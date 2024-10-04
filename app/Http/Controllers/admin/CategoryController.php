@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use App\Helpers\SlugHelper;
 
 class CategoryController extends Controller
 {
+    protected $slugHelper;
+
+    public function __construct(SlugHelper $slugHelper)
+    {
+        $this->slugHelper = $slugHelper;
+    }
+
     public function getSubCategories(Request $request)
     {
         $parent_id = $request->input('parent_id');
@@ -52,7 +60,7 @@ class CategoryController extends Controller
         if ($validator->passes()) {
             $category = new Category();
             $category->name = $request->name;
-            $category->slug = $this->generateUniqueSlug($request->name, Category::class);
+            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
             $category->status = $request->status;
             $category->parent_id = $request->parent_id;
 
@@ -90,10 +98,7 @@ class CategoryController extends Controller
 
         if ($validator->passes()) {
             $category->name = $request->name;
-            // Generate a new unique slug if the name has changed
-            if ($category->isDirty('name')) {
-                $category->slug = $this->generateUniqueSlug($request->name, Category::class);
-            }             
+            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);           
             $category->status = $request->status;
             $category->parent_id = $request->parent_id;
 
