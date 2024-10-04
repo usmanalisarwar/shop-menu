@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Menus PDF</title>
     <style>
-        /* Ensure A4 size layout */
         @page {
             size: A4;
-            margin: 0; /* Remove default margins */
+            margin: 0;
         }
         body {
             font-family: Arial, sans-serif;
@@ -25,10 +24,10 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            page-break-after: always; /* Add a page break after each menu */
+            page-break-after: always;
         }
         .menu:last-child {
-            page-break-after: avoid; /* Avoid breaking after the last menu */
+            page-break-after: avoid;
         }
         .image-container {
             width: 100%;
@@ -41,14 +40,26 @@
         .image {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Ensure the image fills the entire container */
+            object-fit: cover;
             margin: 0;
+        }
+        .user-info {
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
+
     @foreach ($menus as $menu)
         <div class="menu">
+            <h1>Title:{{ $menu->title }}</h1> 
+            <!-- User Information -->
+            <div class="user-info">
+                <p>Name: {{ $user->name }}</p>
+                <p>Email: {{ $user->email }}</p>
+                <p>Company: {{ $user->company_name }}</p> 
+            </div>
             @if ($menu->images->isNotEmpty())
                 <div class="image-container">
                     @foreach ($menu->images as $index => $image)

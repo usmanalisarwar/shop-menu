@@ -9,11 +9,11 @@ use InvalidArgumentException;
 class SlugHelper
 {
     
-	function slug($table, $field ,$data,)
+	function slug($table, $field ,$data)
 	{
 	    $slug = Str::slug($data);
 	
-	        $slugData = DB::table($table)->where($field,'like', '%'.$slug.'%')->get();
+	    $slugData = DB::table($table)->where($field,'like', '%'.$slug.'%')->get();
 	   
 	    if (count($slugData)) {
 	        $slug = $slug . '-' . count($slugData);

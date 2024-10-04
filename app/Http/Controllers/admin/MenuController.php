@@ -23,10 +23,10 @@ class MenuController extends Controller
         $this->slugHelper = $slugHelper;
     }
 
-    // Generate PDF for all menus
     public function generatePdfAll()
     {
         $menus = Menu::with('images')->get(); 
+        $user = Auth::user(); // Get the authenticated user
 
         // Configure Dompdf options
         $options = new Options();
@@ -34,21 +34,33 @@ class MenuController extends Controller
         $dompdf = new Dompdf($options);
 
         // Load the HTML view for the PDF
-        $html = view('admin.menu.pdf-all', compact('menus'))->render();
+        $html = view('admin.menu.pdf-all', compact('menus', 'user'))->render();
         $dompdf->loadHtml($html);
 
         // Set paper size and orientation
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
+
+        // Define the storage path and file name
+        $directoryPath = public_path('uploads/pdfs');
+        if (!File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true);
+        }
+
+        $filePath = $directoryPath . '/menus.pdf';
+
+        // Save the PDF to the specified path
+        file_put_contents($filePath, $dompdf->output());
 
         // Stream the PDF file to the browser
         return $dompdf->stream('menus.pdf', ['Attachment' => true]);
     }
 
-    // Generate PDF for a single menu
+
     public function generatePdf($id)
     {
         $menu = Menu::with('images')->findOrFail($id);
+        $user = Auth::user(); // Get the authenticated user
 
         // Configure Dompdf options
         $options = new Options();
@@ -56,16 +68,29 @@ class MenuController extends Controller
         $dompdf = new Dompdf($options);
 
         // Load the HTML view for the PDF
-        $html = view('admin.menu.pdf', compact('menu'))->render();
+        $html = view('admin.menu.pdf', compact('menu', 'user'))->render();
         $dompdf->loadHtml($html);
 
         // Set paper size and orientation
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
+        // Define the storage path and file name
+        $directoryPath = public_path('uploads/pdfs');
+        if (!File::exists($directoryPath)) {
+            File::makeDirectory($directoryPath, 0755, true);
+        }
+
+        $filePath = $directoryPath . '/menu-' . $menu->id . '.pdf';
+
+        // Save the PDF to the specified path
+        file_put_contents($filePath, $dompdf->output());
+
         // Stream the PDF file to the browser
         return $dompdf->stream('menu-' . $menu->id . '.pdf', ['Attachment' => true]);
     }
+
+
 
     // Fetch all menu images by ID
     public function getMenuImages($id)
