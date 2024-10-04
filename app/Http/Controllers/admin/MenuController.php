@@ -213,7 +213,7 @@ class MenuController extends Controller
         }
 
         $menu->title = $request->title;
-        $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title);
+        $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title, $id);
         $menu->save();
 
         // Handle deleted images

@@ -98,7 +98,7 @@ class CategoryController extends Controller
 
         if ($validator->passes()) {
             $category->name = $request->name;
-            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);           
+            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name, $id); 
             $category->status = $request->status;
             $category->parent_id = $request->parent_id;
 
