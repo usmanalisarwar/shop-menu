@@ -14,16 +14,20 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        }
-        h1 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            height: 100vh;
             text-align: center;
-            margin-bottom: 40px;
         }
         .menu {
-            margin: 0;
-            padding: 0;
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center the content vertically */
+            align-items: center; /* Center the content horizontally */
             page-break-after: always;
         }
         .menu:last-child {
@@ -31,35 +35,29 @@
         }
         .image-container {
             width: 100%;
-            height: 100%;
+            height: auto;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
         }
         .image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            margin: 0;
-        }
-        .user-info {
-            text-align: center;
-            margin-bottom: 20px;
         }
     </style>
+
 </head>
 <body>
+    <div class="header">
+        <p>User: {{ $user->name }}</p>
+        <p>Email: {{ $user->email }}</p>
+        <p>Company: {{ $user->company_name }}</p>
+    </div>
 
     @foreach ($menus as $menu)
         <div class="menu">
-            <h1>Title:{{ $menu->title }}</h1> 
-            <!-- User Information -->
-            <div class="user-info">
-                <p>Name: {{ $user->name }}</p>
-                <p>Email: {{ $user->email }}</p>
-                <p>Company: {{ $user->company_name }}</p> 
-            </div>
+            <h2 style="text-align: center;">{{ $menu->title }}</h2>
             @if ($menu->images->isNotEmpty())
                 <div class="image-container">
                     @foreach ($menu->images as $index => $image)
