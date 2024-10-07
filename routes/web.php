@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\MenuGenerateController;
 use App\Http\Controllers\admin\MenuImageController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
@@ -9,7 +10,8 @@ use App\Http\Controllers\admin\RoleController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/menu/{slug}', [MenuGenerateController::class, 'generateQRCode'])->name('generate.qrcode');
+Route::get('/menu-book/{slug}', [MenuGenerateController::class, 'showBook'])->name('book.show');
 Auth::routes(); // This includes the default authentication routes
 
 // Menus routes with authentication middleware
@@ -45,6 +47,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('role-delete', [RoleController::class,'destroy'])->name('roles.delete')->middleware(['checkRolePermission:roles,delete-role']);
     Route::get('roles/{roleId}/permissions', [RoleController::class,'permissions'])->name('roles.permissions')->middleware(['checkRolePermission:roles,assign-permission']);
     Route::post('roles/{roleId}/assign-permissions', [RoleController::class,'assignPermissions'])->name('roles.permissions.assign')->middleware(['checkRolePermission:roles,assign-permission']);
-    
+
 });
 
