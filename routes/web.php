@@ -5,7 +5,7 @@ use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\MenuGenerateController;
 use App\Http\Controllers\admin\MenuImageController;
 use App\Http\Controllers\admin\CategoryController;
-
+use App\Http\Controllers\admin\RoleController;
 // Public routes
 Route::get('/', function () {
     return view('welcome');
@@ -39,6 +39,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
     Route::get('/categories/subcategories', [CategoryController::class, 'getSubCategories'])->name('categories.subcategories');
+
+     // For Roles
+    Route::get('roles', [RoleController::class,'index'])->name('roles.index')->middleware(['checkRolePermission:roles,read-role']);
+    Route::post('role', [RoleController::class,'store'])->name('roles.add')->middleware(['checkRolePermission:roles,add-new-role']);
+    Route::post('role-update', [RoleController::class,'update'])->name('roles.edit')->middleware(['checkRolePermission:roles,edit-role']);
+    Route::post('role-delete', [RoleController::class,'destroy'])->name('roles.delete')->middleware(['checkRolePermission:roles,delete-role']);
+    Route::get('roles/{roleId}/permissions', [RoleController::class,'permissions'])->name('roles.permissions')->middleware(['checkRolePermission:roles,assign-permission']);
+    Route::post('roles/{roleId}/assign-permissions', [RoleController::class,'assignPermissions'])->name('roles.permissions.assign')->middleware(['checkRolePermission:roles,assign-permission']);
 
 });
 

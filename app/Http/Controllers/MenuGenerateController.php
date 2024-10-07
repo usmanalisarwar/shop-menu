@@ -18,9 +18,9 @@ class MenuGenerateController extends Controller
         }
         // Generate the book URL using the slug
         $bookUrl = route('book.show', $slug);
-        $qrCode = QrCode::size(200)->generate($bookUrl);
+        $qrCode = QrCode::size(450)->generate($bookUrl);
         // Generate QR code and return it as a response
-        return view('qrcode', compact('qrCode'));
+        return view('qrcode', compact('qrCode','menu'));
     }
 
     // Method to show the book (PDF view)
@@ -33,7 +33,7 @@ class MenuGenerateController extends Controller
         if (!$menu) {
             return abort(404, 'Menu not found');
         }
-        $file = storage_path("app/public/books/{$menu->pdf_filename}");
-        return view('menu', compact('file'));
+        $file = asset("{$menu->pdf_path}");
+        return view('menu', compact('file','menu'));
     }
 }

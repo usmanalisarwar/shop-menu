@@ -25,8 +25,8 @@ class MenuController extends Controller
 
     public function generatePdfAll()
     {
-        $menus = Menu::with('images')->get(); 
-        $user = Auth::user(); // Get the authenticated user
+        $menus = Menu::with('images')->get();
+        $user = Auth::user();
 
         // Configure Dompdf options
         $options = new Options();
@@ -47,20 +47,27 @@ class MenuController extends Controller
             File::makeDirectory($directoryPath, 0755, true);
         }
 
-        $filePath = $directoryPath . '/menus.pdf';
+        $fileName = 'menus.pdf';
+        $filePath = $directoryPath . '/' . $fileName;
 
         // Save the PDF to the specified path
         file_put_contents($filePath, $dompdf->output());
 
+        // If needed, you can loop through the menus and update their pdf_path
+        foreach ($menus as $menu) {
+            $menu->pdf_path = 'uploads/pdfs/' . $fileName;
+            $menu->save();
+        }
+
         // Stream the PDF file to the browser
-        return $dompdf->stream('menus.pdf', ['Attachment' => true]);
+        return $dompdf->stream($fileName, ['Attachment' => true]);
     }
 
 
     public function generatePdf($id)
     {
         $menu = Menu::with('images')->findOrFail($id);
-        $user = Auth::user(); // Get the authenticated user
+        $user = Auth::user();
 
         // Configure Dompdf options
         $options = new Options();
@@ -81,10 +88,15 @@ class MenuController extends Controller
             File::makeDirectory($directoryPath, 0755, true);
         }
 
-        $filePath = $directoryPath . '/menu-' . $menu->id . '.pdf';
+        $fileName = 'menu-' . $menu->id . '.pdf';
+        $filePath = $directoryPath . '/' . $fileName;
 
         // Save the PDF to the specified path
         file_put_contents($filePath, $dompdf->output());
+
+        // Save the PDF path to the menu in the database
+        $menu->pdf_path = 'uploads/pdfs/' . $fileName;
+        $menu->save();
 
         // Stream the PDF file to the browser
         return $dompdf->stream('menu-' . $menu->id . '.pdf', ['Attachment' => true]);
