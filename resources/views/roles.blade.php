@@ -1,16 +1,17 @@
-<x-app-layout :active="$active" :breadCrumbs="$breadCrumbs">
-    @section('content')
+@extends('admin.layouts.app')
+@section('content')
         <div class="row">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">{{ ucwords(end($breadCrumbs)['name']) }}</h3>
                         @if(hasPermissions($permissions,'add-new-role'))
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-model">
+                            <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-model">
                                 Add New {{ Str::singular(ucwords(end($breadCrumbs)['name'])) }}
                             </button>
                         @endif
                     </div>
+
                     <!-- /.card-header -->
                     <div class="card-body">
 
@@ -144,8 +145,9 @@
                 <!-- /.modal-dialog -->
             </div>
         @endif
-    @endsection
-    @section('scripts')
+@endsection
+
+@section('customJs')
         <script>
             $(function () {
                 // Define your custom length options
@@ -419,4 +421,3 @@
             });
         </script>
     @endsection
-</x-app-layout>

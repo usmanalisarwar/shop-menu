@@ -25,7 +25,7 @@
 							<li class="nav-item">
 								<a href="{{route('roles.index')}}" class="nav-link">
 									<i class="nav-icon fas fa-file-alt"></i>
-									<p>RolePermission</p>
+									<p>Roles</p>
 								</a>
 							</li>	
 						</ul>
