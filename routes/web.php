@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\MenuController;
+use App\Http\Controllers\MenuGenerateController;
 use App\Http\Controllers\admin\MenuImageController;
 use App\Http\Controllers\admin\CategoryController;
 
@@ -9,7 +10,8 @@ use App\Http\Controllers\admin\CategoryController;
 Route::get('/', function () {
     return view('welcome');
 });
-
+Route::get('/menu/{slug}', [MenuGenerateController::class, 'generateQRCode'])->name('generate.qrcode');
+Route::get('/menu-book/{slug}', [MenuGenerateController::class, 'showBook'])->name('book.show');
 Auth::routes(); // This includes the default authentication routes
 
 // Menus routes with authentication middleware
@@ -37,6 +39,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('categories/{id}', [CategoryController::class, 'destroy'])->name('categories.delete');
     Route::get('/categories/subcategories', [CategoryController::class, 'getSubCategories'])->name('categories.subcategories');
-    
+
 });
 
