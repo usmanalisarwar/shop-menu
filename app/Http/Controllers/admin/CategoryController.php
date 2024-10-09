@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use App\Helpers\SlugHelper;
 
-class RoleController extends Controller
+class CategoryController extends Controller
 {
     protected $slugHelper;
 
@@ -17,53 +19,58 @@ class RoleController extends Controller
         $this->slugHelper = $slugHelper;
     }
 
-    /**
-     * Display a listing of the roles.
-     */
+    public function getSubCategories(Request $request)
+    {
+        $parent_id = $request->input('parent_id');
+        $subCategories = Category::where('parent_id', $parent_id)->get();
+
+        return response()->json([
+            'status' => true,
+            'subCategories' => $subCategories
+        ]);
+    }
+
     public function index(Request $request)
     {
-        $query = Role::orderBy('id', 'asc');
+        $query = Category::orderBy('id', 'asc'); 
 
         if ($keyword = $request->get('keyword')) {
             $query->where('name', 'like', '%' . $keyword . '%');
         }
 
-        $roles = $query->paginate(10);
+        $categories = $query->paginate(10);
 
-        return view('admin.role.list', compact('roles'));
+        return view('admin.category.list', compact('categories'));
     }
 
-    /**
-     * Show the form for creating a new role.
-     */
+
     public function create()
     {
-        return view('admin.role.create');
+        $categories = Category::whereNull('parent_id')->get(); 
+        return view('admin.category.create', compact('categories'));
     }
 
-    /**
-     * Store a newly created role in storage.
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:roles,name',
+            'name' => 'required',
             'status' => 'required|boolean',
         ]);
 
         if ($validator->passes()) {
-            $role = new Role();
-            $role->name = $request->name;
-            $role->slug = $this->slugHelper->slug('roles', 'slug', $request->name);
-            $role->status = $request->status;
+            $category = new Category();
+            $category->name = $request->name;
+            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
+            $category->status = $request->status;
+            $category->parent_id = $request->parent_id;
 
-            $role->save();
+            $category->save();
 
-            $request->session()->flash('success', 'Role added successfully');
+            $request->session()->flash('success', 'Category added successfully');
 
             return response()->json([
                 'status' => true,
-                'message' => 'Role added successfully'
+                'message' => 'Category added successfully'
             ]);
         } else {
             return response()->json([
@@ -73,39 +80,35 @@ class RoleController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified role.
-     */
     public function edit($id)
     {
-        $role = Role::findOrFail($id);
-        return view('admin.role.edit', compact('role'));
+        $category = Category::findOrFail($id);
+        $categories = Category::whereNull('parent_id')->get(); 
+        return view('admin.category.edit', compact('category', 'categories'));
     }
 
-    /**
-     * Update the specified role in storage.
-     */
     public function update(Request $request, $id)
     {
-        $role = Role::findOrFail($id);
+        $category = Category::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|unique:roles,name,' . $id,
+            'name' => 'required',
             'status' => 'required|boolean',
         ]);
 
         if ($validator->passes()) {
-            $role->name = $request->name;
-            $role->slug = $this->slugHelper->slug('roles', 'slug', $request->name, $id);
-            $role->status = $request->status;
+            $category->name = $request->name;
+            $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name, $id); 
+            $category->status = $request->status;
+            $category->parent_id = $request->parent_id;
 
-            $role->save();
+            $category->save();
 
-            $request->session()->flash('success', 'Role updated successfully');
+            $request->session()->flash('success', 'Category updated successfully');
 
             return response()->json([
                 'status' => true,
-                'message' => 'Role updated successfully'
+                'message' => 'Category updated successfully'
             ]);
         } else {
             return response()->json([
@@ -115,14 +118,14 @@ class RoleController extends Controller
         }
     }
 
-    /**
-     * Remove the specified role from storage.
-     */
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
+        $category = Category::findOrFail($id);
 
-        return response()->json(['status' => true, 'message' => 'Role deleted successfully']);
+        $category->delete();
+
+        return response()->json(['status' => true, 'message' => 'Category deleted successfully']);
     }
+
+
 }

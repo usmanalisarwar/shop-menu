@@ -23,7 +23,6 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($request->all());
         $permissions = getAuthUserModulePermissions();
         if (!hasPermissions($permissions, 'read-role')) {
             abort(403, 'Unauthorized'); // Return a 403 Forbidden response if the role check fails
@@ -37,7 +36,7 @@ class RoleController extends Controller
                 ],
                 [
                     'name' => 'Roles',
-                    'url' => url('roles'),
+                    'url' => url('admin/roles'),
                     'active' => 'roles',
                 ]
             ];
@@ -45,6 +44,7 @@ class RoleController extends Controller
             return view('roles', compact('active', 'breadCrumbs', 'permissions','statuses'));
         } else {
             $model = Role::query();
+
             return DataTables::of($model)
                 ->editColumn('created_at', function ($data) {
                     return $data->created_at->format('d F, Y H:i');
@@ -130,11 +130,11 @@ class RoleController extends Controller
             ],
             [
                 'name' => 'Roles',
-                'url' => url('roles'),
+                'url' => url('admin/roles'),
             ],
             [
                 'name' => 'Role Permissions',
-                'url' => url('roles'),
+                'url' => url('admin/roles'),
                 'active' => 'roles',
             ]
         ];

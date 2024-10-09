@@ -10,7 +10,8 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
-        "simplesoftwareio/simple-qrcode": "^4.2"
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "yajra/laravel-datatables-oracle": "^12.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -29,7 +30,7 @@
         "files": [
             "app/Helpers/SlugHelper.php",
             "app/Helpers/helpers.php"
-            ]
+        ]
     },
     "autoload-dev": {
         "psr-4": {
