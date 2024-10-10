@@ -28,7 +28,12 @@
 									<p>Menus</p>
 								</a>
 							</li>
-							
+							<li class="nav-item">
+								<a href="{{route('menu-items.index')}}" class="nav-link">
+									<i class="nav-icon fas fa-file-alt"></i>
+									<p>Menu Items</p>
+								</a>
+							</li>
 						</ul>
 					</nav>
 					<!-- /.sidebar-menu -->

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\MenuController;
 use App\Http\Controllers\MenuGenerateController;
 use App\Http\Controllers\admin\MenuImageController;
+use App\Http\Controllers\admin\MenuItemController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
 // Public routes
@@ -27,8 +28,18 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('menus/{id}/pdf', [MenuController::class, 'generatePdf'])->name('menus.pdf');
     Route::get('/menus/pdf/all', [MenuController::class, 'generatePdfAll'])->name('menus.pdfAll');
 
+    // Menu-items routes
+    Route::get('/menu-items', [MenuItemController::class, 'index'])->name('menu-items.index');
+    Route::get('/menu-items/create', [MenuItemController::class, 'create'])->name('menu-items.create');
+    Route::post('/menu-items', [MenuItemController::class, 'store'])->name('menu-items.store');
+    Route::get('/menu-items/{menuItem}/edit', [MenuItemController::class, 'edit'])->name('menu-items.edit');
+    Route::post('/menu-items/{menuItem}', [MenuItemController::class, 'update'])->name('menu-items.update');
+    Route::delete('menu-items/{id}', [MenuItemController::class, 'destroy'])->name('menu-items.delete');
+    Route::get('menu-items/{id}/images', [MenuItemController::class, 'getMenuItemImages']);
+
     // Menu-images routes
     Route::post('/upload-menu-image', [MenuImageController::class, 'create'])->name('menu-images.create');
+    Route::post('/upload-menu-item-image', [MenuImageController::class, 'menuItemCreate'])->name('menu-item-images.menuItemCreate');
     Route::get('/dashboard', [MenuImageController::class, 'index'])->name('admin.dashboard');
 
     //Categories routes
