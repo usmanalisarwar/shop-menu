@@ -4,18 +4,18 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                  <div class="card-header">
-                <h3 class="card-title">{{ ucwords(end($breadCrumbs)['name']) }}</h3>
-                @if(hasPermissions($permissions, 'add-new-role'))
-                <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-model">
-                    Add New {{ Str::singular(ucwords(end($breadCrumbs)['name'])) }}
-                </button>
-                @endif
-            </div>
+                    <div class="card-header">
+                        <h3 class="card-title">{{ ucwords(end($breadCrumbs)['name']) }}</h3>
+                        @if(hasPermissions($permissions, 'add-new-role'))
+                        <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#add-model">
+                            Add New {{ Str::singular(ucwords(end($breadCrumbs)['name'])) }}
+                        </button>
+                        @endif
+                    </div>
                     <!-- /.card-header -->
                     <div class="card-body">
 
-                        <table id="roles" class="table table-bordered table-striped">
+                        <table id="example1" class="table table-bordered table-striped">
                             <thead>
                             <tr>
                                 <th>Name</th>
@@ -153,7 +153,7 @@
                 var customLengthOptions = [10, 25, 50, 100];
 
                 // Initialize the DataTable
-                var table = $("#roles").DataTable({
+                var table = $("#example1").DataTable({
                     processing: true,
                     serverSide: true,
                     autoWidth: false,
