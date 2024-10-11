@@ -33,3 +33,4 @@ jobs:
             php artisan optimize:clear
             php artisan mirgate
             php artisan db:seed
+            
