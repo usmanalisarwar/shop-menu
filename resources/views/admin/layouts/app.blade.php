@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="{{ asset('admin-assets/plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/datetimepicker.css')}}">
     <link rel="stylesheet" href="{{ asset('admin-assets/css/custom.css')}}">
+      <link rel="stylesheet" href="{{ asset('admin-assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+       <link rel="stylesheet" href="{{ asset('admin-assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/plugins/toastr/toastr.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin-assets/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="hold-transition sidebar-mini">
@@ -87,6 +93,19 @@
     <script src="{{ asset('admin-assets/js/datetimepicker.js')}}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('admin-assets/js/demo.js')}}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/jszip/jszip.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/pdfmake/vfs_fonts.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    <script src="{{ asset('admin-assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
     <script type="text/javascript">
         $.ajaxSetup({
             headers:{
@@ -100,6 +119,32 @@
             });
         });
     </script>
+    <script>
+    $(document).ready(function () {
+        // Show preloader when an Ajax request starts
+        $(document).ajaxStart(function () {
+            $('#preloader').show();
+        });
+
+        // Hide preloader when an Ajax request is completed
+        $(document).ajaxStop(function () {
+            $('#preloader').hide();
+        });
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $('input,textarea,select').on('focus change', function () {
+            // Find the adjacent error message and remove it
+            $(this).next('.errors').html('');
+        });
+        $('#add-model').on('shown.bs.modal', function () {
+            // Reset the form by using its ID
+            $('#add-form')[0].reset();
+        });
+    });
+</script>
     @yield('customJs')
 </body>
 </html>
