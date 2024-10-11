@@ -16,7 +16,7 @@ jobs:
         run: sudo apt-get install openssh-client
       - name: Debug SSH Connection
         run: |
-          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -v
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -v
 
           
       - name: Deploy to Droplet
