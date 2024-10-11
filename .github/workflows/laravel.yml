@@ -27,3 +27,5 @@ jobs:
             git pull origin main
             composer install
             php artisan optimize:clear
+            php artisan mirgate
+            php artisan db:seed
