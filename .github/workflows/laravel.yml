@@ -1,0 +1,29 @@
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Install SSH Client
+        run: sudo apt-get install openssh-client
+      
+      - name: Deploy to Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}  # Replace with your droplet's IP address
+          username: ${{ secrets.SERVER_USERNAME }}  # Replace with your droplet's username
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          script: |
+            cd /var/www/orderandmenu.com
+            git pull origin main
+            composer install
+            php artisan optimize:clear
