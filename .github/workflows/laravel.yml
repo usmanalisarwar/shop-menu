@@ -28,7 +28,7 @@ jobs:
           
           script: |
             cd /var/www/orderandmenu.com
-             rm -fr ".git/rebase-merge"
+            rm -fr ".git/rebase-merge"
             git pull origin main --force
             php artisan migrate
             composer install
