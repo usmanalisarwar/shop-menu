@@ -28,7 +28,7 @@ class ModulePermissionSeeder extends Seeder
         $modulesAndPermissions = [
             [
                 'name'=>'Users',
-                'url'=>'admin/users',
+                'url'=>'users',
                 'active'=>'users',
                 'icon'=>'user-tie',
                 'permissions'=>[
@@ -40,7 +40,7 @@ class ModulePermissionSeeder extends Seeder
             ],
             [
                 'name'=>'Roles',
-                'url'=>'admin/roles',
+                'url'=>'roles',
                 'active'=>'roles',
                 'icon'=>'key',
                 'permissions'=>[
@@ -53,14 +53,38 @@ class ModulePermissionSeeder extends Seeder
             ],
             [
                 'name'=>'Categories',
-                'url'=>'admin/categories',
+                'url'=>'categories',
                 'active'=>'categories',
-                'icon'=>'layer-group',
+                'icon'=>'list-alt',
                 'permissions'=>[
                     'Read Category',
                     'Add New Category',
                     'Edit Category',
                     'Delete Category',
+                ],
+            ],
+             [
+                'name'=>'Menus',
+                'url'=>'menus',
+                'active'=>'menus',
+                'icon'=>'bars',
+                'permissions'=>[
+                    'Read Menu',
+                    'Add New Menu',
+                    'Edit Menu',
+                    'Delete Menu',
+                ],
+            ],
+              [
+                'name'=>'Menu Items',
+                'url'=>'menu-item',
+                'active'=>'menu-item',
+                'icon'=>'fa-utensils',
+                'permissions'=>[
+                    'Read MenuItem',
+                    'Add New MenuItem',
+                    'Edit MenuItem',
+                    'Delete MenuItem',
                 ],
             ],
         ];

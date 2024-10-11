@@ -25,6 +25,7 @@ class MenuController extends Controller
 
     public function generatePdfAll()
     {
+    
         $menus = Menu::with('images')->get();
         $user = Auth::user();
 
@@ -66,6 +67,7 @@ class MenuController extends Controller
 
     public function generatePdf($id)
     {
+
         $menu = Menu::with('images')->findOrFail($id);
         $user = Auth::user();
 
@@ -114,6 +116,11 @@ class MenuController extends Controller
     // List all menus with search functionality
     public function index(Request $request)
     {
+        $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'read-menu')) {
+            abort(403, 'Unauthorized'); // Return 403 Forbidden if the user lacks permission
+        }
         $query = Menu::latest();
 
         if ($keyword = $request->get('keyword')) {
@@ -127,12 +134,23 @@ class MenuController extends Controller
     // Create new menu form
     public function create()
     {
+         $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'create-menu')) {
+            abort(403, 'Unauthorized');
+        }
         return view('admin.menu.create');
     }
 
     // Store a new menu
     public function store(Request $request)
     {
+         $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'create-menu')) {
+            abort(403, 'Unauthorized');
+        }
+
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'image_array' => 'required|array',
@@ -201,6 +219,11 @@ class MenuController extends Controller
     // Edit an existing menu
     public function edit($id)
     {
+        $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'edit-menu')) {
+            abort(403, 'Unauthorized');
+        }
         $menu = Menu::findOrFail($id);
         $menuImages = MenuImage::where('menu_id', $id)->orderBy('order_no')->get();
 
@@ -210,6 +233,12 @@ class MenuController extends Controller
     // Update an existing menu
     public function update(Request $request, $id)
     {
+        $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'edit-menu')) {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = Menu::findOrFail($id);
         $validator = Validator::make($request->all(), [
             'title' => 'required',
@@ -311,6 +340,12 @@ class MenuController extends Controller
     // Delete a menu
     public function destroy($id)
     {
+         $permissions = getAuthUserModulePermissions();
+
+        if (!hasPermissions($permissions, 'delete-menu')) {
+            abort(403, 'Unauthorized');
+        }
+
         $menu = Menu::find($id);
 
         if (!$menu) {

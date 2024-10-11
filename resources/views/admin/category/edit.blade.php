@@ -20,7 +20,7 @@
 <section class="content">
     <!-- Default box -->
     <div class="container-fluid">
-        <form action="{{ route('categories.update', $category->id) }}" method="POST" id="categoryForm" name="categoryForm">
+        <form action="" method="POST" id="categoryForm" name="categoryForm">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -32,15 +32,7 @@
                                 <p></p>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="status">Status</label>
-                                <select name="status" id="status" class="form-control">
-                                    <option value="1" {{ $category->status ? 'selected' : '' }}>Active</option>
-                                    <option value="0" {{ !$category->status ? 'selected' : '' }}>Block</option>
-                                </select>
-                            </div>
-                        </div>
+                
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="parent_id">Parent Category</label>
