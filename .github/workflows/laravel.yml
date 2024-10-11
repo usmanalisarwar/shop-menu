@@ -14,7 +14,11 @@ jobs:
       
       - name: Install SSH Client
         run: sudo apt-get install openssh-client
-      
+      - name: Debug SSH Connection
+        run: |
+          ssh -i ${{ secrets.SSH_PRIVATE_KEY }} -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -v
+
+          
       - name: Deploy to Droplet
         uses: appleboy/ssh-action@master
         with:
