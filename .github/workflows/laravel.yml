@@ -28,8 +28,9 @@ jobs:
           
           script: |
             cd /var/www/orderandmenu.com
-            git pull origin main
+             rm -fr ".git/rebase-merge"
+            git pull origin main --force
+            php artisan migrate
             composer install
             php artisan optimize:clear
-            php artisan mirgate
             php artisan db:seed
