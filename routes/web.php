@@ -7,6 +7,8 @@ use App\Http\Controllers\admin\MenuImageController;
 use App\Http\Controllers\admin\MenuItemController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\UserController;
+
 // Public routes
 Route::get('/', function () {
     return view('welcome');
@@ -20,7 +22,7 @@ Route::group(['middleware' => ['auth']], function () {
     // Menu routes
     Route::get('/menus', [MenuController::class, 'index'])
         ->name('menus.index')
-        ->middleware(['checkRolePermission:menus,read-role']);
+        ->middleware(['checkRolePermission:menus,read-menu']);
     Route::get('/menus/create', [MenuController::class, 'create'])
         ->name('menus.create')
         ->middleware(['checkRolePermission:menus,add-new-menu']);
@@ -37,37 +39,35 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('menus.delete')
         ->middleware(['checkRolePermission:menus,delete-menu']);
     Route::get('/menus/{id}/pdf', [MenuController::class, 'generatePdf'])
-        ->name('menus.pdf')
-        ->middleware(['checkRolePermission:menus,read-role']);
+        ->name('menus.pdf');
     Route::get('/menus/pdf/all', [MenuController::class, 'generatePdfAll'])
-        ->name('menus.pdfAll')
-        ->middleware(['checkRolePermission:menus,read-role']);
+        ->name('menus.pdfAll');
     Route::get('/logout', [MenuController::class, 'logout'])->name('admin.logout');
 
     // Menu-item routes
     Route::get('/menu-items', [MenuItemController::class, 'index'])
         ->name('menu-items.index')
-        ->middleware(['checkRolePermission:menu-items,read-role']);
+        ->middleware(['checkRolePermission:menu-items,read-menu-item']);
     Route::get('/menu-items/create', [MenuItemController::class, 'create'])
         ->name('menu-items.create')
-        ->middleware(['checkRolePermission:menu-items,add-new-item']);
+        ->middleware(['checkRolePermission:menu-items,add-new-menu-item']);
     Route::post('/menu-items', [MenuItemController::class, 'store'])
         ->name('menu-items.store')
-        ->middleware(['checkRolePermission:menu-items,add-new-item']);
+        ->middleware(['checkRolePermission:menu-items,add-new-menu-item']);
     Route::get('/menu-items/{menuItem}/edit', [MenuItemController::class, 'edit'])
         ->name('menu-items.edit')
-        ->middleware(['checkRolePermission:menu-items,edit-item']);
+        ->middleware(['checkRolePermission:menu-items,edit-menu-item']);
     Route::post('/menu-items/{menuItem}', [MenuItemController::class, 'update'])
         ->name('menu-items.update')
-        ->middleware(['checkRolePermission:menu-items,edit-item']);
+        ->middleware(['checkRolePermission:menu-items,edit-menu-item']);
     Route::delete('/menu-items/{id}', [MenuItemController::class, 'destroy'])
         ->name('menu-items.delete')
-        ->middleware(['checkRolePermission:menu-items,delete-item']);
+        ->middleware(['checkRolePermission:menu-items,delete-menu-item']);
 
     // Categories routes
     Route::get('/categories', [CategoryController::class, 'index'])
         ->name('categories.index')
-        ->middleware(['checkRolePermission:categories,read-role']);
+        ->middleware(['checkRolePermission:categories,read-category']);
     Route::get('/categories/create', [CategoryController::class, 'create'])
         ->name('categories.create')
         ->middleware(['checkRolePermission:categories,add-new-category']);
@@ -113,6 +113,12 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('roles/{roleId}/assign-permissions', [RoleController::class, 'assignPermissions'])
         ->name('roles.permissions.assign')
         ->middleware(['checkRolePermission:roles,assign-permission']);
+
+    //User routes
+    Route::get('users', [UserController::class,'index'])->name('users.index')->middleware(['checkRolePermission:users,read-user']);
+    Route::post('user', [UserController::class,'store'])->name('users.add')->middleware(['checkRolePermission:users,add-new-user']);
+    Route::post('user-update', [UserController::class,'update'])->name('users.edit')->middleware(['checkRolePermission:users,edit-user']);
+    Route::post('user-delete', [UserController::class,'destroy'])->name('users.delete')->middleware(['checkRolePermission:users,delete-user']);
 });
 
 

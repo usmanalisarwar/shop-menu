@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->unsignedBigInteger('parent_id')->nullable()->index(); 
+            $table->unsignedBigInteger('parent_id')->nullable()->index();
+            $table->unsignedBigInteger('user_id')->index(); 
             $table->integer('status')->default(1);
             $table->timestamps();
+
             $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); 
         });
     }
 

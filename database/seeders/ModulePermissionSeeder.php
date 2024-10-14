@@ -77,14 +77,14 @@ class ModulePermissionSeeder extends Seeder
             ],
               [
                 'name'=>'Menu Items',
-                'url'=>'menu-item',
+                'url'=>'menu-items',
                 'active'=>'menu-item',
-                'icon'=>'fa-utensils',
+                'icon'=>'utensils',
                 'permissions'=>[
-                    'Read MenuItem',
-                    'Add New MenuItem',
-                    'Edit MenuItem',
-                    'Delete MenuItem',
+                    'Read Menu Item',
+                    'Add New Menu Item',
+                    'Edit Menu Item',
+                    'Delete Menu Item',
                 ],
             ],
         ];

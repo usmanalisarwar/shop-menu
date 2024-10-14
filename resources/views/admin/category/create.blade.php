@@ -17,7 +17,11 @@
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
-        <form action="{{ route('categories.store') }}" method="POST" id="categoryForm" name="categoryForm">
+         @php
+            $permissions = getAuthUserModulePermissions();
+        @endphp
+        @if (hasPermissions($permissions, 'add-new-category'))
+        <form action="" method="POST" id="categoryForm" name="categoryForm">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -29,7 +33,28 @@
                                 <p></p>
                             </div>
                         </div>
-
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="status">Status</label>
+                                <select name="status" id="status" class="form-control">
+                                    <option value="1">Active</option>
+                                    <option value="0">Block</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- User (User ID) -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="user_id">User</label>
+                                <select name="user_id" id="user_id" class="form-control">
+                                    <option value="">Select a User</option>
+                                    @foreach($users as $user)  <!-- Assuming $users is passed from the controller -->
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                                <p></p>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="parent_id">Parent Category</label>
@@ -51,6 +76,7 @@
                 <a href="{{ route('categories.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
             </div>
         </form>
+        @endif
     </div>
 </section>
 

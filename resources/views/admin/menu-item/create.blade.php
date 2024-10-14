@@ -27,6 +27,10 @@
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
+         @php
+            $permissions = getAuthUserModulePermissions();
+        @endphp
+        @if (hasPermissions($permissions, 'add-new-menu-item'))
         <form action="" method="POST" id="menuItemForm" name="menuItemForm">
             @csrf
             <div class="card">
@@ -88,6 +92,7 @@
                 <a href="{{route('menu-items.index')}}" class="btn btn-outline-dark ml-3">Cancel</a>
             </div>
         </form>
+        @endif
     </div>
 </section>
 @endsection

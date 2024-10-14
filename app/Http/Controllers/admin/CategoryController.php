@@ -4,9 +4,11 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\SlugHelper;
+use Illuminate\Support\Facades\Auth; 
 
 class CategoryController extends Controller
 {
@@ -31,12 +33,11 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $permissions = getAuthUserModulePermissions();
-        
         if (!hasPermissions($permissions, 'read-category')) {
             abort(403, 'Unauthorized');
         }
 
-        $query = Category::orderBy('id', 'asc');
+        $query = Category::with('user')->orderBy('id', 'asc'); 
 
         if ($keyword = $request->get('keyword')) {
             $query->where('name', 'like', '%' . $keyword . '%');
@@ -51,19 +52,19 @@ class CategoryController extends Controller
     {
         $permissions = getAuthUserModulePermissions();
 
-        if (!hasPermissions($permissions, 'create-category')) {
+        if (!hasPermissions($permissions, 'add-new-category')) {
             abort(403, 'Unauthorized');
         }
-
+        $users = User::all();
         $categories = Category::whereNull('parent_id')->get();
-        return view('admin.category.create', compact('categories'));
+        return view('admin.category.create', compact('categories','users'));
     }
 
     public function store(Request $request)
     {
         $permissions = getAuthUserModulePermissions();
 
-        if (!hasPermissions($permissions, 'create-category')) {
+        if (!hasPermissions($permissions, 'add-new-category')) {
             abort(403, 'Unauthorized');
         }
 
@@ -84,6 +85,7 @@ class CategoryController extends Controller
         $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
         $category->status = $request->status;
         $category->parent_id = $request->parent_id;
+        $category->user_id = Auth::id(); // Assign the authenticated user's ID
 
         $category->save();
 
@@ -101,10 +103,11 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        $users = User::all();
         $category = Category::findOrFail($id);
         $categories = Category::whereNull('parent_id')->get();
         
-        return view('admin.category.edit', compact('category', 'categories'));
+        return view('admin.category.edit', compact('category', 'categories','users'));
     }
 
     public function update(Request $request, $id)
@@ -117,9 +120,11 @@ class CategoryController extends Controller
 
         $category = Category::findOrFail($id);
 
+        // Validate input data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
+            'user_id' => 'nullable|exists:users,id', // Optional user_id validation
         ]);
 
         if ($validator->fails()) {
@@ -134,6 +139,11 @@ class CategoryController extends Controller
         $category->status = $request->status;
         $category->parent_id = $request->parent_id;
 
+        // Update user_id if provided in the request
+        if ($request->has('user_id')) {
+            $category->user_id = $request->user_id; // Assign new user ID from the request
+        }
+
         $category->save();
 
         return response()->json([
@@ -141,6 +151,7 @@ class CategoryController extends Controller
             'message' => 'Category updated successfully'
         ]);
     }
+
 
     public function destroy($id)
     {

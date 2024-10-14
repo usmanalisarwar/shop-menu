@@ -136,7 +136,7 @@ class MenuController extends Controller
     {
          $permissions = getAuthUserModulePermissions();
 
-        if (!hasPermissions($permissions, 'create-menu')) {
+        if (!hasPermissions($permissions, 'add-new-menu')) {
             abort(403, 'Unauthorized');
         }
         return view('admin.menu.create');
@@ -147,7 +147,7 @@ class MenuController extends Controller
     {
          $permissions = getAuthUserModulePermissions();
 
-        if (!hasPermissions($permissions, 'create-menu')) {
+        if (!hasPermissions($permissions, 'add-new-menu')) {
             abort(403, 'Unauthorized');
         }
 

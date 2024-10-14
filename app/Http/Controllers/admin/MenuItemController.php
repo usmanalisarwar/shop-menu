@@ -129,7 +129,7 @@ class MenuItemController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Menu added successfully',
+            'message' => 'Menu Item added successfully',
         ]);
     }
 
@@ -197,7 +197,7 @@ class MenuItemController extends Controller
 
         \Log::info('Menu Item updated successfully: ', $menuItem->toArray());
 
-        return response()->json(['status' => true, 'message' => 'Menu updated successfully']);
+        return response()->json(['status' => true, 'message' => 'Menu Item updated successfully']);
     }
 
     // Delete a menu

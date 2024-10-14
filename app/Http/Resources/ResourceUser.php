@@ -18,10 +18,8 @@ class ResourceUser extends JsonResource
             'id' => $this->id,
             'role' => $this->role,
             'name' => $this->name,
-            'image' => $this->image,
-            'dob' => $this->dob,
             'email' => $this->email,
-            'status' => $this->status,
+            'company_name' => $this->company_name,
             'created_at' => $this->created_at->format('d F, Y H:i'),
             'updated_at' => $this->updated_at->format('d F, Y H:i'),
             // Add more attributes as needed

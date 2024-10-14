@@ -19,7 +19,11 @@
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
-        <form action="{{ route('menus.update', $menu->id) }}" method="POST" id="menuForm" name="menuForm">
+        @php
+            $permissions = getAuthUserModulePermissions();
+        @endphp
+        @if (hasPermissions($permissions, 'edit-menu'))
+        <form action="" method="POST" id="menuForm" name="menuForm">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -63,6 +67,7 @@
                 </div>
             </div>
         </form>
+        @endif
     </div>
 </section>
 @endsection
