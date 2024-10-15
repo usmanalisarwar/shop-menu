@@ -9,9 +9,6 @@
 				<h1>Menus</h1>
 			</div>
 			<div class="col-sm-6 text-right">
-				<a href="{{ route('menus.pdfAll') }}" target="_blank" class="btn btn-secondary">
-                    Generate Menus PDF
-                </a>
                 @if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu'))		<a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
 				@endif
 			</div>

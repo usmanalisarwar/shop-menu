@@ -40,8 +40,6 @@ Route::group(['middleware' => ['auth']], function () {
         ->middleware(['checkRolePermission:menus,delete-menu']);
     Route::get('/menus/{id}/pdf', [MenuController::class, 'generatePdf'])
         ->name('menus.pdf');
-    Route::get('/menus/pdf/all', [MenuController::class, 'generatePdfAll'])
-        ->name('menus.pdfAll');
     Route::get('/logout', [MenuController::class, 'logout'])->name('admin.logout');
 
     // Menu-item routes
