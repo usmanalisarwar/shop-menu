@@ -92,9 +92,9 @@
 						</tr>
                         @endforeach
                         @else
-                        <tr>
-                            <td colspan="5">Records Not Found</td>
-                        </tr>
+                       <td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
+			                <strong>No Records Found</strong>
+			            </td>
                         @endif
 					</tbody>
 				</table>										

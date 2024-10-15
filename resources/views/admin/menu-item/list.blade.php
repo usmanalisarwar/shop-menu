@@ -89,9 +89,9 @@
 						</tr>
                         @endforeach
                         @else
-                        <tr>
-                            <td colspan="6">Records Not Found</td>
-                        </tr>
+                        <td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
+			                <strong>No Records Found</strong>
+			            </td>
                         @endif
 					</tbody>
 				</table>										
@@ -134,27 +134,22 @@
 @section('customJs')
 <script>
 function deleteMenuItem(id) {
-    var url = '{{ route("menu-items.delete", ":id") }}';
-    url = url.replace(':id', id);
-    
-    if (confirm("Are you sure you want to delete this menu?")) {
+    var url = '{{ route("menu-items.delete", "ID") }}';
+    var newUrl = url.replace("ID", id);
+    if (confirm("Are you sure you want to delete")) {
         $.ajax({
-            url: url,
-            type: 'DELETE',
+            url: newUrl,
+            type: 'POST',
             data: {
+                _method: 'DELETE',
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
+            dataType: 'json',
             success: function(response) {
                 if (response.status) {
                     alert(response.message);
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert('Failed to delete the menu.');
+                    window.location.href = "{{ route('menu-items.index') }}";
                 }
-            },
-            error: function(xhr) {
-                alert('An error occurred while trying to delete the menu.');
-                console.log(xhr.responseText);
             }
         });
     }
