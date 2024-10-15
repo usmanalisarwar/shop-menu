@@ -172,13 +172,27 @@ Sortable.create(gallery, {
     }
 });
 
-// Update the image numbers after sorting or deleting
 function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
-        var imageNumberText = (index === 0) 
+        var isFirst = (index === 0);
+        var imageNumberText = isFirst 
             ? '1 - This is the first menu page and also show this first menu page on barcode page' 
             : index + 1;
-        $(element).find('.image-number').html(imageNumberText);
+
+        // For the first image, add the button and text
+        if (isFirst) {
+            var toggleText = '<span class="image-info" style="display:none;">' + imageNumberText + '</span>';
+            var button = `<button class="btn btn-info btn-sm toggle-info">Info</button>`;
+            $(element).find('.image-number').html(index + 1 + " " + button + toggleText);
+        } else {
+            // For other images, only show the number without a button
+            $(element).find('.image-number').html(index + 1);
+        }
+    });
+    
+    // Add click event listener to toggle the text for the first image
+    $('.toggle-info').on('click', function () {
+        $(this).siblings('.image-info').toggle();  // Toggle visibility of text
     });
 }
 
