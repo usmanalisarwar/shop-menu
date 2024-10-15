@@ -2,13 +2,12 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-    width: 100%; /* Make sure the image takes the full width of the card */
-    height: auto; /* Maintain aspect ratio */
-}
-.image-row {
-    margin-bottom: 15px; /* Add spacing between rows */
-}
-
+        width: 100%; /* Make sure the image takes the full width of the card */
+        height: auto; /* Maintain aspect ratio */
+    }
+    .image-row {
+        margin-bottom: 15px; /* Add spacing between rows */
+    }
 </style>
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -18,7 +17,7 @@
                 <h1>Create Menu</h1>
             </div>
             <div class="col-sm-6 text-right">
-                <a href="{{route('menus.index')}}" class="btn btn-primary">Back</a>
+                <a href="{{ route('menus.index') }}" class="btn btn-primary">Back</a>
             </div>
         </div>
     </div>
@@ -44,7 +43,7 @@
                                 <p></p>
                             </div>
                         </div>
-                         
+
                         <div class="col-md-12">  
                             <div class="card mb-3">
                                 <div class="card-body">
@@ -64,7 +63,7 @@
             </div>
             <div class="pb-5 pt-3">
                 <button type="submit" class="btn btn-primary">Create</button>
-                <a href="{{route('menus.index')}}" class="btn btn-outline-dark ml-3">Cancel</a>
+                <a href="{{ route('menus.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
             </div>
         </form>
         @endif
@@ -78,14 +77,14 @@
 $("#menuForm").submit(function(event){
     event.preventDefault();
     var element = $(this);
-    $("button[type=submit]").prop('disabled',true);
+    $("button[type=submit]").prop('disabled', true);
     $.ajax({
         url: '{{ route("menus.store") }}',
         type: 'POST',
         data: element.serialize(),
         dataType: 'json',
         success: function(response){
-            $("button[type=submit]").prop('disabled',false);
+            $("button[type=submit]").prop('disabled', false);
             if(response.status){
                 window.location.href = "{{ route('menus.index') }}";
             } else {
@@ -151,8 +150,6 @@ const dropzone = $("#image").dropzone({
     }
 });
 
-
-
 // Initialize Sortable for image swapping
 const gallery = document.getElementById('menu-gallery');
 Sortable.create(gallery, {
@@ -165,7 +162,8 @@ Sortable.create(gallery, {
 // Update the image numbers after sorting or deleting
 function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
-        $(element).find('.image-number').text(index + 1);
+        var imageNumberText = (index === 0) ? '1 - This is the first menu page and also show this first menu page on barcode page' : index + 1;
+        $(element).find('.image-number').html(imageNumberText);
     });
 }
 

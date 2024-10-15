@@ -59,15 +59,17 @@
 							<td>{{$menu->id}}</td>
 							<td>{{$menu->title}}</td>
 							<td>
-								@if($menu->images->isNotEmpty())
-				                    {{-- Display the first image and make it clickable --}}
-									<a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})">
-										<img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50">
-									</a>
-				                @else
-				                    <p>No image available</p>
-				                @endif
-				            </td>
+							    @if($menu->images->isNotEmpty())
+							        {{-- Display the first image with a tooltip --}}
+							        <a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})" 
+							           data-toggle="tooltip" title="This is the first menu page this menu page show on bar code page">
+							            <img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50">
+							        </a>
+							    @else
+							        <p>No image available</p>
+							    @endif
+							</td>
+
 							<td>
 								 <a href="{{ route('menus.pdf', $menu->id) }}" target="_blank" class="btn btn-secondary">
 					                Generate PDF
@@ -131,40 +133,16 @@
 </section>
 <!-- /.content -->
 
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="imageModalLabel">Menu Images</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-          <div class="carousel-inner" id="carouselImages">
-            <!-- Images will be injected here via JavaScript -->
-          </div>
-          <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 @endsection
 
 @section('customJs')
 <script>
+	<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
+});
+</script>
+
 function deleteMenu(id) {
     var url = '{{ route("menus.delete", ":id") }}';
     url = url.replace(':id', id);
@@ -190,40 +168,6 @@ function deleteMenu(id) {
             }
         });
     }
-}
-
-function showImageModal(menuId) {
-    $.ajax({
-        url: '/menus/' + menuId + '/images',
-        type: 'GET',
-        success: function(response) {
-            var images = response.images;
-            var carouselInner = $('#carouselImages');
-            carouselInner.empty();
-
-            if (images.length) {
-                images.forEach(function(image, index) {
-                    var activeClass = index === 0 ? 'active' : '';
-                    var carouselItem = `
-                        <div class="carousel-item ${activeClass}">
-                            <img src="/uploads/menu/${image.image}" class="d-block w-100" alt="${image.name}">
-                            <div class="carousel-caption d-none d-md-block">
-                                <p>Sort Order: ${index + 1}</p>
-                            </div>
-                        </div>
-                    `;
-                    carouselInner.append(carouselItem);
-                });
-                $('#imageModal').modal('show');
-            } else {
-                alert('No images found for this menu.');
-            }
-        },
-        error: function(xhr) {
-            alert('Failed to load images.');
-            console.log(xhr.responseText);
-        }
-    });
 }
 
 </script>

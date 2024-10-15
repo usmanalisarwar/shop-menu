@@ -46,27 +46,26 @@
             object-fit: cover;
         }
     </style>
-
 </head>
 <body>
-    <div class="header">
-        <p>User: {{ $user->name }}</p>
-        <p>Email: {{ $user->email }}</p>
-        <p>Company: {{ $user->company_name }}</p>
-    </div>
 
-    @foreach ($menus as $menu)
+    @foreach ($menus as $index => $menu)
         <div class="menu">
             <h2 style="text-align: center;">{{ $menu->title }}</h2>
+            <p>User: {{ $user->name }}</p>
+            <p>Email: {{ $user->email }}</p>
+            @if ($index === 0) <!-- Check if it's the first menu -->
+                <h2>This is the first menu page <br> also show this first menu page on barcode page</h2>
+            @endif
             @if ($menu->images->isNotEmpty())
                 <div class="image-container">
-                    @foreach ($menu->images as $index => $image)
+                    @foreach ($menu->images as $image)
                         @php
                             $imagePath = public_path('uploads/menu/' . $image->image);
                             $base64 = base64_encode(file_get_contents($imagePath));
                             $imageSrc = 'data:image/' . pathinfo($imagePath, PATHINFO_EXTENSION) . ';base64,' . $base64;
                         @endphp
-                        <img src="{{ $imageSrc }}" class="image" alt="Image {{ $index + 1 }}">
+                        <img src="{{ $imageSrc }}" class="image" alt="Image">
                     @endforeach
                 </div>
             @else
