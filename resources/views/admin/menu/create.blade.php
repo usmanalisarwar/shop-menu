@@ -8,6 +8,13 @@
     .image-row {
         margin-bottom: 15px; /* Add spacing between rows */
     }
+     .image-info {
+        display: none; /* Initially hide the info text */
+        font-size: 14px;
+        color: #555;
+        margin-top: 10px; /* Space above the text */
+        transition: opacity 0.3s ease; /* Smooth transition */
+    }
 </style>
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -163,26 +170,33 @@ function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
         var isFirst = (index === 0);
         var imageNumberText = isFirst 
-            ? '1 - This is the first menu page and also show this first menu page on barcode page' 
+            ? '1 - This is the first menu page and also shows this first menu page on the barcode page' 
             : index + 1;
 
         // For the first image, add the button and text
         if (isFirst) {
-            var toggleText = '<span class="image-info" style="display:none;">' + imageNumberText + '</span>';
-            var button = `<button class="btn btn-info btn-sm toggle-info">Info</button>`;
-            $(element).find('.image-number').html(index + 1 + " " + button + toggleText);
+            var toggleText = `<span class="image-info">${imageNumberText}</span>`;
+            var button = `<button class="btn btn-info btn-sm toggle-info" style="margin-left: 10px;">Info</button>`;
+            $(element).find('.image-number').html(index + 1 + button + toggleText);
         } else {
             // For other images, only show the number without a button
             $(element).find('.image-number').html(index + 1);
         }
     });
-    
+
     // Add click event listener to toggle the text for the first image
-    $('.toggle-info').on('click', function () {
-        $(this).siblings('.image-info').toggle();  // Toggle visibility of text
+    $('.toggle-info').off('click').on('click', function () {
+        var infoText = $(this).siblings('.image-info');
+        if (infoText.is(':visible')) {
+            infoText.css('opacity', 0); // Start with transparent
+            setTimeout(() => {
+                infoText.hide(); // Hide after the transition
+            }, 300); // Match the transition duration
+        } else {
+            infoText.show().css('opacity', 1); // Show and fade in
+        }
     });
 }
-
 
 
 function deleteImage(id){

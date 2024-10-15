@@ -9,8 +9,11 @@
 				<h1>Menus</h1>
 			</div>
 			<div class="col-sm-6 text-right">
-                @if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu'))		<a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
+                @if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu'))		
+                    <a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
 				@endif
+                <!-- Add a button to copy the QR Code link -->
+                <button type="button" onclick="copyLink()" class="btn btn-info">Copy QR Code Link</button>
 			</div>
 		</div>
 	</div>
@@ -134,39 +137,45 @@
 
 @section('customJs')
 <script>
-	<script>
-$(document).ready(function(){
-    $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
-});
-</script>
+	$(document).ready(function(){
+	    $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
+	});
 
-function deleteMenu(id) {
-    var url = '{{ route("menus.delete", ":id") }}';
-    url = url.replace(':id', id);
-    
-    if (confirm("Are you sure you want to delete this menu?")) {
-        $.ajax({
-            url: url,
-            type: 'DELETE',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.status) {
-                    alert(response.message);
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert('Failed to delete the menu.');
-                }
-            },
-            error: function(xhr) {
-                alert('An error occurred while trying to delete the menu.');
-                console.log(xhr.responseText);
-            }
-        });
-    }
-}
+	function deleteMenu(id) {
+	    var url = '{{ route("menus.delete", ":id") }}';
+	    url = url.replace(':id', id);
+	    
+	    if (confirm("Are you sure you want to delete this menu?")) {
+	        $.ajax({
+	            url: url,
+	            type: 'DELETE',
+	            data: {
+	                _token: $('meta[name="csrf-token"]').attr('content')
+	            },
+	            success: function(response) {
+	                if (response.status) {
+	                    alert(response.message);
+	                    location.reload(); // Reload the page to reflect changes
+	                } else {
+	                    alert('Failed to delete the menu.');
+	                }
+	            },
+	            error: function(xhr) {
+	                alert('An error occurred while trying to delete the menu.');
+	                console.log(xhr.responseText);
+	            }
+	        });
+	    }
+	}
 
+	// Function to copy the QR Code link
+	function copyLink() {
+	    const qrCodePageLink = '{{ route("your.qr.code.page.route") }}'; // Replace with your actual QR code page route
+	    navigator.clipboard.writeText(qrCodePageLink).then(() => {
+	        alert('QR Code link copied to clipboard!');
+	    }).catch(err => {
+	        alert('Failed to copy the link: ' + err);
+	    });
+	}
 </script>
 @endsection
-

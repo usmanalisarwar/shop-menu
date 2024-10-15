@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/menus/{id}/pdf', [MenuController::class, 'generatePdf'])
         ->name('menus.pdf');
     Route::get('/logout', [MenuController::class, 'logout'])->name('admin.logout');
+    Route::get('/qr-code-page', [MenuController::class, 'qrCodePage'])->name('your.qr.code.page.route');
 
     // Menu-item routes
     Route::get('/menu-items', [MenuItemController::class, 'index'])

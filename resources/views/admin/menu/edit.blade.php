@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+
 @section('content')
 <style type="text/css">
     .card-img-top {
@@ -8,7 +9,15 @@
     .image-row {
         margin-bottom: 15px; /* Add spacing between rows */
     }
+    .image-info {
+        display: none; /* Initially hide the info text */
+        font-size: 14px;
+        color: #555;
+        margin-top: 10px; /* Space above the text */
+        transition: opacity 0.3s ease; /* Smooth transition */
+    }
 </style>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid my-2">
@@ -31,7 +40,7 @@
             $permissions = getAuthUserModulePermissions();
         @endphp
         @if (hasPermissions($permissions, 'edit-menu'))
-        <form action="" method="POST" id="menuForm" name="menuForm">
+        <form action="{{ route('menus.update', $menu->id) }}" method="POST" id="menuForm" name="menuForm">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -47,7 +56,7 @@
                         <div class="col-md-12">  
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <h2 class="h4 mb-3">Media</h2>                              
+                                    <h2 class="h4 mb-3">Media</h2>
                                     <div id="image" class="dropzone dz-clickable">
                                         <div class="dz-message needsclick">    
                                             <br>Drop files here or click to upload.<br><br>                               <p></p>          
@@ -56,19 +65,20 @@
                                 </div>                                                                        
                             </div>
                         </div>
+
                         <!-- Image gallery -->
                         <div class="row" id="menu-gallery" class="sortable-gallery">
-                            @foreach ($menu->images as $image)
-                                <div class="col-md-4 image-row" id="image-row-{{ $image->id }}" data-id="{{ $image->id }}">
-                                    <input type="hidden" name="image_array[]" value="{{ $image->id }}">
-                                    <div class="card">
-                                        <img src="{{ asset('uploads/menu/' . $image->image) }}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
-                                        <div class="card-body text-center">
-                                            <span class="image-number">{{ $loop->index + 1 }}</span>
-                                            <a href="javascript:void(0)" onclick="deleteImage({{ $image->id }})" class="btn btn-danger">Delete</a>
-                                        </div>
+                            @foreach ($menuImages as $index => $menuImage)
+                            <div class="col-md-4 image-row" id="image-row-{{ $menuImage->id }}" data-id="{{ $menuImage->id }}">
+                                <input type="hidden" name="image_array[]" value="{{ $menuImage->id }}">
+                                <div class="card">
+                                    <img src="{{ asset('uploads/menu/' . $menuImage->image) }}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;">
+                                    <div class="card-body text-center">
+                                        <span class="image-number">{{ $index + 1 }}</span>
+                                        <a href="javascript:void(0)" onclick="deleteImage({{ $menuImage->id }})" class="btn btn-danger">Delete</a>
                                     </div>
                                 </div>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -82,6 +92,7 @@
         @endif
     </div>
 </section>
+
 @endsection
 
 @section('customJs')
@@ -92,7 +103,7 @@ $("#menuForm").submit(function(event){
     var element = $(this);
     $("button[type=submit]").prop('disabled', true);
     $.ajax({
-        url: '{{ route("menus.update", $menu->id) }}',
+        url: element.attr('action'),
         type: 'POST',
         data: element.serialize(),
         dataType: 'json',
@@ -106,11 +117,6 @@ $("#menuForm").submit(function(event){
                     $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
                 } else {
                     $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
-                if(errors.image){
-                    $("#image").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.image);
-                } else {
-                    $("#image").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
             }
         },
@@ -176,31 +182,42 @@ function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
         var isFirst = (index === 0);
         var imageNumberText = isFirst 
-            ? '1 - This is the first menu page and also show this first menu page on barcode page' 
+            ? '1 - This is the first menu page and also shows this first menu page on the barcode page' 
             : index + 1;
 
         // For the first image, add the button and text
         if (isFirst) {
-            var toggleText = '<span class="image-info" style="display:none;">' + imageNumberText + '</span>';
-            var button = `<button class="btn btn-info btn-sm toggle-info">Info</button>`;
-            $(element).find('.image-number').html(index + 1 + " " + button + toggleText);
+            var toggleText = `<span class="image-info">${imageNumberText}</span>`;
+            var button = `<button class="btn btn-info btn-sm toggle-info" style="margin-left: 10px;">Info</button>`;
+            $(element).find('.image-number').html(index + 1 + button + toggleText);
         } else {
             // For other images, only show the number without a button
             $(element).find('.image-number').html(index + 1);
         }
     });
-    
+
     // Add click event listener to toggle the text for the first image
-    $('.toggle-info').on('click', function () {
-        $(this).siblings('.image-info').toggle();  // Toggle visibility of text
+    $('.toggle-info').off('click').on('click', function () {
+        var infoText = $(this).siblings('.image-info');
+        if (infoText.is(':visible')) {
+            infoText.css('opacity', 0); // Start with transparent
+            setTimeout(() => {
+                infoText.hide(); // Hide after the transition
+            }, 300); // Match the transition duration
+        } else {
+            infoText.show().css('opacity', 1); // Show and fade in
+        }
     });
 }
-
 
 function deleteImage(id){
     $("#image-row-" + id).remove();
     updateImageNumbers(); // Update numbers after deletion
 }
 
+// On page load, update image numbers
+$(document).ready(function() {
+    updateImageNumbers();
+});
 </script>
 @endsection
