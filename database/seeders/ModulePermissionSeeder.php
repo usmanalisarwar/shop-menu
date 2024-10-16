@@ -20,7 +20,6 @@ class ModulePermissionSeeder extends Seeder
             ['name'=>'Super Admin'],
             ['name'=>'Admin'],
             ['name'=>'User'],
-            ['name'=>'B2B'],
         ];
         foreach ($roles as $role){
             Role::updateOrCreate($role,$role);
