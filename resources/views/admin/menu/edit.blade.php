@@ -1,20 +1,26 @@
 @extends('admin.layouts.app')
-
 @section('content')
 <style type="text/css">
     .card-img-top {
         width: 100%; /* Make sure the image takes the full width of the card */
         height: auto; /* Maintain aspect ratio */
+        position: relative;
     }
     .image-row {
         margin-bottom: 15px; /* Add spacing between rows */
     }
-    .image-info {
-        display: none; /* Initially hide the info text */
-        font-size: 14px;
-        color: #555;
-        margin-top: 10px; /* Space above the text */
-        transition: opacity 0.3s ease; /* Smooth transition */
+    .image-overlay-text {
+        position: absolute;
+        top: 50%; 
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-align: center;
+        display: none; /* Hidden for all except the first image */
     }
 </style>
 
@@ -30,7 +36,6 @@
             </div>
         </div>
     </div>
-    <!-- /.container-fluid -->
 </section>
 
 <!-- Main content -->
@@ -40,7 +45,7 @@
             $permissions = getAuthUserModulePermissions();
         @endphp
         @if (hasPermissions($permissions, 'edit-menu'))
-        <form action="{{ route('menus.update', $menu->id) }}" method="POST" id="menuForm" name="menuForm">
+        <form action="" method="POST" id="menuForm" name="menuForm">
             @csrf
             <div class="card">
                 <div class="card-body">
@@ -48,7 +53,7 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="title">Title</label>
-                                <input type="text" name="title" id="title" class="form-control" placeholder="Title" value="{{ old('title', $menu->title) }}">
+                                <input type="text" name="title" id="title" class="form-control" value="{{ $menu->title }}" placeholder="Title">
                                 <p></p>
                             </div>
                         </div>
@@ -56,29 +61,31 @@
                         <div class="col-md-12">  
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <h2 class="h4 mb-3">Media</h2>
+                                    <h2 class="h4 mb-3">Media</h2>                              
                                     <div id="image" class="dropzone dz-clickable">
                                         <div class="dz-message needsclick">    
-                                            <br>Drop files here or click to upload.<br><br>                               <p></p>          
+                                            <br>Drop files here or click to upload.<br><br>
                                         </div>
                                     </div>
                                 </div>                                                                        
                             </div>
                         </div>
-
                         <!-- Image gallery -->
-                        <div class="row" id="menu-gallery" class="sortable-gallery">
-                            @foreach ($menuImages as $index => $menuImage)
-                            <div class="col-md-4 image-row" id="image-row-{{ $menuImage->id }}" data-id="{{ $menuImage->id }}">
-                                <input type="hidden" name="image_array[]" value="{{ $menuImage->id }}">
-                                <div class="card">
-                                    <img src="{{ asset('uploads/menu/' . $menuImage->image) }}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;">
-                                    <div class="card-body text-center">
-                                        <span class="image-number">{{ $index + 1 }}</span>
-                                        <a href="javascript:void(0)" onclick="deleteImage({{ $menuImage->id }})" class="btn btn-danger">Delete</a>
+                        <div class="row" id="menu-gallery">
+                            @foreach($menuImages as $menuImage)
+                                <div class="col-md-4 image-row" id="image-row-{{ $menuImage->id }}" data-id="{{ $menuImage->id }}">
+                                    <input type="hidden" name="image_array[]" value="{{ $menuImage->id }}">
+                                    <div class="card">
+                                        <div class="image-container" style="position: relative;">
+                                            <img src="{{ asset('uploads/menu/' . $menuImage->image) }}" class="card-img-top img-fluid" alt=""> 
+                                            <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
+                                        </div>
+                                        <div class="card-body text-center">
+                                            <span class="image-number">{{ $loop->index + 1 }}</span>
+                                            <a href="javascript:void(0)" onclick="deleteImage({{ $menuImage->id }})" class="btn btn-danger">Delete</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -92,7 +99,6 @@
         @endif
     </div>
 </section>
-
 @endsection
 
 @section('customJs')
@@ -101,14 +107,14 @@
 $("#menuForm").submit(function(event){
     event.preventDefault();
     var element = $(this);
-    $("button[type=submit]").prop('disabled', true);
+    $("button[type=submit]").prop('disabled',true);
     $.ajax({
-        url: element.attr('action'),
+        url: '{{ route("menus.update", $menu->id) }}',
         type: 'POST',
         data: element.serialize(),
         dataType: 'json',
         success: function(response){
-            $("button[type=submit]").prop('disabled', false);
+            $("button[type=submit]").prop('disabled',false);
             if(response.status){
                 window.location.href = "{{ route('menus.index') }}";
             } else {
@@ -117,6 +123,11 @@ $("#menuForm").submit(function(event){
                     $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
                 } else {
                     $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.image){
+                    $("#image").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.image);
+                } else {
+                    $("#image").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
             }
         },
@@ -153,7 +164,10 @@ const dropzone = $("#image").dropzone({
                 <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
                     <input type="hidden" name="image_array[]" value="${response.image_id}">
                     <div class="card">
-                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                        <div class="image-container" style="position: relative;">
+                            <img src="${response.ImagePath}" class="card-img-top img-fluid" alt=""> 
+                            <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
+                        </div>
                         <div class="card-body text-center">
                             <span class="image-number">${$('.image-row').length + 1}</span>
                             <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
@@ -178,34 +192,21 @@ Sortable.create(gallery, {
     }
 });
 
+// Call this function on page load to initialize visibility
+$(document).ready(function() {
+    updateImageNumbers();
+});
+
+// Update the image numbers after sorting or deleting
 function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
-        var isFirst = (index === 0);
-        var imageNumberText = isFirst 
-            ? '1 - This is the first menu page and also shows this first menu page on the barcode page' 
-            : index + 1;
-
-        // For the first image, add the button and text
-        if (isFirst) {
-            var toggleText = `<span class="image-info">${imageNumberText}</span>`;
-            var button = `<button class="btn btn-info btn-sm toggle-info" style="margin-left: 10px;">Info</button>`;
-            $(element).find('.image-number').html(index + 1 + button + toggleText);
+        $(element).find('.image-number').text(index + 1);
+        
+        // Check if it's the first image and display the overlay text
+        if (index === 0) {
+            $(element).find('.image-overlay-text').show(); // Show text on the first image
         } else {
-            // For other images, only show the number without a button
-            $(element).find('.image-number').html(index + 1);
-        }
-    });
-
-    // Add click event listener to toggle the text for the first image
-    $('.toggle-info').off('click').on('click', function () {
-        var infoText = $(this).siblings('.image-info');
-        if (infoText.is(':visible')) {
-            infoText.css('opacity', 0); // Start with transparent
-            setTimeout(() => {
-                infoText.hide(); // Hide after the transition
-            }, 300); // Match the transition duration
-        } else {
-            infoText.show().css('opacity', 1); // Show and fade in
+            $(element).find('.image-overlay-text').hide(); // Hide text on other images
         }
     });
 }
@@ -214,10 +215,5 @@ function deleteImage(id){
     $("#image-row-" + id).remove();
     updateImageNumbers(); // Update numbers after deletion
 }
-
-// On page load, update image numbers
-$(document).ready(function() {
-    updateImageNumbers();
-});
 </script>
 @endsection
