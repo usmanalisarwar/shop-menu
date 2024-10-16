@@ -189,7 +189,6 @@ class MenuController extends Controller
         return view('admin.menu.edit', compact('menu', 'menuImages'));
     }
 
-    // Update an existing menu
     public function update(Request $request, $id)
     {
         $permissions = getAuthUserModulePermissions();
@@ -198,7 +197,9 @@ class MenuController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $menu = Menu::findOrFail($id);
+        \Log::info('Update request received for Menu ID: ' . $id);
+
+        // Validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'new_images' => 'nullable|array',
@@ -206,100 +207,39 @@ class MenuController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors(),
-            ]);
+            \Log::warning('Validation errors: ', $validator->errors()->toArray());
+            return response()->json(['status' => false, 'errors' => $validator->errors()]);
+        }
+
+        // Find the existing menu
+        $menu = Menu::find($id);
+        if (!$menu) {
+            \Log::error('Menu not found: ' . $id);
+            return response()->json(['status' => false, 'errors' => ['menu' => 'Menu not found.']]);
         }
 
         $menu->title = $request->title;
         $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title, $id);
-        $menu->save();
+        $menu->save();;
 
-        // Handle deleted images
-        if ($request->has('deleted_images')) {
-            $this->handleDeletedImages($request->input('deleted_images'));
-        }
-
-        // Handle new images
-        if ($request->has('new_images')) {
-            $this->handleNewImages($request->new_images, $menu->id);
-        }
-
-        // Update the order_no based on updated_order
-        if ($request->has('updated_order')) {
-            $this->updateImageOrder($request->input('updated_order'));
-        }
-
-        $request->session()->flash('success', 'Menu updated successfully');
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Menu updated successfully',
-        ]);
-    }
-
-    // Handle deleted images
-    protected function handleDeletedImages($deletedImages)
-    {
-        $deletedImages = json_decode($deletedImages, true);
-        foreach ($deletedImages as $imageId) {
-            $image = MenuImage::find($imageId);
-            if ($image) {
-                $imagePath = public_path('uploads/menu/' . $image->image);
-                if (File::exists($imagePath)) {
-                    File::delete($imagePath);
-                }
-                $image->delete();
-            }
-        }
-    }
-
-    // Handle new images
-    protected function handleNewImages(array $newImages, $menuId)
-    {
-        foreach ($newImages as $menuImageId) {
-            $menuImage = MenuImage::find($menuImageId);
+        // Update the order numbers for images
+        foreach ($request->image_array as $order => $imageId) {
+            $menuImage = MenuImage::find($imageId);
             if ($menuImage) {
-                $ext = pathinfo($menuImage->name, PATHINFO_EXTENSION);
-                $newMenuImage = new MenuImage();
-                $newMenuImage->menu_id = $menuId;
-                $newMenuImage->order_no = $menuImage->order_no;
-                $newMenuImage->name = $menuImage->name;
-                $newMenuImage->image = $menuImage->image;
-                $newMenuImage->save();
-
-                $imageName = $menuId . '-' . $newMenuImage->id . '-' . time() . '.' . $ext;
-                $sourcePath = public_path('temp/' . $menuImage->name);
-                $destinationPath = public_path('uploads/menu/' . $imageName);
-
-                File::copy($sourcePath, $destinationPath);
-                $newMenuImage->image = $imageName;
-                $newMenuImage->save();
-
-                // Optionally delete the temp image
-                File::delete($sourcePath);
-            }
-        }
-    }
-
-    // Update the order_no based on updated_order
-    protected function updateImageOrder($updatedOrder)
-    {
-        $updatedOrder = json_decode($updatedOrder, true);
-        foreach ($updatedOrder as $order) {
-            $menuImage = MenuImage::find($order['id']);
-            if ($menuImage) {
-                $menuImage->order_no = $order['order_no'];
+                $menuImage->order_no = $order + 1; // Update order number (starting from 1)
                 $menuImage->save();
             }
         }
+
+        \Log::info('Menu  updated successfully: ', $menu->toArray());
+
+        return response()->json(['status' => true, 'message' => 'Menu updated successfully']);
     }
 
     // Delete a menu
     public function destroy($id)
     {
-         $permissions = getAuthUserModulePermissions();
+        $permissions = getAuthUserModulePermissions();
 
         if (!hasPermissions($permissions, 'delete-menu')) {
             abort(403, 'Unauthorized');
@@ -311,7 +251,9 @@ class MenuController extends Controller
             return response()->json(['status' => false, 'message' => 'Menu not found']);
         }
 
-        foreach ($menu->images as $image) {
+        // Delete associated images
+        $menuImages = MenuItemImage::where('menu_id', $id)->get();
+        foreach ($menuImages as $image) {
             $imagePath = public_path('uploads/menu/' . $image->image);
             if (File::exists($imagePath)) {
                 File::delete($imagePath);

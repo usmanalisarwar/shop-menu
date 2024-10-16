@@ -57,7 +57,7 @@
                                 <p></p>
                             </div>
                         </div>
-
+                        <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
                             <div class="card mb-3">
                                 <div class="card-body">
@@ -70,24 +70,28 @@
                                 </div>                                                                        
                             </div>
                         </div>
-                        <!-- Image gallery -->
-                        <div class="row" id="menu-gallery">
-                            @foreach($menuImages as $menuImage)
-                                <div class="col-md-4 image-row" id="image-row-{{ $menuImage->id }}" data-id="{{ $menuImage->id }}">
-                                    <input type="hidden" name="image_array[]" value="{{ $menuImage->id }}">
+                        <!-- Image Gallery -->
+                        <div class="row" id="menu-gallery" class="sortable-gallery">
+                            @foreach($menuImages as $image)
+                                <div class="col-md-4 image-row" id="image-row-{{ $image->id }}" data-id="{{ $image->id }}">
+                                    <input type="hidden" name="image_array[]" value="{{ $image->id }}">
                                     <div class="card">
                                         <div class="image-container" style="position: relative;">
-                                            <img src="{{ asset('uploads/menu/' . $menuImage->image) }}" class="card-img-top img-fluid" alt=""> 
-                                            <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
+                                            <img src="{{ asset('uploads/menu/' . $image->image) }}" class="card-img-top img-fluid" alt="">
+                                            <!-- Add the overlay text, but only display it for the first image -->
+                                            <div class="image-overlay-text" style="display: {{ $loop->first ? 'block' : 'none' }}">
+                                                First page of menu and this first menu page also show on bar code page
+                                            </div>
                                         </div>
                                         <div class="card-body text-center">
                                             <span class="image-number">{{ $loop->index + 1 }}</span>
-                                            <a href="javascript:void(0)" onclick="deleteImage({{ $menuImage->id }})" class="btn btn-danger">Delete</a>
+                                            <a href="javascript:void(0)" onclick="deleteImage({{ $image->id }})" class="btn btn-danger">Delete</a>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -137,10 +141,10 @@ $("#menuForm").submit(function(event){
     });
 });
 
-// Dropzone setup
+// Dropzone setup for media images
 Dropzone.autoDiscover = false;
 const dropzone = $("#image").dropzone({
-    url: "{{ route('menu-images.create') }}",
+    url: "{{ route('menu-item-images.menuItemCreate') }}",
     maxFiles: 10,
     paramName: 'image',
     acceptedFiles: "image/jpeg,image/png,image/gif",
@@ -164,10 +168,7 @@ const dropzone = $("#image").dropzone({
                 <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
                     <input type="hidden" name="image_array[]" value="${response.image_id}">
                     <div class="card">
-                        <div class="image-container" style="position: relative;">
-                            <img src="${response.ImagePath}" class="card-img-top img-fluid" alt=""> 
-                            <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
-                        </div>
+                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
                         <div class="card-body text-center">
                             <span class="image-number">${$('.image-row').length + 1}</span>
                             <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
@@ -192,11 +193,6 @@ Sortable.create(gallery, {
     }
 });
 
-// Call this function on page load to initialize visibility
-$(document).ready(function() {
-    updateImageNumbers();
-});
-
 // Update the image numbers after sorting or deleting
 function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
@@ -210,6 +206,12 @@ function updateImageNumbers() {
         }
     });
 }
+
+// Call this function on page load to update numbers and display overlay on the first image
+$(document).ready(function() {
+    updateImageNumbers(); // Initialize correct overlay display for loaded images
+});
+
 
 function deleteImage(id){
     $("#image-row-" + id).remove();
