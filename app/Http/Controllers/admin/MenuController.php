@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Helpers\SlugHelper;
-use App\Rules\ImageSize; 
+use App\Rules\ImageSize;
 
 class MenuController extends Controller
 {
@@ -113,32 +113,37 @@ class MenuController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'image_array' => 'required|array',
-            'image_array.*' => 'exists:menu_images,id', 
+            'image_array.*' => [
+                'required',
+                'exists:menu_images,id',
+                function ($attribute, $value, $fail) use ($request) {
+                    // Retrieve the image from the request based on the current looped value
+                    $image = $request->file(str_replace('image_array.', 'image_array[', $attribute) . ']');
+
+                    if ($image) {
+                        // Get image size
+                        $imageSize = getimagesize($image);
+                        if (!$imageSize) {
+                            $fail('The uploaded file is not a valid image.');
+                        } elseif ($imageSize[0] != 2481 || $imageSize[1] != 3507) {
+                            $fail('The ' . $attribute . ' must be an A4 size image (2481x3507 pixels).');
+                        }
+                    }
+                }
+            ],
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors(),
-            ]);
+            return redirect()->back()->withErrors($validator)->withInput();
         }
+
 
         // Check the size of each image
         foreach ($request->image_array as $menuImageId) {
             $menuImage = MenuImage::find($menuImageId);
             $imagePath = public_path('temp/' . $menuImage->name);
-            
-            // Validate image size
-            $imageSizeValidator = Validator::make(['image' => $imagePath], [
-                'image' => [new ImageSize()],
-            ]);
 
-            if ($imageSizeValidator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'errors' => ['image' => 'The image ' . $menuImage->name . ' is not A4 size or smaller.'],
-                ]);
-            }
+
         }
 
         $menu = new Menu();

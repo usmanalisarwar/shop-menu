@@ -11,6 +11,7 @@ class MenuGenerateController extends Controller
     {
         // Example: Find the book by slug from the database
         $menu = Menu::where('slug', $slug)->first();
+        $menuImage = $menu->images[0];
 
         // Check if the book exists
         if (!$menu) {
@@ -18,9 +19,9 @@ class MenuGenerateController extends Controller
         }
         // Generate the book URL using the slug
         $bookUrl = route('book.show', $slug);
-        $qrCode = QrCode::size(450)->generate($bookUrl);
+        $qrCode = QrCode::size(350)->generate($bookUrl);
         // Generate QR code and return it as a response
-        return view('qrcode', compact('qrCode','menu'));
+        return view('qrcode', compact('qrCode','menu','menuImage'));
     }
 
     // Method to show the book (PDF view)

@@ -51,7 +51,7 @@ class RoleController extends Controller
                 })
                 ->addColumn('actions', function ($data) use ($permissions) {
                     $html = "";
-                    if ($data->id > 4) {
+                    if ($data->id > 1) {
                         if (hasPermissions($permissions, 'assign-permission')) {
                             $html .= '<a title="Assign Permissions" class="btn btn-info m-1" href="'.route('roles.permissions',['roleId'=>$data->id]).'" ><i class="fas fa-key"></i></a>';
                         }
@@ -91,7 +91,7 @@ class RoleController extends Controller
         $response['status'] = true;
         $response['message'] = "Role Updated successfully!";
         $data = $request->validated();
-        $role = Role::where('id', $request->id)->where('id','>',4)->first();
+        $role = Role::where('id', $request->id)->where('id','>',1)->first();
         $role->name = $data['name'];
         $role->status = $data['status'];
         $role->save();
@@ -106,7 +106,7 @@ class RoleController extends Controller
     {
         $response['status'] = true;
         $response['message'] = "Role Deleted successfully!";
-        $role = Role::where('id', $request->id)->where('id','>',4)->first();
+        $role = Role::where('id', $request->id)->where('id','>',1)->first();
         $role->delete();
         $response['data'] = new ResourceRole($role);
         return response()->json($response);
@@ -118,7 +118,7 @@ class RoleController extends Controller
         if (!hasPermissions($permissions, 'assign-permission')) {
             abort(403, 'Unauthorized'); // Return a 403 Forbidden response if the role check fails
         }
-        $role = Role::whereNotIn('id',[1,3,4])->where('id',$roleId)->first();
+        $role = Role::whereNotIn('id',[1])->where('id',$roleId)->first();
         if(!$role){
             return  redirect('admin/roles');
         }
@@ -150,7 +150,7 @@ class RoleController extends Controller
         if (!hasPermissions($permissions, 'assign-permission')) {
             abort(403, 'Unauthorized'); // Return a 403 Forbidden response if the role check fails
         }
-        $role = Role::whereNotIn('id',[1,3,4])->where('id',$roleId)->first();
+        $role = Role::whereNotIn('id',[1])->where('id',$roleId)->first();
         if(!$role){
             return  redirect('admin/roles');
         }

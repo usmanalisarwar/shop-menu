@@ -11,23 +11,33 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
+            position: relative;
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
+        .container {
+            position: relative;
         }
-        div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .qr-container {
+            position: absolute;
+            top: 50%;
+            left: -20%; /* Moves QR code 50% left from the image */
+            transform: translate(0, -50%); /* Centers the QR code vertically */
+        }
+        .qr-container img {
+            width: 100%;
+            height: auto;
+        }
+        .menu-image {
+            height: 700px;
+            width: 500px;
         }
     </style>
 </head>
 <body>
-<h1>Scan the QR Code to Open the {{$menu->title}} menu!</h1>
-<div>
-    {!! $qrCode !!}
+<div class="container">
+    <img src="{{ asset('temp/' . $menuImage->name) }}" class="menu-image" alt="Menu Image">
+    <div class="qr-container">
+        {!! $qrCode !!}
+    </div>
 </div>
 </body>
 </html>
