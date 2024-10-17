@@ -356,7 +356,7 @@ input {
                         
                         
                     </div>
-                    <a href="http://127.0.0.1:5504/signin.html" class="btn btn-primary py-2 px-4">Sign In</a>
+                    <a href="{{ route('home.login')}}" class="btn btn-primary py-2 px-4">Sign In</a>
                 </div>
             </nav>
 
