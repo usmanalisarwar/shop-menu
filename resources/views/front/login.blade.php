@@ -370,9 +370,15 @@ input {
 <div class="cont">
     <div class="form sign-in">
         <h2>Welcome Back</h2>
-         @if(session('success'))
+          @if(session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
             </div>
         @endif
         <!-- Login form -->
@@ -409,11 +415,17 @@ input {
 
         <div class="form sign-up">
             <h2>Create your Account</h2>
-             @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('message'))  <!-- Add this line -->
+                    <div class="alert alert-success">  <!-- Add this line -->
+                        {{ session('message') }}  <!-- Add this line -->
+                    </div>  <!-- Add this line -->
+                @endif  <!-- Add this line -->
             <!-- Registration form -->
             <form method="POST" action="{{ route('register') }}">
                 @csrf

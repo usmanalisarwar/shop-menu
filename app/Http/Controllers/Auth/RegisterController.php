@@ -55,5 +55,6 @@ class RegisterController extends Controller
         $user->sendEmailVerificationNotification();
 
         return redirect($this->redirectTo)->with('message', 'Please check your email to verify your account.');
+
     }
 }
