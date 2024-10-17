@@ -13,7 +13,7 @@
                         <a href="{{ route('home.about-us')}}" class="nav-item nav-link">About Us</a>
                         <!-- <a href="service.html" class="nav-item nav-link">Contact Us</a> -->
                         <a href="{{ route('home.contact-us')}}" class="nav-item nav-link">Contact Us</a>
-                        <a href="{{ route('home.services')}}" class="nav-item nav-link">Servies</a>
+                        <a href="{{ route('home.services')}}" class="nav-item nav-link">Disclaimer</a>
                         
                     </div>
                     <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>

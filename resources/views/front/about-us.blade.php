@@ -58,25 +58,12 @@
                         <a href="{{ route('home.index') }}" class="nav-item nav-link">Home</a>
                         <a href="{{ route('home.about-us') }}" class="nav-item nav-link active">About Us</a>
                         <a href="{{ route('home.contact-us') }}" class="nav-item nav-link">Contact Us</a>
-                        <a href="{{ route('home.services') }}" class="nav-item nav-link">Services</a>
+                        <a href="{{ route('home.services') }}" class="nav-item nav-link">Disclaimer</a>
                         
                     </div>
                     <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>
                 </div>
             </nav>
-
-            <div class="container-xxl py-5 bg-dark hero-header mb-5">
-                <div class="container text-center my-5 pt-5 pb-4">
-                    <h1 class="display-3 text-white mb-3 animated slideInDown">About Us</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center text-uppercase">
-                            <li class="breadcrumb-item"><a href="{{ route('home.index') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('home.about-us') }}">Contact Us</a></li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
         <!-- Navbar & Hero End -->
 
 

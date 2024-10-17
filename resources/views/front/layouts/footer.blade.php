@@ -7,7 +7,7 @@
                         <a class="btn btn-link" href="{{ route('home.about-us') }}">About Us</a>
                         <a class="btn btn-link" href="{{ route('home.contact-us') }}">Contact Us</a>
                         
-                        <a class="btn btn-link" href="{{ route('home.services') }}">Services</a>
+                        <a class="btn btn-link" href="{{ route('home.services') }}">Disclaimer</a>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
