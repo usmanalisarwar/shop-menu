@@ -8,11 +8,34 @@ use App\Http\Controllers\admin\MenuItemController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\front\HomeController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
-// Public routes
-Route::get('/', function () {
-    return view('welcome');
-});
+
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('home.login')->with('message', 'Your email has been verified. Please log in.');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+
+//front end routes
+Route::get('/', [HomeController::class, 'home'])->name('home.index');
+Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('home.about-us');
+Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('home.contact-us');
+Route::get('/services', [HomeController::class, 'service'])->name('home.services');
+Route::get('/user/login', [HomeController::class, 'login'])->name('home.login');
+
 Route::get('/menu/{slug}', [MenuGenerateController::class, 'generateQRCode'])->name('generate.qrcode');
 Route::get('/menu-book/{slug}', [MenuGenerateController::class, 'showBook'])->name('book.show');
 Auth::routes(); // This includes the default authentication routes
@@ -90,7 +113,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/upload-menu-item-image', [MenuImageController::class, 'menuItemCreate'])
         ->name('menu-item-images.menuItemCreate');
     Route::get('/dashboard', [MenuImageController::class, 'index'])
-        ->name('admin.dashboard');
+    ->middleware(['auth', 'verified'])
+    ->name('admin.dashboard');
 
 
     // Roles routes (already set up)

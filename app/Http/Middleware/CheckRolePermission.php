@@ -18,7 +18,7 @@ class CheckRolePermission
     {
         // Check if the user is authenticated
         if (!auth()->check()) {
-            return redirect('admin/login'); // Redirect to the login page if not authenticated
+            return redirect('/user/login'); // Redirect to the login page if not authenticated
         }
         $user = auth()->user();
         if(!$user->role_id){

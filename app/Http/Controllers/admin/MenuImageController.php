@@ -15,7 +15,7 @@ class MenuImageController extends Controller
         return view('admin.dashboard');
         
     }
-
+   
    public function create(Request $request)
     {
         $image = $request->file('image');
