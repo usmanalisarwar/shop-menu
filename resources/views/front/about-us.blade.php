@@ -64,6 +64,7 @@
                     <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>
                 </div>
             </nav>
+        </div>
         <!-- Navbar & Hero End -->
 
 
