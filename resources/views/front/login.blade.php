@@ -31,7 +31,7 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('front-assets/css/style.css')}}" rel="stylesheet">
     <style type="text/css">
-    *,
+          *,
     *:before,
     *:after {
         box-sizing: border-box;
@@ -45,7 +45,24 @@
         background: #ffffff;
         
     }
+    .food-logo{
+     
+      width: 20%;
+      height: 50%;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      
 
+    }
+    .navbar{
+      display: flex;
+    }
+    .navbar-dark .navbar-brand{
+      width: 50%;
+    }
+    .form-2{
+      display: none;
+    }
 
     input,
     button {
@@ -147,21 +164,6 @@
         height: 100%;
         padding-top: 360px;
     }
-
-    /* .img:before {
-        content: '';
-        position: absolute;
-        right: 0;
-        top: 0;
-        width: 900px;
-        height: 100%;
-        background-image: url("ext.jpg");
-        opacity: .8;
-        background-size: cover;
-        -webkit-transition: -webkit-transform 1.2s ease-in-out;
-        transition: transform 1.2s ease-in-out;
-        transition: transform 1.2s ease-in-out, -webkit-transform 1.2s ease-in-out;
-    } */
 
     .img:after {
         content: '';
@@ -311,6 +313,7 @@
         text-align: center;
         font-size: 12px;
         color: #cfcfcf;
+        margin-left: 246px;
     }
 
     .submit {
@@ -365,18 +368,57 @@
         background: #FEA116;
         text-transform: uppercase;
     }
-    .form-2{
+    p{
+      display: flex;
+    }
+    a{
+      color:#FEA116 ;
+      text-decoration: underline;
+    }
+    .margin-left{
+      margin-left: 10px;
       display: none;
     }
-
+    .p15{
+      display: none;
+    }
+    .margin-right{
+      display: none;
+      padding-top: 15px;
+    }
+    .display-none{
+      display: none;
+    }
     @media only screen and (max-width: 600px) {
       .cont {
           width: 90%; /* Full width for mobile */
           height: auto; /* Auto height for content */
       }
+      .forgot-pass {
+        margin-top: 15px;
+        margin-left: 116px;
+        font-size: 12px;
+        color: #cfcfcf;
+       
+    }
+
+      .p15{
+        display: block;
+      }
+      .margin-right{
+        display: block;
+        padding-top: 15px;
+      }
+      .margin-left{
+        display: block;
+      }
+      .display-none{
+        display: block;
+      }
 
       .form {
           width: 100%; /* Full width for forms */
+          padding-bottom: 15px;
       }
 
       .img {
@@ -411,22 +453,59 @@
     .submit-1{
       display: block;
     }
-    .form-2{
+
+    .food-logo{
+     
+      width: 100%;
+      height: 100%;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      
+
+    }
+    .navbar-dark .navbar-brand{
+      width: 90px;
+    }
+    .navbar-dark .navbar-toggler{
+      margin-right: 3%;
+      
+     
+     
+      border-radius: 2px;
+      transition: box-shadow 0.15s ease-in-out;
+      
+    }
+    .navbar{
+      height: 95%;
+    }
+    /* .form-2{
       display: block;
+    } */
+
+    }
+    .navbar-dark .navbar-toggler{
+      width: 50%;
     }
 
 
+    @media (max-width: 768px) {
+      #sign-up-form {
+          display: none; /* Hide sign-up form initially */
+      }
     }
+
     </style>
 </head>
 
 <body>
- <div class="container-xxl bg-white p-0">
+    <div class="container-xxl bg-white p-0">
     </div>
+      
+    <!-- Navbar & Hero Start -->
     <div class="container-xxl position-relative p-0">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
             <a href="" class="navbar-brand p-0">
-                <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Order And Menu</h1>
+                <img src="{{ asset('front-assets/img/food-logo.jpeg')}}" alt="Logo" class="food-logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
@@ -441,132 +520,129 @@
                 <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>
             </div>
         </nav>
-    </div>
 
-    <div class="cont">
-        <div class="form sign-in">
-            <h2>Welcome</h2>
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-            @if(session('message'))
-                <div class="alert alert-success">{{ session('message') }}</div>
-            @endif
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-                <label>
-                    <span>Email</span>
-                    <input type="email" name="email" required />
-                </label>
-                <label>
-                    <span>Password</span>
-                    <input type="password" name="password" required />
-                </label>
-                <p class="forgot-pass">
-                    <a href="{{ route('password.request') }}">Forgot password?</a>
-                </p>
-                <button type="submit" class="submit">Sign In</button>
-            </form>
-
-            <!-- Mobile Only Form -->
-            <form class="form-2" method="POST" action="{{ route('register') }}">
-                @csrf
-                <label>
-                    <span>Name</span>
-                    <input type="text" name="name" required />
-                </label>
-                <label>
-                    <span>Email</span>
-                    <input type="email" name="email" required />
-                </label>
-                <label>
-                    <span>Company Name</span>
-                    <input type="text" name="company_name" required />
-                </label>
-                <label>
-                    <span>Password</span>
-                    <input type="password" name="password" required />
-                </label>
-                <label>
-                    <span>Confirm Password</span>
-                    <input type="password" name="password_confirmation" required />
-                </label>
-                <button type="submit" class="submit-1">Sign Up</button>
-            </form>
-
-        </div>
-
-        <div class="sub-cont">
-            <div class="img">
-                <div class="img__text m--up">
-                    <h3>Don't have an account? Please Sign up!</h3>
-                </div>
-                <div class="img__text m--in">
-                    <h3>If you already have an account, just sign in.</h3>
-                </div>
-                <div class="img__btn">
-                    <span class="m--up">Sign Up</span>
-                    <span class="m--in">Sign In</span>
-                </div>
-            </div>
-
-            <div class="form sign-up">
-                <h2>Create your Account</h2>
-                 @if(session('success'))
+        <br><br>
+        <div class="cont">
+            <div class="form sign-in">
+                <h2>Welcome</h2>
+                @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
                 @if(session('message'))
                     <div class="alert alert-success">{{ session('message') }}</div>
-                @endif
-                <form method="POST" action="{{ route('register') }}">
+                @endif <!-- Fixed this part -->
+                <form id="sign-up" method="POST" action="{{ route('login') }}">
                     @csrf
-                    <label>
-                        <span>Name</span>
-                        <input type="text" name="name" required />
-                    </label>
                     <label>
                         <span>Email</span>
                         <input type="email" name="email" required />
                     </label>
                     <label>
-                        <span>Company Name</span>
-                        <input type="text" name="company_name" required />
-                    </label>
-                    <label>
                         <span>Password</span>
                         <input type="password" name="password" required />
                     </label>
-                    <label>
-                        <span>Confirm Password</span>
-                        <input type="password" name="password_confirmation" required />
-                    </label>
-                    <button type="submit" class="submit">Sign Up</button>
+                    <p class="forgot-pass">
+                        <a href="{{ route('password.request') }}">Forgot password?</a>
+                    </p>
+                    <button type="submit" class="submit">Sign In</button>
+                    <p class="display-none">Don't have an account? <a class="margin-left" href="#" id="sign-up-btn" onclick="showSignupForm()">Sign Up</a></p>
                 </form>
+
+                <div>
+                    <!-- Mobile Only Form -->
+                    <form class="form-2" id="sign-in" method="POST" action="{{ route('register') }}">
+                        @csrf
+                        <label>
+                            <span>Name</span>
+                            <input type="text" name="name" required />
+                        </label>
+                        <label>
+                            <span>Email</span>
+                            <input type="email" name="email" required />
+                        </label>
+                        <label>
+                            <span>Company Name</span>
+                            <input type="text" name="company_name" required />
+                        </label>
+                        <label>
+                            <span>Password</span>
+                            <input type="password" name="password" required />
+                        </label>
+                        <label>
+                            <span>Confirm Password</span>
+                            <input type="password" name="password_confirmation" required />
+                        </label>
+                        <button type="submit" class="submit-1">Sign Up</button>
+                        <p class="p15">If you already have an account, just sign in?</p>
+                        <a class="margin-right" href="#" id="sign-in-btn" onclick="showSigninForm()">Sign in</a>
+                    </form>
+                </div>
+            </div>
+
+            <div class="sub-cont">
+                <div class="img">
+                    <div class="img__text m--up">
+                        <h3>Don't have an account? Please Sign up!</h3>
+                    </div>
+                    <div class="img__text m--in">
+                        <h3>If you already have an account, just sign in.</h3>
+                    </div>
+                    <div class="img__btn">
+                        <span class="m--up">Sign Up</span>
+                        <span class="m--in">Sign In</span>
+                    </div>
+                </div>
+
+                <div class="form sign-up">
+                    <h2>Create your Account</h2>
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+                    @if(session('message'))
+                        <div class="alert alert-success">{{ session('message') }}</div>
+                    @endif
+                    <form method="POST" action="{{ route('register') }}">
+                        @csrf
+                        <label>
+                            <span>Name</span>
+                            <input type="text" name="name" required />
+                        </label>
+                        <label>
+                            <span>Email</span>
+                            <input type="email" name="email" required />
+                        </label>
+                        <label>
+                            <span>Company Name</span>
+                            <input type="text" name="company_name" required />
+                        </label>
+                        <label>
+                            <span>Password</span>
+                            <input type="password" name="password" required />
+                        </label>
+                        <label>
+                            <span>Confirm Password</span>
+                            <input type="password" name="password_confirmation" required />
+                        </label>
+                        <button type="submit" class="submit">Sign Up</button>
+                    </form>
+                </div>
             </div>
         </div>
+
+        <script>
+            function showSignupForm() {
+                document.getElementById("sign-up").style.display = "none";
+                document.getElementById("sign-in").style.display = "block";
+            }
+            function showSigninForm() {
+                document.getElementById("sign-in").style.display = "none";
+                document.getElementById("sign-up").style.display = "block";
+            }
+            document.querySelector('.img__btn').addEventListener('click', function() {
+                document.querySelector('.cont').classList.toggle('s--signup');
+            });
+        </script>
     </div>
-            
-    <script>
-        document.querySelector('.img__btn').addEventListener('click', function() {
-            document.querySelector('.cont').classList.toggle('s--signup');
-        });
-    </script>
+</body>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('front-assets/lib/wow/wow.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/easing/easing.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/waypoints/waypoints.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/counterup/counterup.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/tempusdominus/js/moment.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/tempusdominus/js/moment-timezone.min.js')}}"></script>
-    <script src="{{ asset('front-assets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js')}}"></script>
-
-    <!-- Template Javascript -->
-    <script src="{{ asset('front-assets/js/main.js')}}"></script>
-
-// </body>
-// </html>
-        
+</html>
