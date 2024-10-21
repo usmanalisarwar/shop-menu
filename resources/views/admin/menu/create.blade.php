@@ -2,14 +2,28 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-    width: 100%; /* Make sure the image takes the full width of the card */
-    height: auto; /* Maintain aspect ratio */
-}
-.image-row {
-    margin-bottom: 15px; /* Add spacing between rows */
-}
-
+        width: 100%; /* Make sure the image takes the full width of the card */
+        height: auto; /* Maintain aspect ratio */
+        position: relative;
+    }
+    .image-row {
+        margin-bottom: 15px; /* Add spacing between rows */
+    }
+    .image-overlay-text {
+        position: absolute;
+        top: 50%; 
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-size: 16px;
+        background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+        padding: 5px 10px;
+        border-radius: 5px;
+        text-align: center;
+        display: none; /* Hidden for all except the first image */
+    }
 </style>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid my-2">
@@ -28,6 +42,10 @@
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
+        @php
+            $permissions = getAuthUserModulePermissions();
+        @endphp
+        @if (hasPermissions($permissions, 'add-new-menu'))
         <form action="" method="POST" id="menuForm" name="menuForm">
             @csrf
             <div class="card">
@@ -63,6 +81,7 @@
                 <a href="{{route('menus.index')}}" class="btn btn-outline-dark ml-3">Cancel</a>
             </div>
         </form>
+        @endif
     </div>
 </section>
 @endsection
@@ -130,7 +149,10 @@ const dropzone = $("#image").dropzone({
                 <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
                     <input type="hidden" name="image_array[]" value="${response.image_id}">
                     <div class="card">
-                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                        <div class="image-container" style="position: relative;">
+                            <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                            <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
+                        </div>
                         <div class="card-body text-center">
                             <span class="image-number">${$('.image-row').length + 1}</span>
                             <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
@@ -146,8 +168,6 @@ const dropzone = $("#image").dropzone({
     }
 });
 
-
-
 // Initialize Sortable for image swapping
 const gallery = document.getElementById('menu-gallery');
 Sortable.create(gallery, {
@@ -161,6 +181,13 @@ Sortable.create(gallery, {
 function updateImageNumbers() {
     $('#menu-gallery .image-row').each(function (index, element) {
         $(element).find('.image-number').text(index + 1);
+        
+        // Check if it's the first image and display the overlay text
+        if (index === 0) {
+            $(element).find('.image-overlay-text').show(); // Show text on the first image
+        } else {
+            $(element).find('.image-overlay-text').hide(); // Hide text on other images
+        }
     });
 }
 
@@ -168,6 +195,5 @@ function deleteImage(id){
     $("#image-row-" + id).remove();
     updateImageNumbers(); // Update numbers after deletion
 }
-
 </script>
 @endsection

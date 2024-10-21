@@ -9,7 +9,9 @@
 				<h1>Menu Items</h1>
 			</div>
 			<div class="col-sm-6 text-right">
-				<a href="{{route('menu-items.create')}}" class="btn btn-primary">New Menu Item</a>
+				@if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu-item')) 
+				<a href="{{ route('menu-items.create') }}" class="btn btn-primary">New Menu Item</a>
+				@endif
 			</div>
 		</div>
 	</div>
@@ -68,23 +70,28 @@
 							</td>
 
 							<td>
-								<a href="{{ route('menu-items.edit', $menu->id) }}">
-									<svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-										<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-									</svg>
-								</a>
-								<a onclick="deleteMenuItem({{ $menu->id }})" class="text-danger w-4 h-4 mr-1">
-									<svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-										<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-								  	</svg>
-								</a>
+								@if(hasPermissions(getAuthUserModulePermissions(), 'edit-menu-item'))
+									<a href="{{ route('menu-items.edit', $menu->id) }}">
+										<svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+											<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+										</svg>
+									</a>
+								@endif
+								
+								@if(hasPermissions(getAuthUserModulePermissions(), 'delete-menu-item'))
+									<a onclick="deleteMenuItem({{ $menu->id }})" class="text-danger w-4 h-4 mr-1">
+										<svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+											<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+										</svg>
+									</a>
+								@endif
 							</td>
 						</tr>
                         @endforeach
                         @else
-                        <tr>
-                            <td colspan="6">Records Not Found</td>
-                        </tr>
+                        <td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
+			                <strong>No Records Found</strong>
+			            </td>
                         @endif
 					</tbody>
 				</table>										
@@ -127,27 +134,22 @@
 @section('customJs')
 <script>
 function deleteMenuItem(id) {
-    var url = '{{ route("menu-items.delete", ":id") }}';
-    url = url.replace(':id', id);
-    
-    if (confirm("Are you sure you want to delete this menu?")) {
+    var url = '{{ route("menu-items.delete", "ID") }}';
+    var newUrl = url.replace("ID", id);
+    if (confirm("Are you sure you want to delete")) {
         $.ajax({
-            url: url,
-            type: 'DELETE',
+            url: newUrl,
+            type: 'POST',
             data: {
+                _method: 'DELETE',
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
+            dataType: 'json',
             success: function(response) {
                 if (response.status) {
                     alert(response.message);
-                    location.reload(); // Reload the page to reflect changes
-                } else {
-                    alert('Failed to delete the menu.');
+                    window.location.href = "{{ route('menu-items.index') }}";
                 }
-            },
-            error: function(xhr) {
-                alert('An error occurred while trying to delete the menu.');
-                console.log(xhr.responseText);
             }
         });
     }

@@ -20,7 +20,6 @@ class ModulePermissionSeeder extends Seeder
             ['name'=>'Super Admin'],
             ['name'=>'Admin'],
             ['name'=>'User'],
-            ['name'=>'B2B'],
         ];
         foreach ($roles as $role){
             Role::updateOrCreate($role,$role);
@@ -28,7 +27,7 @@ class ModulePermissionSeeder extends Seeder
         $modulesAndPermissions = [
             [
                 'name'=>'Users',
-                'url'=>'admin/users',
+                'url'=>'users',
                 'active'=>'users',
                 'icon'=>'user-tie',
                 'permissions'=>[
@@ -40,7 +39,7 @@ class ModulePermissionSeeder extends Seeder
             ],
             [
                 'name'=>'Roles',
-                'url'=>'admin/roles',
+                'url'=>'roles',
                 'active'=>'roles',
                 'icon'=>'key',
                 'permissions'=>[
@@ -53,14 +52,38 @@ class ModulePermissionSeeder extends Seeder
             ],
             [
                 'name'=>'Categories',
-                'url'=>'admin/categories',
+                'url'=>'categories',
                 'active'=>'categories',
-                'icon'=>'layer-group',
+                'icon'=>'list-alt',
                 'permissions'=>[
                     'Read Category',
                     'Add New Category',
                     'Edit Category',
                     'Delete Category',
+                ],
+            ],
+             [
+                'name'=>'Menus',
+                'url'=>'menus',
+                'active'=>'menus',
+                'icon'=>'bars',
+                'permissions'=>[
+                    'Read Menu',
+                    'Add New Menu',
+                    'Edit Menu',
+                    'Delete Menu',
+                ],
+            ],
+              [
+                'name'=>'Menu Items',
+                'url'=>'menu-items',
+                'active'=>'menu-item',
+                'icon'=>'utensils',
+                'permissions'=>[
+                    'Read Menu Item',
+                    'Add New Menu Item',
+                    'Edit Menu Item',
+                    'Delete Menu Item',
                 ],
             ],
         ];

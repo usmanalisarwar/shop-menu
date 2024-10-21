@@ -11,7 +11,7 @@
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.5",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "yajra/laravel-datatables-oracle": "^12.0"
+        "yajra/laravel-datatables-oracle": "^11.1.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

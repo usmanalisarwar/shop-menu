@@ -49,13 +49,6 @@
 
 </head>
 <body>
-    <div class="header">
-        <h1>Title:{{ $menu->title }}</h1>
-        <p>User: {{ $user->name }}</p>
-        <p>Email: {{ $user->email }}</p>
-        <p>Company: {{ $user->company_name }}</p>
-    </div>
-    
     <div class="menu">
         @if ($menu->images->isNotEmpty())
             <div class="image-container">

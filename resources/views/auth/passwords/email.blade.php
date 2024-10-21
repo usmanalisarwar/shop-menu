@@ -1,58 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Shop Menu</title>
-        <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="{{ asset('admin-assets/plugins/fontawesome-free/css/all.min.css')}}">
-        <!-- Theme style -->
-        <link rel="stylesheet" href="{{ asset('admin-assets/css/adminlte.min.css')}}">
-        <link rel="stylesheet" href="{{ asset('admin-assets/css/custom.css')}}">
-    </head>
-    <body class="hold-transition login-page">
-        <div class="login-box">
-            <!-- /.login-logo -->
-             @include('admin.message')
-            <div class="card card-outline card-primary">
-                <div class="card-header text-center">
-                    <a href="#" class="h3">Administrative Panel</a>
+
+<head>
+    <meta charset="utf-8">
+    <title>Order And Menu</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link href="{{ asset('front-assets/img/favicon.ico')}}" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Nunito:wght@600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{{ asset('front-assets/lib/animate/animate.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('front-assets/lib/owlcarousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
+    <link href="{{ asset('front-assets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css')}}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="{{ asset('front-assets/css/bootstrap.min.css')}}" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="{{ asset('front-assets/css/style.css')}}" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navbar & Hero Start -->
+    <div class="container-xxl position-relative p-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
+            <a href="{{ route('home.index') }}" class="navbar-brand p-0">
+               <img src="{{ asset('front-assets/img/food-logo.png')}}" alt="Logo" class="food-logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0 pe-4">
+                    <a href="{{ route('home.index') }}" class="nav-item nav-link">Home</a>
+                    <a href="{{ route('home.about-us') }}" class="nav-item nav-link active">About Us</a>
+                    <a href="{{ route('home.contact-us') }}" class="nav-item nav-link">Contact Us</a>
+                    <a href="{{ route('home.services') }}" class="nav-item nav-link">Disclaimer</a>
                 </div>
-                <div class="card-body">
-                    <p class="login-box-msg">Reset Password</p>
-                    <form action="{{route('password.email')}}" method="post">
-                        @csrf
-                        <div class="input-group mb-3">
-                            <input type="email" name="email" id="email" value="{{old('email')}}" class="form-control @error('email') is-invalid @enderror" placeholder="Email">
-                            <div class="input-group-append">
-                                <div class="input-group-text">
-                                    <span class="fas fa-envelope"></span>
-                                </div>
-                            </div>
-                            @error('email')
-                            <p class="invalid-feedback">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div class="row">
-                           <div class="col-4">
-                                <button type="submit" class="btn btn-primary">Send Password Reset Link</button>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="text-center small">Go Back Login? <a href="{{route('login')}}">Login Now</a></div>
+                <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>
             </div>
-            <!-- /.card -->
+        </nav>
+
+        <!-- Spacing for the header -->
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">{{ __('Reset Password') }}</div>
+                        <div class="card-body">
+                            <p>{{ __('Please enter your email address to receive a password reset link.') }}</p>
+                            <form action="{{ route('password.email') }}" method="POST">
+                                @csrf
+                                <div class="row mb-3">
+                                    <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email') }}</label>
+                                    <div class="col-md-6">
+                                        <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Enter your email">
+                                        @error('email')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row mb-0">
+                                    <div class="col-md-8 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                            {{ __('Send Password Reset Link') }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                            <div class="text-center small mt-3">
+                                {{ __('Go Back to Login?') }} <a href="{{ route('home.login') }}">{{ __('Login Now') }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- ./wrapper -->
-        <!-- jQuery -->
-        <script src="{{ asset('admin-assets/plugins/jquery/jquery.min.js')}}"></script>
-        <!-- Bootstrap 4 -->
-        <script src="{{ asset('admin-assets/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-        <!-- AdminLTE App -->
-        <script src="{{ asset('admin-assets/js/adminlte.min.js')}}"></script>
-        <!-- AdminLTE for demo purposes -->
-        <script src="{{ asset('admin-assets/js/demo.js')}}"></script>
-    </body>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="{{ asset('front-assets/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+
 </html>

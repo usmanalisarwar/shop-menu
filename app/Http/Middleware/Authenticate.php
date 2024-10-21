@@ -18,7 +18,7 @@ class Authenticate
     {
         if (!Auth::check()) {
             // Redirect to login if the user is not authenticated
-            return redirect()->route('login');
+            return redirect()->route('home.login');
         }
 
         return $next($request);

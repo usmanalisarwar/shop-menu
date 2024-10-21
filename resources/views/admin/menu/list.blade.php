@@ -9,10 +9,8 @@
 				<h1>Menus</h1>
 			</div>
 			<div class="col-sm-6 text-right">
-				<a href="{{ route('menus.pdfAll') }}" target="_blank" class="btn btn-secondary">
-                    Generate Menus PDF
-                </a>
-				<a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
+                @if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu'))		<a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
+				@endif
 			</div>
 		</div>
 	</div>
@@ -58,36 +56,46 @@
 							<td>{{$menu->id}}</td>
 							<td>{{$menu->title}}</td>
 							<td>
-								@if($menu->images->isNotEmpty())
-				                    {{-- Display the first image and make it clickable --}}
-									<a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})">
-										<img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50">
-									</a>
-				                @else
-				                    <p>No image available</p>
-				                @endif
-				            </td>
-							<td>
-								 <a href="{{ route('menus.pdf', $menu->id) }}" target="_blank" class="btn btn-secondary">
-					                Generate PDF
-					            </a>
-								<a href="{{route('menus.edit',$menu->id)}}">
-									<svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-										<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
-									</svg>
-								</a>
-								<a onclick="deleteMenu({{$menu->id}})" class="text-danger w-4 h-4 mr-1">
-									<svg wire:loading.remove.delay="" wire:target="" class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-										<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-								  	</svg>
-								</a>
+							    @if($menu->images->isNotEmpty())
+							        {{-- Display the first image with a tooltip --}}
+							        <a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})" 
+							           data-toggle="tooltip" title="This is the first menu page this menu page show on bar code page">
+							            <img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50">
+							        </a>
+							    @else
+							        <p>No image available</p>
+							    @endif
 							</td>
+
+							<td>
+								<button onclick="copyLink('{{ route('generate.qrcode', $menu->slug) }}')" class="btn btn-warning btn-sm mr-1"> <!-- Add btn-sm for small size -->
+							        Copy QR Code Link
+							    </button>
+							    <a href="{{ route('menus.pdf', $menu->id) }}" target="_blank" class="btn btn-secondary">
+							        Generate PDF
+							    </a>
+							    @if(hasPermissions(getAuthUserModulePermissions(), 'edit-menu'))						
+							        <a href="{{ route('menus.edit', $menu->id) }}">
+							            <svg class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+							                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+							            </svg>
+							        </a>
+							    @endif
+							    @if(hasPermissions(getAuthUserModulePermissions(), 'delete-menu'))		
+							        <a onclick="deleteMenu({{ $menu->id }})" class="text-danger w-4 h-4 mr-1">
+							            <svg wire:loading.remove.delay="" wire:target="" class="filament-link-icon w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+							                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+							            </svg>
+							        </a>
+							    @endif
+							</td>
+
 						</tr>
                         @endforeach
                         @else
-                        <tr>
-                            <td colspan="5">Records Not Found</td>
-                        </tr>
+                       <td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
+			                <strong>No Records Found</strong>
+			            </td>
                         @endif
 					</tbody>
 				</table>										
@@ -126,40 +134,16 @@
 </section>
 <!-- /.content -->
 
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="imageModalLabel">Menu Images</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="imageCarousel" class="carousel slide" data-ride="carousel">
-          <div class="carousel-inner" id="carouselImages">
-            <!-- Images will be injected here via JavaScript -->
-          </div>
-          <a class="carousel-control-prev" href="#imageCarousel" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-          </a>
-          <a class="carousel-control-next" href="#imageCarousel" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 @endsection
 
 @section('customJs')
 <script>
+	<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
+});
+</script>
+<script type="text/javascript">
 function deleteMenu(id) {
     var url = '{{ route("menus.delete", ":id") }}';
     url = url.replace(':id', id);
@@ -187,40 +171,13 @@ function deleteMenu(id) {
     }
 }
 
-function showImageModal(menuId) {
-    $.ajax({
-        url: '/menus/' + menuId + '/images',
-        type: 'GET',
-        success: function(response) {
-            var images = response.images;
-            var carouselInner = $('#carouselImages');
-            carouselInner.empty();
-
-            if (images.length) {
-                images.forEach(function(image, index) {
-                    var activeClass = index === 0 ? 'active' : '';
-                    var carouselItem = `
-                        <div class="carousel-item ${activeClass}">
-                            <img src="/uploads/menu/${image.image}" class="d-block w-100" alt="${image.name}">
-                            <div class="carousel-caption d-none d-md-block">
-                                <p>Sort Order: ${index + 1}</p>
-                            </div>
-                        </div>
-                    `;
-                    carouselInner.append(carouselItem);
-                });
-                $('#imageModal').modal('show');
-            } else {
-                alert('No images found for this menu.');
-            }
-        },
-        error: function(xhr) {
-            alert('Failed to load images.');
-            console.log(xhr.responseText);
-        }
+function copyLink(link) {
+    navigator.clipboard.writeText(link).then(function() {
+        alert('QR Code link copied to clipboard!');
+    }, function(err) {
+        console.error('Could not copy text: ', err);
     });
 }
-
 </script>
 @endsection
 
