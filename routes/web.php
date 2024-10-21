@@ -12,7 +12,15 @@ use App\Http\Controllers\front\HomeController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Route;
 
+Route::get('/send-email', function () {
+    $data = ['name' => 'John Doe']; 
+    Mail::to('faisal.mahmood.alam@gmail.com')->send(new SendMail($data));
+    return 'Email sent successfully!';
+});
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
