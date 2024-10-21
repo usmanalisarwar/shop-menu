@@ -49,7 +49,7 @@
                 <a href="" class="navbar-brand p-0">
                     <!-- <h1 class="text-primary m-0"><i class="fa fa-utensils me-3"></i>Order And Menu</h1> -->
                     <!-- <img src="img/logo.png" alt="Logo"> -->
-                     <img src="{{ asset('front-assets/img/food-logo.jpeg')}}" alt="Logo" class="food-logo">
+                     <img src="{{ asset('front-assets/img/food-logo.png')}}" alt="Logo" class="food-logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                     <span class="fa fa-bars"></span>

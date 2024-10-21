@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <title>Order And Menu</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
 
     <!-- Favicon -->
     <link href="{{ asset('front-assets/img/favicon.ico')}}" rel="icon">
@@ -23,7 +23,7 @@
     <!-- Libraries Stylesheet -->
     <link href="{{ asset('front-assets/lib/animate/animate.min.css')}}" rel="stylesheet">
     <link href="{{ asset('front-assets/lib/owlcarousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
-    <link href="{{ asset('front-assets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css')}}" rel="stylesheet" />
+    <link href="{{ asset('front-assets/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css')}}" rel="stylesheet">
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('front-assets/css/bootstrap.min.css')}}" rel="stylesheet">
@@ -355,6 +355,7 @@
     .cont.s--signup .sign-up {
         -webkit-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
+        margin-top: -50px;
     }
     /* .submit{
       display: none;
@@ -493,8 +494,44 @@
           display: none; /* Hide sign-up form initially */
       }
     }
+  /* Your existing styles */
+        body {
+            font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+            background: #ffffff;
+        }
 
+        /* Add your other styles here */
     </style>
+     <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
+    <script>
+        let map;
+        let marker;
+
+        function initMap() {
+            const mapOptions = {
+                center: { lat: -34.397, lng: 150.644 }, // Default center (adjust as needed)
+                zoom: 8,
+            };
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            
+            // Add a marker
+            marker = new google.maps.Marker({
+                position: mapOptions.center,
+                map: map,
+                title: "Your Location",
+            });
+            
+            // Update hidden fields on map click
+            google.maps.event.addListener(map, "click", function (event) {
+                marker.setPosition(event.latLng);
+                document.getElementById("latitude").value = event.latLng.lat();
+                document.getElementById("longitude").value = event.latLng.lng();
+                fetchLocation(event.latLng);
+            });
+        }
+
+    </script>
 </head>
 
 <body>
@@ -505,7 +542,7 @@
     <div class="container-xxl position-relative p-0">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
             <a href="{{ route('home.index') }}" class="navbar-brand p-0">
-                <img src="{{ asset('front-assets/img/food-logo.jpeg')}}" alt="Logo" class="food-logo">
+                <img src="{{ asset('front-assets/img/food-logo.png')}}" alt="Logo" class="food-logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
@@ -623,7 +660,11 @@
                             <span>Confirm Password</span>
                             <input type="password" name="password_confirmation" required />
                         </label>
-                        <button type="submit" class="submit">Sign Up</button>
+                          <!-- Other form fields -->
+                        <div id="map" style="height: 140px; width: 500px; margin-bottom: 20px; margin-top: 2px;"></div>
+                        <input type="hidden" name="latitude" id="latitude" />
+                        <input type="hidden" name="longitude" id="longitude" />
+                        <button type="submit" class="submit" style="margin-top: -18px;">Sign Up</button>
                     </form>
                 </div>
             </div>
