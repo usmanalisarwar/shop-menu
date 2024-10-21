@@ -14,11 +14,13 @@ use Illuminate\Http\Request;
 
 use App\Mail\SendMail;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/send-test-mail', function () {
-    $data = ['name' => 'John Doe']; 
+    $data = ['name' => 'John Doe']; // Replace with dynamic data if needed
+
+    // Send email
     Mail::to('faisal.mahmood.alam@gmail.com')->send(new SendMail($data));
+
     return 'Email sent successfully!';
 });
 

@@ -13,7 +13,7 @@ class SendMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data; 
+    public $data; // Data to be passed to the email view
 
     /**
      * Create a new message instance.
@@ -22,7 +22,7 @@ class SendMail extends Mailable
      */
     public function __construct(array $data)
     {
-        $this->data = $data; 
+        $this->data = $data; // Assign passed data to the $data property
     }
 
     /**
@@ -31,7 +31,7 @@ class SendMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Example Mail',
+            subject: 'Example Mail', // Email subject
         );
     }
 
@@ -41,10 +41,10 @@ class SendMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.example', 
+            view: 'emails.email', 
             with: [
                 'data' => $this->data, 
-            ]
+            ],
         );
     }
 
