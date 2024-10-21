@@ -16,7 +16,7 @@ use App\Mail\SendMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/send-email', function () {
+Route::get('/send-test-mail', function () {
     $data = ['name' => 'John Doe']; 
     Mail::to('faisal.mahmood.alam@gmail.com')->send(new SendMail($data));
     return 'Email sent successfully!';
