@@ -257,7 +257,7 @@ class MenuController extends Controller
         }
 
         // Delete associated images
-        $menuImages = MenuItemImage::where('menu_id', $id)->get();
+        $menuImages = MenuImage::where('menu_id', $id)->get();
         foreach ($menuImages as $image) {
             $imagePath = public_path('uploads/menu/' . $image->image);
             if (File::exists($imagePath)) {
