@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\MenuImage;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
@@ -72,15 +73,16 @@ class MenuController extends Controller
         return response()->json(['images' => $menuImages]);
     }
 
-    // List all menus with search functionality
     public function index(Request $request)
     {
         $permissions = getAuthUserModulePermissions();
 
         if (!hasPermissions($permissions, 'read-menu')) {
-            abort(403, 'Unauthorized'); // Return 403 Forbidden if the user lacks permission
+            abort(403, 'Unauthorized');
         }
-        $query = Menu::latest();
+
+        // Get menus only for the authenticated user
+        $query = Menu::where('user_id', Auth::id())->latest();
 
         if ($keyword = $request->get('keyword')) {
             $query->where('title', 'like', '%' . $keyword . '%');
@@ -89,6 +91,7 @@ class MenuController extends Controller
         $menus = $query->paginate(10);
         return view('admin.menu.list', compact('menus'));
     }
+
 
     // Create new menu form
     public function create()
@@ -149,6 +152,7 @@ class MenuController extends Controller
         $menu = new Menu();
         $menu->title = $request->title;
         $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title);
+        $menu->user_id = Auth::id();
         $menu->save();
 
         // Save Menu images
@@ -180,7 +184,6 @@ class MenuController extends Controller
         ]);
     }
 
-    // Edit an existing menu
     public function edit($id)
     {
         $permissions = getAuthUserModulePermissions();
@@ -188,11 +191,14 @@ class MenuController extends Controller
         if (!hasPermissions($permissions, 'edit-menu')) {
             abort(403, 'Unauthorized');
         }
-        $menu = Menu::findOrFail($id);
+
+        // Only find the menu that belongs to the logged-in user
+        $menu = Menu::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $menuImages = MenuImage::where('menu_id', $id)->orderBy('order_no')->get();
 
         return view('admin.menu.edit', compact('menu', 'menuImages'));
     }
+
 
     public function update(Request $request, $id)
     {
@@ -215,13 +221,13 @@ class MenuController extends Controller
             \Log::warning('Validation errors: ', $validator->errors()->toArray());
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
-
-        // Find the existing menu
-        $menu = Menu::find($id);
-        if (!$menu) {
-            \Log::error('Menu not found: ' . $id);
-            return response()->json(['status' => false, 'errors' => ['menu' => 'Menu not found.']]);
-        }
+        
+        // Find the existing menu owned by the authenticated user
+        $menu = Menu::where('id', $id)->where('user_id', Auth::id())->first();
+            if (!$menu) {
+                \Log::error('Menu not found or does not belong to the user: ' . $id);
+                return response()->json(['status' => false, 'errors' => ['menu' => 'Menu not found or does not belong to you.']]);
+            }
 
         $menu->title = $request->title;
         $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title, $id);
@@ -250,7 +256,8 @@ class MenuController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $menu = Menu::find($id);
+    // Find the menu that belongs to the logged-in user
+        $menu = Menu::where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$menu) {
             return response()->json(['status' => false, 'message' => 'Menu not found']);

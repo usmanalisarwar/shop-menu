@@ -568,6 +568,15 @@
                 @if(session('message'))
                     <div class="alert alert-success">{{ session('message') }}</div>
                 @endif <!-- Fixed this part -->
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <form id="sign-up" method="POST" action="{{ route('login') }}">
                     @csrf
                     <label>

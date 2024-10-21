@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -17,16 +19,15 @@ class LoginController extends Controller
         $this->middleware('auth')->only('logout');
     }
 
-    /**
-     * The user has been authenticated.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return mixed
-     */
-    protected function authenticated($request, $user)
+    protected function authenticated(Request $request, $user)
     {
-        // Set a flash message to be shown on the dashboard
         return redirect($this->redirectTo)->with('message', 'Welcome back, ' . $user->name . '!');
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        throw ValidationException::withMessages([
+            'email' => [trans('auth.failed')],
+        ]);
     }
 }

@@ -147,8 +147,11 @@ $(document).ready(function(){
 function deleteMenu(id) {
     var url = '{{ route("menus.delete", ":id") }}';
     url = url.replace(':id', id);
-    
+
     if (confirm("Are you sure you want to delete this menu?")) {
+        // Disable button to prevent multiple clicks
+        $('a[onclick="deleteMenu('+id+')"]').attr('disabled', 'disabled');
+
         $.ajax({
             url: url,
             type: 'DELETE',
@@ -158,7 +161,7 @@ function deleteMenu(id) {
             success: function(response) {
                 if (response.status) {
                     alert(response.message);
-                    location.reload(); // Reload the page to reflect changes
+                    location.reload(); 
                 } else {
                     alert('Failed to delete the menu.');
                 }
@@ -166,6 +169,10 @@ function deleteMenu(id) {
             error: function(xhr) {
                 alert('An error occurred while trying to delete the menu.');
                 console.log(xhr.responseText);
+            },
+            complete: function() {
+                // Enable button again after processing
+                $('a[onclick="deleteMenu('+id+')"]').removeAttr('disabled');
             }
         });
     }
