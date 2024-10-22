@@ -505,45 +505,96 @@
      <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
     <script>
-     function initMap() {
-        const mapOptions = {
-            center: { lat: -34.397, lng: 150.644 }, // Default center
-            zoom: 8,
+function initMap() {
+    // Set default center
+    const mapOptions = {
+        zoom: 8,
+    };
+
+    // Initialize the map for desktop
+    const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    const marker = new google.maps.Marker({
+        map: map,
+        title: "Your Location",
+    });
+
+    // Initialize the map for mobile
+    const mobileMap = new google.maps.Map(document.getElementById("map-mobile"), mapOptions);
+    const mobileMarker = new google.maps.Marker({
+        map: mobileMap,
+        title: "Your Location",
+    });
+
+    // Function to update marker position and hidden fields
+    function updateLocation(position) {
+        const userLocation = {
+            lat: position.lat(),
+            lng: position.lng(),
         };
 
-        // Initialize desktop map
-        const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-        const marker = new google.maps.Marker({
-            position: mapOptions.center,
-            map: map,
-            title: "Your Location",
-        });
+        // Update marker positions
+        marker.setPosition(userLocation);
+        mobileMarker.setPosition(userLocation);
 
-        // Update hidden fields on desktop map click
-        google.maps.event.addListener(map, "click", function (event) {
-            marker.setPosition(event.latLng);
-            document.getElementById("latitude").value = event.latLng.lat();
-            document.getElementById("longitude").value = event.latLng.lng();
-        });
-
-        // Initialize mobile map
-        const mobileMap = new google.maps.Map(document.getElementById("map-mobile"), mapOptions);
-        const mobileMarker = new google.maps.Marker({
-            position: mapOptions.center,
-            map: mobileMap,
-            title: "Your Location",
-        });
-
-        // Update hidden fields on mobile map click
-        google.maps.event.addListener(mobileMap, "click", function (event) {
-            mobileMarker.setPosition(event.latLng);
-            document.getElementById("latitude-mobile").value = event.latLng.lat();
-            document.getElementById("longitude-mobile").value = event.latLng.lng();
-        });
+        // Set the hidden fields with the selected location
+        document.getElementById("latitude").value = userLocation.lat;
+        document.getElementById("longitude").value = userLocation.lng;
+        document.getElementById("latitude-mobile").value = userLocation.lat;
+        document.getElementById("longitude-mobile").value = userLocation.lng;
     }
 
+    // Try to get the user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
 
-    </script>
+                // Set the map center to user's location
+                map.setCenter(userLocation);
+                marker.setPosition(userLocation);
+                
+                mobileMap.setCenter(userLocation);
+                mobileMarker.setPosition(userLocation);
+
+                // Set the hidden fields with the current location
+                updateLocation({ lat: () => userLocation.lat, lng: () => userLocation.lng });
+            },
+            () => {
+                handleLocationError(true, map);
+            }
+        );
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, map);
+    }
+
+    // Add click event to the desktop map
+    map.addListener("click", (event) => {
+        updateLocation(event.latLng);
+    });
+
+    // Add click event to the mobile map
+    mobileMap.addListener("click", (event) => {
+        updateLocation(event.latLng);
+    });
+}
+
+function handleLocationError(browserHasGeolocation, map) {
+    const infoWindow = new google.maps.InfoWindow({
+        content: browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation.",
+    });
+    infoWindow.setPosition(map.getCenter());
+    infoWindow.open(map);
+}
+
+
+</script>
+
 </head>
 
 <body>
