@@ -2,7 +2,7 @@
 
 @section('content')
     <!-- About Start -->
-    <div class="container-xxl py-5">
+    <div class="py-5">
         <div class="container">
             <div class="row g-5 align-items-center">
                 <div class="col-lg-6">
@@ -35,7 +35,7 @@
     <!-- About End -->
 
     <!-- Reservation Start -->
-    <div class="container-xxl py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
         <div class="row g-0">
             <div class="col-md-6">
                 <div class="video">

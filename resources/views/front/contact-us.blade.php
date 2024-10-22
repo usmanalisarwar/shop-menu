@@ -33,7 +33,7 @@
 </head>
 
 <body>
-    <div class="container-xxl bg-white p-0">
+    <div class="bg-white p-0">
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -44,7 +44,7 @@
 
 
         <!-- Navbar & Hero Start -->
-        <div class="container-xxl position-relative p-0">
+        <div class="position-relative p-0">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
                 <a href="{{ route('home.index') }}" class="navbar-brand p-0">
                      <img src="{{ asset('front-assets/img/food-logo.png')}}" alt="Logo" class="food-logo">
@@ -69,7 +69,7 @@
 
 
         <!-- Contact Start -->
-        <div class="container-xxl py-5">
+        <div class="py-5">
             <div class="container">
                 <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
                     <h5 class="section-title ff-secondary text-center text-primary fw-normal">Contact Us</h5>
@@ -80,15 +80,15 @@
                         <div class="row gy-4">
                             <div class="col-md-4">
                                 <h5 class="section-title ff-secondary fw-normal text-start text-primary">Booking</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>book@example.com</p>
+                                <p><i class="fa fa-envelope-open text-primary me-2"></i><a href="mailto:{{ config('services.email') }}">
+                                {{ config('services.email') }}
+                                </a></p>
                             </div>
                             <div class="col-md-4">
-                                <h5 class="section-title ff-secondary fw-normal text-start text-primary">General</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>info@example.com</p>
-                            </div>
-                            <div class="col-md-4">
-                                <h5 class="section-title ff-secondary fw-normal text-start text-primary">Technical</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>tech@example.com</p>
+                                <h5 class="section-title ff-secondary fw-normal text-start text-primary">Phone Number</h5>
+                                <p><i class="fa fa-phone-alt me-2"></i><a href="tel:{{ preg_replace('/\s+/', '', config('services.mobile_number')) }}">
+                                {{ config('services.mobile_number') }}
+                                </a></p>
                             </div>
                         </div>
                     </div>
@@ -148,20 +148,31 @@
                         <a class="btn btn-link" href="{{ route('home.index') }}">Home</a>
                         <a class="btn btn-link" href="{{ route('home.about-us') }}">About Us</a>
                         <a class="btn btn-link" href="{{ route('home.contact-us') }}">Contact Us</a>
-                        <a class="btn btn-link" href="{{ route('home.services') }}">Services</a>
+                        <a class="btn btn-link" href="{{ route('home.services') }}">Disclaimer</a>
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
-                        <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                        </div>
+                        <p class="mb-2" style="color: white;">
+                            <i class="fa fa-map-marker-alt me-3"></i>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('services.address')) }}" target="_blank" style="color: white;">
+                                {{ config('services.address') }}
+                            </a>
+                        </p>
+                        <p class="mb-2" style="color: white;">
+                            <i class="fa fa-phone-alt me-3"></i>
+                            <a href="tel:{{ preg_replace('/\s+/', '', config('services.mobile_number')) }}" style="color: white;">
+                                {{ config('services.mobile_number') }}
+                            </a>
+                        </p>
+                        <p class="mb-2" style="color: white;">
+                            <i class="fa fa-envelope me-3"></i>
+                            <a href="mailto:{{ config('services.email') }}" style="color: white;">
+                                {{ config('services.email') }}
+                            </a>
+                        </p>
                     </div>
+
+
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
                         <h5 class="text-light fw-normal">Monday - Saturday</h5>
@@ -179,27 +190,7 @@
                     </div>
                 </div>
             </div>
-            <div class="container">
-                <div class="copyright">
-                    <div class="row">
-                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
-                            
-                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            Designed By <a class="border-bottom" href="http://127.0.0.1:5504/index.html">5Th Gen Technologies</a><br><br>
-                            <!-- Distributed By <a class="border-bottom" href="https://themewagon.com" target="_blank">ThemeWagon</a> -->
-                        </div>
-                        <div class="col-md-6 text-center text-md-end">
-                            <div class="footer-menu">
-                                <a href="{{ route('home.index') }}">Home</a>
-                                <a href="">Cookies</a>
-                                <a href="">Help</a>
-                                <a href="">FQAs</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
         <!-- Footer End -->
 
