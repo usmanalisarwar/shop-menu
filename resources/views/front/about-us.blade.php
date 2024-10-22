@@ -181,7 +181,7 @@
                         <a class="btn btn-link" href="{{ route('home.index') }}">Home</a>
                         <a class="btn btn-link" href="{{ route('home.about-us') }}">About Us</a>
                         <a class="btn btn-link" href="{{ route('home.contact-us') }}">Contact Us</a>
-                        <a class="btn btn-link" href="{{ route('home.services') }}">Services</a>
+                        <a class="btn btn-link" href="{{ route('home.services') }}">Disclaimer</a>
                         
                         <!-- <a class="btn btn-link" href="">Terms & Condition</a> -->
                     </div>
