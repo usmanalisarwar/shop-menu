@@ -11,9 +11,24 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ config('services.address') }}</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ config('services.mobile_number') }}</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ config('services.email') }}</p>
+                        <p class="mb-2">
+                            <i class="fa fa-map-marker-alt me-3"></i>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode(config('services.address')) }}" target="_blank">
+                                {{ config('services.address') }}
+                            </a>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fa fa-phone-alt me-3"></i>
+                            <a href="tel:{{ preg_replace('/\s+/', '', config('services.mobile_number')) }}">
+                                {{ config('services.mobile_number') }}
+                            </a>
+                        </p>
+                        <p class="mb-2">
+                            <i class="fa fa-envelope me-3"></i>
+                            <a href="mailto:{{ config('services.email') }}">
+                                {{ config('services.email') }}
+                            </a>
+                        </p>
                     </div>
 
                     <div class="col-lg-3 col-md-6">
