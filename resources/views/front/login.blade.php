@@ -505,31 +505,43 @@
      <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
     <script>
-        let map;
-        let marker;
+     function initMap() {
+        const mapOptions = {
+            center: { lat: -34.397, lng: 150.644 }, // Default center
+            zoom: 8,
+        };
 
-        function initMap() {
-            const mapOptions = {
-                center: { lat: -34.397, lng: 150.644 }, // Default center (adjust as needed)
-                zoom: 8,
-            };
-            map = new google.maps.Map(document.getElementById("map"), mapOptions);
-            
-            // Add a marker
-            marker = new google.maps.Marker({
-                position: mapOptions.center,
-                map: map,
-                title: "Your Location",
-            });
-            
-            // Update hidden fields on map click
-            google.maps.event.addListener(map, "click", function (event) {
-                marker.setPosition(event.latLng);
-                document.getElementById("latitude").value = event.latLng.lat();
-                document.getElementById("longitude").value = event.latLng.lng();
-                fetchLocation(event.latLng);
-            });
-        }
+        // Initialize desktop map
+        const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        const marker = new google.maps.Marker({
+            position: mapOptions.center,
+            map: map,
+            title: "Your Location",
+        });
+
+        // Update hidden fields on desktop map click
+        google.maps.event.addListener(map, "click", function (event) {
+            marker.setPosition(event.latLng);
+            document.getElementById("latitude").value = event.latLng.lat();
+            document.getElementById("longitude").value = event.latLng.lng();
+        });
+
+        // Initialize mobile map
+        const mobileMap = new google.maps.Map(document.getElementById("map-mobile"), mapOptions);
+        const mobileMarker = new google.maps.Marker({
+            position: mapOptions.center,
+            map: mobileMap,
+            title: "Your Location",
+        });
+
+        // Update hidden fields on mobile map click
+        google.maps.event.addListener(mobileMap, "click", function (event) {
+            mobileMarker.setPosition(event.latLng);
+            document.getElementById("latitude-mobile").value = event.latLng.lat();
+            document.getElementById("longitude-mobile").value = event.latLng.lng();
+        });
+    }
+
 
     </script>
 </head>
@@ -618,6 +630,10 @@
                             <span>Confirm Password</span>
                             <input type="password" name="password_confirmation" required />
                         </label>
+                          <!-- Add the map div here -->
+                        <div id="map-mobile" style="height: 140px; width: 100%; margin-bottom: 20px;"></div>
+                        <input type="hidden" name="latitude" id="latitude-mobile" />
+                        <input type="hidden" name="longitude" id="longitude-mobile" />
                         <button type="submit" class="submit-1">Sign Up</button>
                         <p class="p15">If you already have an account, just sign in?</p>
                         <a class="margin-right" href="#" id="sign-in-btn" onclick="showSigninForm()">Sign in</a>
