@@ -11,10 +11,11 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Gillani Muhallah Jaranwala</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+92 339 0662400</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@orderandmenu.com</p>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ config('services.address') }}</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ config('services.mobile_number') }}</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ config('services.email') }}</p>
                     </div>
+
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
                         <h5 class="text-light fw-normal">Monday - Saturday</h5>

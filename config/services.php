@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'mobile_number' => env('MOBILE_NUMBER'),
+    'address' => env('ADDRESS'),
+    'email' => env('EMAIL'),
+
 ];

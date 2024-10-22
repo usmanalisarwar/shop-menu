@@ -80,15 +80,15 @@
                         <div class="row gy-4">
                             <div class="col-md-4">
                                 <h5 class="section-title ff-secondary fw-normal text-start text-primary">Booking</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>info@orderandmenu.com</p>
+                                <p><i class="fa fa-envelope-open text-primary me-2"></i>{{ config('services.email') }}</p>
                             </div>
                             <div class="col-md-4">
                                 <h5 class="section-title ff-secondary fw-normal text-start text-primary">General</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>info@orderandmenu.com</p>
+                                <p><i class="fa fa-envelope-open text-primary me-2"></i>{{ config('services.email') }}</p>
                             </div>
                             <div class="col-md-4">
                                 <h5 class="section-title ff-secondary fw-normal text-start text-primary">Technical</h5>
-                                <p><i class="fa fa-envelope-open text-primary me-2"></i>info@orderandmenu.com</p>
+                                <p><i class="fa fa-envelope-open text-primary me-2"></i>{{ config('services.email') }}</p>
                             </div>
                         </div>
                     </div>
@@ -152,11 +152,11 @@
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Contact</h4>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Gillani Muhallah Jaranwala</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+92 339 0662400</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@orderandmenu.com</p>
-
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ config('services.address') }}</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ config('services.mobile_number') }}</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ config('services.email') }}</p>
                     </div>
+
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Opening</h4>
                         <h5 class="text-light fw-normal">Monday - Saturday</h5>
