@@ -30,6 +30,13 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('front-assets/css/style.css')}}" rel="stylesheet">
+        <style>
+        /* Set the height of the map */
+        #map {
+            height: 350px; /* Adjust as needed */
+            width: 100%;
+        }
+    </style>
 </head>
 
 <body>
@@ -92,11 +99,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
-                        <iframe class="position-relative rounded w-100 h-100"
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-                            frameborder="0" style="min-height: 350px; border:0;" allowfullscreen="" aria-hidden="false"
-                            tabindex="0"></iframe>
+                   <div class="col-md-6 wow fadeIn" data-wow-delay="0.1s">
+                        <div id="map"></div>
                     </div>
                     <div class="col-md-6">
                         <div class="wow fadeInUp" data-wow-delay="0.2s">
@@ -210,6 +214,69 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('front-assets/js/main.js')}}"></script>
+
+        <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
+
+<script>
+    let map;
+    let marker;
+
+    function initMap() {
+        // Get current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const currentLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                // Create map
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 14,
+                    center: currentLocation
+                });
+
+                // Create marker
+                marker = new google.maps.Marker({
+                    position: currentLocation,
+                    map: map,
+                    draggable: true
+                });
+
+                // Add listener for marker drag event
+                marker.addListener('dragend', function(event) {
+                    const newLocation = {
+                        lat: event.latLng.lat(),
+                        lng: event.latLng.lng()
+                    };
+                    map.setCenter(newLocation);
+                });
+
+                // Add click listener to the map
+                map.addListener('click', function(event) {
+                    const clickedLocation = {
+                        lat: event.latLng.lat(),
+                        lng: event.latLng.lng()
+                    };
+                    marker.setPosition(clickedLocation);
+                    map.setCenter(clickedLocation);
+                });
+            });
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, map.getCenter());
+        }
+    }
+
+    function handleLocationError(browserHasGeolocation, pos) {
+        const errorMsg = browserHasGeolocation ?
+            'Error: The Geolocation service failed.' :
+            'Error: Your browser doesn\'t support geolocation.';
+        alert(errorMsg);
+    }
+</script>
+
 </body>
 
 </html>
