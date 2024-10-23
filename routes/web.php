@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\front\HomeController;
+use App\Http\Controllers\front\ContactController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -38,6 +39,8 @@ Route::post('/email/resend', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
 
+
+Route::post('/contact', [ContactController::class, 'sendEmail'])->name('contact.send');
 
 //front end routes
 Route::get('/', [HomeController::class, 'home'])->name('home.index');

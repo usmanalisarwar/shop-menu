@@ -32,4 +32,6 @@ class HomeController extends Controller
     {
         return view('front.login');
     }
+
 }
+
