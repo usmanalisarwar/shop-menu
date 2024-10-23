@@ -1,4 +1,4 @@
-   <div class="container-xxl position-relative p-0">
+   <div class="position-relative p-0">
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4 px-lg-5 py-3 py-lg-0">
                 <a href="{{ route('home.index') }}" class="navbar-brand p-0">
                      <img src="{{ asset('front-assets/img/food-logo.png')}}" alt="Logo" class="food-logo">
@@ -20,7 +20,7 @@
                 </div>
             </nav>
 
-            <div class="container-xxl py-5 bg-dark hero-header mb-5">
+            <div class="py-5 bg-dark hero-header mb-5">
                 <div class="container my-5 py-5">
                     <div class="row align-items-center g-5">
                         <div class="col-lg-6 text-center text-lg-start">
