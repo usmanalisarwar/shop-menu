@@ -36,6 +36,11 @@
             height: 350px; /* Adjust as needed */
             width: 100%;
         }
+         .col-lg-3 {
+        /* flex: 0 0 auto; */
+        width: 33%;
+        padding:0px 80px;
+    }
     </style>
 </head>
 

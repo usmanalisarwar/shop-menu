@@ -30,6 +30,13 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('front-assets/css/style.css')}}" rel="stylesheet">
+    <style>
+          .col-lg-3 {
+        /* flex: 0 0 auto; */
+        width: 33%;
+        padding:0px 80px;
+    }
+    </style>
 </head>
 
 <body>
