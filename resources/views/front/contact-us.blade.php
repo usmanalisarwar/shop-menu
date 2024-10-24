@@ -222,64 +222,44 @@
         <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
 
-<script>
-    let map;
-    let marker;
+    <script>
+        let map;
+        let marker;
 
-    function initMap() {
-        // Get current location
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                const currentLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
+        function initMap() {
+            // Coordinates for 5th Gen Technologies in Jaranwala
+            const techLocation = {
+                lat: 31.1942, // Replace with actual latitude
+                lng: 73.9783  // Replace with actual longitude
+            };
 
-                // Create map
-                map = new google.maps.Map(document.getElementById("map"), {
-                    zoom: 14,
-                    center: currentLocation
-                });
-
-                // Create marker
-                marker = new google.maps.Marker({
-                    position: currentLocation,
-                    map: map,
-                    draggable: true
-                });
-
-                // Add listener for marker drag event
-                marker.addListener('dragend', function(event) {
-                    const newLocation = {
-                        lat: event.latLng.lat(),
-                        lng: event.latLng.lng()
-                    };
-                    map.setCenter(newLocation);
-                });
-
-                // Add click listener to the map
-                map.addListener('click', function(event) {
-                    const clickedLocation = {
-                        lat: event.latLng.lat(),
-                        lng: event.latLng.lng()
-                    };
-                    marker.setPosition(clickedLocation);
-                    map.setCenter(clickedLocation);
-                });
+            // Create map
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: techLocation
             });
-        } else {
-            // Browser doesn't support Geolocation
-            handleLocationError(false, map.getCenter());
-        }
-    }
 
-    function handleLocationError(browserHasGeolocation, pos) {
-        const errorMsg = browserHasGeolocation ?
-            'Error: The Geolocation service failed.' :
-            'Error: Your browser doesn\'t support geolocation.';
-        alert(errorMsg);
-    }
-</script>
+            // Create marker
+            marker = new google.maps.Marker({
+                position: techLocation,
+                map: map,
+                title: "5th Gen Technologies"
+            });
+
+            // Optional: Add a click listener to the marker
+            marker.addListener('click', function() {
+                alert("You are at 5th Gen Technologies!");
+            });
+        }
+
+        function handleLocationError(browserHasGeolocation, pos) {
+            const errorMsg = browserHasGeolocation ?
+                'Error: The Geolocation service failed.' :
+                'Error: Your browser doesn\'t support geolocation.';
+            alert(errorMsg);
+        }
+    </script>
+
 
 </body>
 
