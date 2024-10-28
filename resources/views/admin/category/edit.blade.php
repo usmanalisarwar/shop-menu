@@ -1,6 +1,14 @@
 @extends('admin.layouts.app')
 @section('content')
-
+<style type="text/css">
+    .card-img-top {
+        width: 100%; /* Make sure the image takes the full width of the card */
+        height: auto; /* Maintain aspect ratio */
+    }
+    .image-row {
+        margin-bottom: 15px; /* Add spacing between rows */
+    }
+</style>
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid my-2">
@@ -72,6 +80,35 @@
                             </div>
                         </div>
                         <div id="subcategory-container" class="row"></div>
+
+                        <!-- Media Images Dropzone -->
+                        <div class="col-md-12">  
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h2 class="h4 mb-3">Media</h2>                              
+                                    <div id="image" class="dropzone dz-clickable">
+                                        <div class="dz-message needsclick">    
+                                            <br>Drop files here or click to upload.<br><br>
+                                        </div>
+                                    </div>
+                                </div>                                                                        
+                            </div>
+                        </div>
+                        <!-- Image Gallery -->
+                        <div class="row" id="menu-gallery" class="sortable-gallery">
+                            @foreach($categoryImages as $image)
+                                <div class="col-md-4 image-row" id="image-row-{{ $image->id }}" data-id="{{ $image->id }}">
+                                    <input type="hidden" name="image_array[]" value="{{ $image->id }}">
+                                    <div class="card">
+                                        <img src="{{ asset('uploads/category/' . $image->image) }}" class="card-img-top img-fluid" alt="">
+                                        <div class="card-body text-center">
+                                            <span class="image-number">{{ $loop->index + 1 }}</span>
+                                            <a href="javascript:void(0)" onclick="deleteImage({{ $image->id }})" class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,8 +126,20 @@
 @endsection
 
 @section('customJs')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
 <script>
+
+    $(document).ready(function () {
+        // Initialize Summernote
+        $('.summernote').summernote({
+            height: 250 // Set the editor height
+        });
+
+        $('#parent_id').on('change', function () {
+            let parent_id = $(this).val();
+            loadSubCategories(parent_id, 1);
+        });
+    });
  $(document).ready(function () {
     // Load existing subcategories based on the selected parent category
     loadExistingSubCategories("{{ $category->parent_id }}", {{ old('parent_id', $category->parent_id) ? 1 : 0 }});
@@ -188,7 +237,69 @@ $("#categoryForm").submit(function(event){
     });
 });
 
+// Dropzone setup for media images
+Dropzone.autoDiscover = false;
+const dropzone = $("#image").dropzone({
+    url: "{{ route('category-images.categoryCreate') }}",
+    maxFiles: 10,
+    paramName: 'image',
+    acceptedFiles: "image/jpeg,image/png,image/gif",
+    thumbnailWidth: 300,
+    thumbnailHeight: 275,
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function(file, response) {
+        if (response.status) {
+            const existingImages = $('#menu-gallery .image-row').map(function() {
+                return $(this).data('id');
+            }).get();
 
+            if (existingImages.includes(response.image_id)) {
+                this.removeFile(file);
+                return;
+            }
+
+            var html = `
+                <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
+                    <input type="hidden" name="image_array[]" value="${response.image_id}">
+                    <div class="card">
+                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                        <div class="card-body text-center">
+                            <span class="image-number">${$('.image-row').length + 1}</span>
+                            <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>`;
+            $("#menu-gallery").append(html);
+            updateImageNumbers();
+        }
+    },
+    complete: function(file){
+        this.removeFile(file);
+    }
+});
+
+// Initialize Sortable for image swapping
+const gallery = document.getElementById('menu-gallery');
+Sortable.create(gallery, {
+    animation: 150,
+    onEnd: function (evt) {
+        updateImageNumbers(); // Update the numbering after sorting
+    }
+});
+
+// Update the image numbers after sorting or deleting
+function updateImageNumbers() {
+    $('#menu-gallery .image-row').each(function (index, element) {
+        $(element).find('.image-number').text(index + 1);
+    });
+}
+
+function deleteImage(id){
+    $("#image-row-" + id).remove();
+    updateImageNumbers(); // Update numbers after deletion
+}
 
 </script>
 @endsection

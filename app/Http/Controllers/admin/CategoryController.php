@@ -5,10 +5,13 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\CategoryImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\SlugHelper;
 use Illuminate\Support\Facades\Auth; 
+use App\Rules\ImageSize;
+use Illuminate\Support\Facades\File;
 
 class CategoryController extends Controller
 {
@@ -29,7 +32,12 @@ class CategoryController extends Controller
             'subCategories' => $subCategories
         ]);
     }
-
+    // Fetch all category images by ID
+    public function getCategoryImages($id)
+    {
+        $categoryImages = CategoryImage::where('category_id', $id)->get();
+        return response()->json(['images' => $categoryImages]);
+    }
     public function index(Request $request)
     {
         $permissions = getAuthUserModulePermissions();
@@ -71,6 +79,8 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
+            'image_array' => 'required|array',
+            'image_array.*' => 'exists:category_images,id',
         ]);
 
         if ($validator->fails()) {
@@ -78,6 +88,28 @@ class CategoryController extends Controller
                 'status' => false,
                 'errors' => $validator->errors()
             ]);
+        }
+        // Validate image sizes for each image in the array
+        foreach ($request->image_array as $categoryImageId) {
+            $categoryImage = CategoryImage::find($categoryImageId);
+
+            if (!$categoryImage) {
+                continue; // Skip if image is not found
+            }
+
+            $imagePath = public_path('temp/' . $categoryImage->name);
+
+            // Validate image size
+            $imageSizeValidator = Validator::make(['image' => $imagePath], [
+                'image' => [new ImageSize()],
+            ]);
+
+            if ($imageSizeValidator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'errors' => ['image' => 'The image ' . $categoryImage->name . ' is not A4 size or smaller.'],
+                ]);
+            }
         }
 
         $category = new Category();
@@ -89,6 +121,31 @@ class CategoryController extends Controller
 
         $category->save();
 
+             // Save the menu images
+        foreach ($request->image_array as $categoryImageId) {
+            $categoryImage = CategoryImage::find($categoryImageId);
+
+            if (!$categoryImage) {
+                continue; // Skip if image is not found
+            }
+
+            $ext = pathinfo($categoryImage->name, PATHINFO_EXTENSION);
+            $newCategoryImage = new CategoryImage(); 
+            $newCategoryImage->category_id = $category->id;
+            $newCategoryImage->order_no = $categoryImage->order_no;
+            $newCategoryImage->name = $categoryImage->name;
+            $newCategoryImage->image = $categoryImage->image;
+            $newCategoryImage->save();
+
+            $imageName = $category->id . '-' . $newCategoryImage->id . '-' . time() . '.' . $ext;
+            $sourcePath = public_path('temp/' . $categoryImage->name);
+            $destinationPath = public_path('uploads/category/' . $imageName);
+
+            File::copy($sourcePath, $destinationPath);
+            $newCategoryImage->image = $imageName;
+            $newCategoryImage->save();
+        }
+        $request->session()->flash('success', 'Category added successfully');
         return response()->json([
             'status' => true,
             'message' => 'Category added successfully'
@@ -106,8 +163,9 @@ class CategoryController extends Controller
         $users = User::all();
         $category = Category::findOrFail($id);
         $categories = Category::whereNull('parent_id')->get();
-        
-        return view('admin.category.edit', compact('category', 'categories','users'));
+        $categoryImages = CategoryImage::where('category_id', $id)->orderBy('order_no')->get();
+
+        return view('admin.category.edit', compact('category', 'categories','users','categoryImages'));
     }
 
     public function update(Request $request, $id)
@@ -124,7 +182,9 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
-            'user_id' => 'nullable|exists:users,id', // Optional user_id validation
+            'user_id' => 'nullable|exists:users,id', 
+            'image_array' => 'required|array',
+            'image_array.*' => 'exists:category_images,id',
         ]);
 
         if ($validator->fails()) {
@@ -145,6 +205,15 @@ class CategoryController extends Controller
         }
 
         $category->save();
+        // Update the order numbers for images
+        foreach ($request->image_array as $order => $imageId) {
+            $categoryImage = CategoryImage::find($imageId);
+            if ($categoryImage) {
+                $categoryImage->order_no = $order + 1; // Update order number (starting from 1)
+                $categoryImage->save();
+            }
+        }
+        $request->session()->flash('success', 'Category updated successfully');
 
         return response()->json([
             'status' => true,
@@ -162,6 +231,15 @@ class CategoryController extends Controller
         }
 
         $category = Category::findOrFail($id);
+        // Delete associated images
+        $categoryImages = CategoryImage::where('category_id', $id)->get();
+        foreach ($categoryImages as $image) {
+            $imagePath = public_path('uploads/category/' . $image->image);
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+            $image->delete();
+        }
         $category->delete();
 
         return response()->json(['status' => true, 'message' => 'Category deleted successfully']);

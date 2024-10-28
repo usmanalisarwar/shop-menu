@@ -125,6 +125,8 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('menu-images.create');
     Route::post('/upload-menu-item-image', [MenuImageController::class, 'menuItemCreate'])
         ->name('menu-item-images.menuItemCreate');
+    Route::post('/upload-category-image', [MenuImageController::class, 'categoryCreate'])
+        ->name('category-images.categoryCreate');
     Route::get('/dashboard', [MenuImageController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('admin.dashboard');
