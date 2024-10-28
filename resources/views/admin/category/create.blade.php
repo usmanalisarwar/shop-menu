@@ -192,67 +192,68 @@
         // Add other field validations as needed
     }
 
-    // Dropzone setup for media images
-    Dropzone.autoDiscover = false;
-    const dropzone = $("#image").dropzone({
-        url: "{{ route('category-images.categoryCreate') }}",
-        maxFiles: 10,
-        paramName: 'image',
-        acceptedFiles: "image/jpeg,image/png,image/gif",
-        thumbnailWidth: 300,
-        thumbnailHeight: 275,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(file, response) {
-            if (response.status) {
-                const existingImages = $('#menu-gallery .image-row').map(function() {
-                    return $(this).data('id');
-                }).get();
+// Dropzone setup for media images
+Dropzone.autoDiscover = false;
+const dropzone = $("#image").dropzone({
+    url: "{{ route('category-images.categoryCreate') }}",
+    maxFiles: 10,
+    paramName: 'image',
+    acceptedFiles: "image/jpeg,image/png,image/gif",
+    thumbnailWidth: 300,
+    thumbnailHeight: 275,
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function(file, response) {
+        if (response.status) {
+            const existingImages = $('#menu-gallery .image-row').map(function() {
+                return $(this).data('id');
+            }).get();
 
-                if (existingImages.includes(response.image_id)) {
-                    this.removeFile(file);
-                    return;
-                }
-
-                var html = `
-                    <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
-                        <input type="hidden" name="image_array[]" value="${response.image_id}">
-                        <div class="card">
-                            <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
-                            <div class="card-body text-center">
-                                <span class="image-number">${$('.image-row').length + 1}</span>
-                                <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
-                            </div>
-                        </div>
-                    </div>`;
-                $("#menu-gallery").append(html);
-                updateImageNumbers();
+            if (existingImages.includes(response.image_id)) {
+                this.removeFile(file);
+                return;
             }
-        },
-        complete: function(file){
-            this.removeFile(file);
-        }
-    });
 
-    // Initialize Sortable for image gallery
-    Sortable.create(menu-gallery, {
-        animation: 150,
-        onEnd: function (evt) {
+            var html = `
+                <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
+                    <input type="hidden" name="image_array[]" value="${response.image_id}">
+                    <div class="card">
+                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                        <div class="card-body text-center">
+                            <span class="image-number">${$('.image-row').length + 1}</span>
+                            <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>`;
+            $("#menu-gallery").append(html);
             updateImageNumbers();
         }
-    });
+    },
+    complete: function(file){
+        this.removeFile(file);
+    }
+});
 
+// Initialize Sortable for image swapping
+const gallery = document.getElementById('menu-gallery');
+Sortable.create(gallery, {
+    animation: 150,
+    onEnd: function (evt) {
+        updateImageNumbers(); // Update the numbering after sorting
+    }
+});
+
+// Update the image numbers after sorting or deleting
+function updateImageNumbers() {
+    $('#menu-gallery .image-row').each(function (index, element) {
+        $(element).find('.image-number').text(index + 1);
+    });
+}
 
 function deleteImage(id){
     $("#image-row-" + id).remove();
     updateImageNumbers(); // Update numbers after deletion
 }
-
-    function updateImageNumbers() {
-        $('#menu-gallery .image-row').each(function(index) {
-            $(this).find('.image-number').text(index + 1);
-        });
-    }
 </script>
 @endsection
