@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\MenuItem;
 use App\Models\MenuItemImage;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ImageSize;
+use Illuminate\Support\Facades\Auth;
 
 class MenuItemController extends Controller
 {
@@ -22,7 +24,7 @@ class MenuItemController extends Controller
             abort(403, 'Unauthorized'); // Return 403 Forbidden if the user lacks permission
         }
 
-        $query = MenuItem::latest();
+        $query = MenuItem::where('user_id', Auth::id())->latest();
 
         if ($keyword = $request->get('keyword')) {
             $query->where('title', 'like', '%' . $keyword . '%');
@@ -59,6 +61,8 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:65535', // New field
+            'quantity' => 'required|integer|min:0', // New field
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -98,6 +102,9 @@ class MenuItemController extends Controller
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
+        $menuItem->description = $request->description; // Set new field
+        $menuItem->quantity = $request->quantity; // Set new field
+        $menuItem->user_id = Auth::id();
         $menuItem->save();
 
         // Save the menu images
@@ -142,7 +149,7 @@ class MenuItemController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $menuItem = MenuItem::findOrFail($id);
+        $menuItem = MenuItem::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $menuItemImages = MenuItemImage::where('menu_item_id', $id)->orderBy('order_no')->get();
         $categories = Category::all();
 
@@ -164,6 +171,8 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:65535', // New field
+            'quantity' => 'required|integer|min:0', // New field
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -174,7 +183,7 @@ class MenuItemController extends Controller
         }
 
         // Find the existing menu item
-        $menuItem = MenuItem::find($id);
+        $menuItem = MenuItem::where('id', $id)->where('user_id', Auth::id())->first();
         if (!$menuItem) {
             \Log::error('Menu Item not found: ' . $id);
             return response()->json(['status' => false, 'errors' => ['menu_item' => 'Menu item not found.']]);
@@ -184,6 +193,8 @@ class MenuItemController extends Controller
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
+        $menuItem->description = $request->description; // Set new field
+        $menuItem->quantity = $request->quantity; // Set new field
         $menuItem->save();
 
         // Update the order numbers for images
@@ -209,7 +220,7 @@ class MenuItemController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $menuItem = MenuItem::find($id);
+        $menuItem = MenuItem::where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$menuItem) {
             return response()->json(['status' => false, 'message' => 'Menu Item not found']);

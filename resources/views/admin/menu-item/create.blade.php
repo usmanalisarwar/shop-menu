@@ -2,11 +2,11 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-        width: 100%; /* Make sure the image takes the full width of the card */
-        height: auto; /* Maintain aspect ratio */
+        width: 100%;
+        height: auto;
     }
     .image-row {
-        margin-bottom: 15px; /* Add spacing between rows */
+        margin-bottom: 15px;
     }
 </style>
 
@@ -36,7 +36,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                    	 <!-- Category Field -->
+                        <!-- Category Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="category_id">Category</label>
@@ -49,6 +49,7 @@
                                 <p></p>
                             </div>
                         </div>
+                        
                         <!-- Title Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -63,6 +64,24 @@
                             <div class="mb-3">
                                 <label for="price">Price</label>
                                 <input type="number" step="0.01" name="price" id="price" class="form-control" placeholder="Price">
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <!-- Description Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="description">Description</label>
+                                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <!-- Quantity Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" min="0">
                                 <p></p>
                             </div>
                         </div>
@@ -82,7 +101,6 @@
                         </div>
                         <!-- Image Gallery -->
                         <div class="row" id="menu-gallery" class="sortable-gallery"></div>
-
                     </div>
                 </div>
             </div>
@@ -129,6 +147,16 @@ $("#menuItemForm").submit(function(event){
                     $("#price").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.price);
                 } else {
                     $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.description){
+                    $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
+                } else {
+                    $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.quantity){
+                    $("#quantity").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.quantity);
+                } else {
+                    $("#quantity").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
             }
         },
@@ -186,7 +214,7 @@ const gallery = document.getElementById('menu-gallery');
 Sortable.create(gallery, {
     animation: 150,
     onEnd: function (evt) {
-        updateImageNumbers(); // Update the numbering after sorting
+        updateImageNumbers();
     }
 });
 
@@ -199,7 +227,7 @@ function updateImageNumbers() {
 
 function deleteImage(id){
     $("#image-row-" + id).remove();
-    updateImageNumbers(); // Update numbers after deletion
+    updateImageNumbers();
 }
 
 </script>

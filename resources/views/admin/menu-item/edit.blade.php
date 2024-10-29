@@ -67,6 +67,23 @@
                                 <p></p>
                             </div>
                         </div>
+                        <!-- Description Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="description">Description</label>
+                                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ old('description', $menuItem->description) }}</textarea>
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <!-- Quantity Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" value="{{ old('quantity', $menuItem->quantity) }}" min="0">
+                                <p></p>
+                            </div>
+                        </div>
 
                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
@@ -143,6 +160,17 @@ $("#menuItemForm").submit(function(event){
                 } else {
                     $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
+                if(errors.description){
+                    $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
+                } else {
+                    $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                 if(errors.quantity){
+                    $("#quantity").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.quantity);
+                } else {
+                    $("#quantity").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+
             }
         },
         error: function(jqXHR, exception){
