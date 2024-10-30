@@ -61,8 +61,10 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:65535', // New field
-            'quantity' => 'required|integer|min:0', // New field
+            'description' => 'nullable|string|max:65535', 
+            'quantity' => 'required|integer|min:0', 
+            'pieces' => 'required|integer|min:1', 
+            'plate_type' => 'required|in:half,full', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -102,8 +104,10 @@ class MenuItemController extends Controller
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
-        $menuItem->description = $request->description; // Set new field
-        $menuItem->quantity = $request->quantity; // Set new field
+        $menuItem->description = $request->description; 
+        $menuItem->quantity = $request->quantity; 
+        $menuItem->pieces = $request->pieces; 
+        $menuItem->plate_type = $request->plate_type; 
         $menuItem->user_id = Auth::id();
         $menuItem->save();
 
@@ -171,8 +175,10 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:65535', // New field
-            'quantity' => 'required|integer|min:0', // New field
+            'description' => 'nullable|string|max:65535', 
+            'quantity' => 'required|integer|min:0',
+            'pieces' => 'required|integer|min:1', 
+            'plate_type' => 'required|in:half,full', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -193,8 +199,10 @@ class MenuItemController extends Controller
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
-        $menuItem->description = $request->description; // Set new field
-        $menuItem->quantity = $request->quantity; // Set new field
+        $menuItem->description = $request->description; 
+        $menuItem->quantity = $request->quantity; 
+        $menuItem->pieces = $request->pieces; 
+        $menuItem->plate_type = $request->plate_type; 
         $menuItem->save();
 
         // Update the order numbers for images
@@ -207,6 +215,9 @@ class MenuItemController extends Controller
         }
 
         \Log::info('Menu Item updated successfully: ', $menuItem->toArray());
+        
+        $request->session()->flash('success', 'Menu Item updated successfully');
+
 
         return response()->json(['status' => true, 'message' => 'Menu Item updated successfully']);
     }

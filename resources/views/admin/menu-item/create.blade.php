@@ -73,7 +73,6 @@
                             <div class="mb-3">
                                 <label for="description">Description</label>
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
-                                <p></p>
                             </div>
                         </div>
 
@@ -85,7 +84,27 @@
                                 <p></p>
                             </div>
                         </div>
+                        <!-- Pieces Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="pieces">Pieces</label>
+                                <input type="number" name="pieces" id="pieces" class="form-control" placeholder="Number of Pieces" min="1">
+                                <p></p>
+                            </div>
+                        </div>
 
+                        <!-- Plate Type Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="plate_type">Plate Type</label>
+                                <select name="plate_type" id="plate_type" class="form-control">
+                                    <option value="" selected disabled>Select Plate Type</option>
+                                    <option value="half">Half</option>
+                                    <option value="full">Full</option>
+                                </select>
+                                <p></p>
+                            </div>
+                        </div>
                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
                             <div class="card mb-3">
@@ -148,15 +167,20 @@ $("#menuItemForm").submit(function(event){
                 } else {
                     $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
-                if(errors.description){
-                    $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
-                } else {
-                    $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
                 if(errors.quantity){
                     $("#quantity").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.quantity);
                 } else {
                     $("#quantity").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                 if(errors.pieces){
+                    $("#pieces").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.pieces);
+                } else {
+                    $("#pieces").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                  if(errors.plate_type){
+                    $("#plate_type").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.plate_type);
+                } else {
+                    $("#plate_type").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
             }
         },

@@ -59,7 +59,7 @@
 							<td>{{ $menu->id }}</td>
 							<td>{{ $menu->title }}</td>
 							<td>{{ $menu->category->name ?? 'Uncategorized' }}</td> <!-- Show category name or default to 'Uncategorized' -->
-							<td>{{ number_format($menu->price, 2) }}</td> <!-- Format price with two decimals -->
+							<td>Rs.{{ number_format($menu->price, 2) }}</td> <!-- Format price with two decimals -->
 							<td>{{ $menu->quantity }}</td>
 							<td>
 							    @if($menu->images->isNotEmpty())

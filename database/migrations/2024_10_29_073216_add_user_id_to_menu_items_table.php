@@ -15,7 +15,9 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable()->after('id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('description')->nullable()->after('price');
-            $table->integer('quantity')->default(0)->after('description'); // Quantity of items available
+            $table->integer('quantity')->default(0)->after('description'); 
+            $table->integer('pieces')->default(1)->after('quantity');
+            $table->enum('plate_type', ['half', 'full'])->default('full')->after('pieces');
         });
     }
 
@@ -29,6 +31,8 @@ return new class extends Migration
             $table->dropColumn('user_id');
             $table->dropColumn('description');
             $table->dropColumn('quantity');
+            $table->dropColumn('pieces');
+            $table->dropColumn('plate_type'); 
         });
     }
 };
