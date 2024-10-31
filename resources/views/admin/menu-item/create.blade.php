@@ -76,36 +76,54 @@
                             </div>
                         </div>
 
-                        <!-- Quantity Field -->
+                        <!-- Availability Status Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="quantity">Quantity</label>
-                                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" min="0">
-                                <p></p>
-                            </div>
-                        </div>
-                        <!-- Pieces Field -->
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="pieces">Pieces</label>
-                                <input type="number" name="pieces" id="pieces" class="form-control" placeholder="Number of Pieces" min="1">
-                                <p></p>
+                                <label for="availability_status">Availability Status</label>
+                                <select name="availability_status" id="availability_status" class="form-control">
+                                    <option value="1" selected>Available</option>
+                                    <option value="0">Not Available</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Plate Type Field -->
+                        <!-- Preparation Time Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="plate_type">Plate Type</label>
-                                <select name="plate_type" id="plate_type" class="form-control">
-                                    <option value="" selected disabled>Select Plate Type</option>
-                                    <option value="half">Half</option>
-                                    <option value="full">Full</option>
-                                </select>
-                                <p></p>
+                                <label for="prep_time">Preparation Time (minutes)</label>
+                                <input type="number" name="prep_time" id="prep_time" class="form-control" placeholder="e.g., 15">
                             </div>
                         </div>
-                        <!-- Media Images Dropzone -->
+
+                        <!-- Discount Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="discount">Discount (%)</label>
+                                <input type="number" step="0.01" name="discount" id="discount" class="form-control" placeholder="e.g., 10">
+                            </div>
+                        </div>
+
+                        <!-- Size Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="size">Size</label>
+                                <select name="size" id="size" class="form-control">
+                                    <option value="" selected disabled>Select Size</option>
+                                    <option value="Small">Small</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Large">Large</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Order Count Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="order_count">Order Count</label>
+                                <input type="number" name="order_count" id="order_count" class="form-control" value="0">
+                            </div>
+                        </div>
+                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
                             <div class="card mb-3">
                                 <div class="card-body">
@@ -167,21 +185,7 @@ $("#menuItemForm").submit(function(event){
                 } else {
                     $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
-                if(errors.quantity){
-                    $("#quantity").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.quantity);
-                } else {
-                    $("#quantity").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
-                 if(errors.pieces){
-                    $("#pieces").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.pieces);
-                } else {
-                    $("#pieces").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
-                  if(errors.plate_type){
-                    $("#plate_type").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.plate_type);
-                } else {
-                    $("#plate_type").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
+
             }
         },
         error: function(jqXHR, exception){

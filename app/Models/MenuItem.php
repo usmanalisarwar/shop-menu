@@ -9,7 +9,7 @@ class MenuItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id ','category_id', 'title', 'price','description','quantity','pieces','plate_type'];
+    protected $fillable = ['user_id ','category_id', 'title', 'price','description','availability_status','prep_time','discount','size','order_count'];
 
     public function category()
     {

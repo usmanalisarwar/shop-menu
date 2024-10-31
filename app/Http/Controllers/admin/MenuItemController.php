@@ -61,10 +61,12 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:65535', 
-            'quantity' => 'required|integer|min:0', 
-            'pieces' => 'required|integer|min:1', 
-            'plate_type' => 'required|in:half,full', 
+            'description' => 'nullable|string|max:65535',
+            'availability_status' => 'boolean',
+            'prep_time' => 'integer|min:0',
+            'discount' => 'numeric|min:0|max:100',
+            'size' => 'nullable|string|max:50',
+            'order_count' => 'integer|min:0', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -104,10 +106,12 @@ class MenuItemController extends Controller
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
-        $menuItem->description = $request->description; 
-        $menuItem->quantity = $request->quantity; 
-        $menuItem->pieces = $request->pieces; 
-        $menuItem->plate_type = $request->plate_type; 
+        $menuItem->description = $request->description;
+        $menuItem->availability_status = $request->get('availability_status', true);
+        $menuItem->prep_time = $request->get('prep_time', 0);
+        $menuItem->discount = $request->get('discount', 0);
+        $menuItem->size = $request->get('size');
+        $menuItem->order_count = $request->get('order_count', 0); 
         $menuItem->user_id = Auth::id();
         $menuItem->save();
 
@@ -175,10 +179,12 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:65535', 
-            'quantity' => 'required|integer|min:0',
-            'pieces' => 'required|integer|min:1', 
-            'plate_type' => 'required|in:half,full', 
+            'description' => 'nullable|string|max:65535',
+            'availability_status' => 'boolean',
+            'prep_time' => 'integer|min:0',
+            'discount' => 'numeric|min:0|max:100',
+            'size' => 'nullable|string|max:50',
+            'order_count' => 'integer|min:0', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -199,10 +205,12 @@ class MenuItemController extends Controller
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
-        $menuItem->description = $request->description; 
-        $menuItem->quantity = $request->quantity; 
-        $menuItem->pieces = $request->pieces; 
-        $menuItem->plate_type = $request->plate_type; 
+        $menuItem->description = $request->description;
+        $menuItem->availability_status = $request->get('availability_status', true);
+        $menuItem->prep_time = $request->get('prep_time', 0);
+        $menuItem->discount = $request->get('discount', 0);
+        $menuItem->size = $request->get('size');
+        $menuItem->order_count = $request->get('order_count', 0); 
         $menuItem->save();
 
         // Update the order numbers for images

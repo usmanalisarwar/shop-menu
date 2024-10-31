@@ -15,9 +15,11 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable()->after('id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('description')->nullable()->after('price');
-            $table->integer('quantity')->default(0)->after('description'); 
-            $table->integer('pieces')->default(1)->after('quantity');
-            $table->enum('plate_type', ['half', 'full'])->default('full')->after('pieces');
+            $table->boolean('availability_status')->default(true)->after('description'); // Available or not  
+            $table->integer('prep_time')->default(0)->after('availability_status'); // Preparation time in minutes  
+            $table->decimal('discount', 5, 2)->default(0)->after('prep_time'); // Discount amount (e.g., 10% discount)  
+            $table->string('size')->nullable()->after('discount'); // Small, Medium, Large, etc.  
+            $table->unsignedInteger('order_count')->default(0)->after('size'); // Number of times item has been ordered   
         });
     }
 
@@ -30,9 +32,12 @@ return new class extends Migration
             $table->dropForeign(['user_id']);
             $table->dropColumn('user_id');
             $table->dropColumn('description');
-            $table->dropColumn('quantity');
-            $table->dropColumn('pieces');
-            $table->dropColumn('plate_type'); 
+            $table->dropColumn('availability_status');
+            $table->dropColumn('prep_time');
+            $table->dropColumn('discount');
+            $table->dropColumn('size');
+            $table->dropColumn('order_count'); 
+ 
         });
     }
 };
