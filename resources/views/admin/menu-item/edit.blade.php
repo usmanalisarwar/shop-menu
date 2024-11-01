@@ -3,11 +3,11 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-        width: 100%; 
-        height: auto; 
+        width: 100%; /* Make sure the image takes the full width of the card */
+        height: auto; /* Maintain aspect ratio */
     }
     .image-row {
-        margin-bottom: 15px; 
+        margin-bottom: 15px; /* Add spacing between rows */
     }
 </style>
 
