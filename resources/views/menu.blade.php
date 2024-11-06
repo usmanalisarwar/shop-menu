@@ -382,22 +382,16 @@
     <div class="owl-carousel owl-theme">
         
    
-    <div class="item" data-target="popular"><h4 class="black">Popular</h4></div>
-    <div class="item" data-target="cakes"><h4 class="black">Cakes</h4></div>
-    <div class="item" data-target="fish"><h4 class="black">Fish</h4></div>
-    <div class="item" data-target="premium-desserts"><h4 class="black">Premium Desserts</h4></div>
-    
-    <div class="item" data-target="pizzas"><h4 class="black">Pizzas</h4></div>
-    <div class="item" data-target="peri-peri-chicken"><h4 class="black">Peri Peri Chicken</h4></div>
-    <div class="item" data-target="gril-fish"><h4 class="black">Gril Fish</h4></div>
-    <div class="item" data-target="chicken-tikka"><h4 class="black">Chicken Tikka</h4></div>
-    
-    
-    
-    <!-- <div class="item"><h4 class="black">Kabab</h4></div>
-    <div class="item"><h4 class="black">Mali Boti</h4></div>
-    <div class="item"><h4 class="black">Zinger burger</h4></div> -->
-
+        <div class="item" data-target="popular"><h4 class="black">Popular</h4></div>
+        <div class="item" data-target="cakes"><h4 class="black">Cakes</h4></div>
+        <div class="item" data-target="fish"><h4 class="black">Fish</h4></div>
+        <div class="item" data-target="premium-desserts"><h4 class="black">Premium Desserts</h4></div>
+        
+        <div class="item" data-target="pizzas"><h4 class="black">Pizzas</h4></div>
+        <div class="item" data-target="peri-peri-chicken"><h4 class="black">Peri Peri Chicken</h4></div>
+        <div class="item" data-target="gril-fish"><h4 class="black">Gril Fish</h4></div>
+        <div class="item" data-target="chicken-tikka"><h4 class="black">Chicken Tikka</h4></div>
+    </div>
 
 </div>
 <!-- </div> -->

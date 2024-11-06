@@ -101,7 +101,7 @@ class MenuItemController extends Controller
             }
         }
 
-        // Create The New Menu Item
+        // Create the new menu item
         $menuItem = new MenuItem();
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
@@ -201,7 +201,7 @@ class MenuItemController extends Controller
             return response()->json(['status' => false, 'errors' => ['menu_item' => 'Menu item not found.']]);
         }
 
-        // Update The Menu Item Fields
+        // Update the menu item fields
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->price = $request->price;
