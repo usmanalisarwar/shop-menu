@@ -8,6 +8,7 @@ use App\Http\Controllers\admin\MenuItemController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\PriceManagementController;
 use App\Http\Controllers\front\HomeController;
 use App\Http\Controllers\front\ContactController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -157,6 +158,26 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('user', [UserController::class,'store'])->name('users.add')->middleware(['checkRolePermission:users,add-new-user']);
     Route::post('user-update', [UserController::class,'update'])->name('users.edit')->middleware(['checkRolePermission:users,edit-user']);
     Route::post('user-delete', [UserController::class,'destroy'])->name('users.delete')->middleware(['checkRolePermission:users,delete-user']);
+
+    // Price Management routes (already set up)
+    Route::get('price-managements', [PriceManagementController::class, 'index'])
+        ->name('price-managements.index')
+        ->middleware(['checkRolePermission:price-managements,read-price-management']);
+    Route::get('price-managements/create', [PriceManagementController::class, 'create'])
+        ->name('price-managements.create')
+        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
+    Route::post('price-managements', [PriceManagementController::class, 'store'])
+        ->name('price-managements.store')
+        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
+     Route::get('price-managements/{priceMangement}/edit', [PriceManagementController::class, 'edit'])
+        ->name('price-managements.edit')
+        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
+    Route::post('price-managements/{priceMangement}', [PriceManagementController::class, 'update'])
+        ->name('price-managements.update')
+        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
+    Route::delete('price-managements/{id}', [PriceManagementController::class, 'destroy'])
+    ->name('price-managements.delete')
+    ->middleware(['checkRolePermission:price-managements,delete-price-management']);
 });
 
 

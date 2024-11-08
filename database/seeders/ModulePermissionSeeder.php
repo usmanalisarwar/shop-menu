@@ -86,6 +86,19 @@ class ModulePermissionSeeder extends Seeder
                     'Delete Menu Item',
                 ],
             ],
+             [
+                'name'=>'Price Management',
+                'url'=>'price-managements',
+                'active'=>'price-management',
+                'icon'=>'tag',
+                'permissions'=>[
+                    'Read Price Management',
+                    'Add New Price Management',
+                    'Edit Price Management',
+                    'Delete Price Management',
+                ],
+            ],
+
         ];
         foreach ($modulesAndPermissions as $modulesAndPermission){
             $module = Module::where('name',$modulesAndPermission['name'])->where('url',$modulesAndPermission['url'])->first();
