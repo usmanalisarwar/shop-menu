@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\Category;
+use App\Models\MenuItem;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MenuGenerateController extends Controller
@@ -24,17 +26,26 @@ class MenuGenerateController extends Controller
         return view('qrcode', compact('qrCode','menu','menuImage'));
     }
 
-    // Method to show the book (PDF view)
     public function showBook($slug)
     {
-        // Example: Find the book by slug from the database
+        // Find the menu by slug
         $menu = Menu::where('slug', $slug)->first();
 
-        // Check if the book exists
+        // Check if the menu exists
         if (!$menu) {
             return abort(404, 'Menu not found');
         }
+
+        // Fetch related MenuItems and images for categories
+        $categories = Category::with('menuItems.images')->get();
+
+        // PDF file path for menu
         $file = asset("{$menu->pdf_path}");
-        return view('menu', compact('file','menu'));
+
+        // Pass data to the view
+        return view('menu', compact('file', 'menu', 'categories'));
     }
+
+
+
 }

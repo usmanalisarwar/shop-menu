@@ -66,8 +66,8 @@
                                     <input type="number" name="order_nos[]" class="form-control" value="{{ $item['order_no'] }}" placeholder="Order No.">
                                 </div>
                                 <div class="col-md-5">
-                                    <label for="price">Price</label>
-                                    <input type="number" name="prices[]" class="form-control" value="{{ $item['price'] }}" placeholder="Price">
+                                    <label for="label">Label</label>
+                                    <input type="text" name="label[]" class="form-control" value="{{ $item['label'] }}" placeholder="Label">
                                 </div>
                                 <div class="col-md-2 d-flex align-items-end">
                                     <button type="button" class="btn btn-success add-entry">+</button>
@@ -109,8 +109,8 @@
                             <input type="number" name="order_nos[]" class="form-control" placeholder="Order No.">
                         </div>
                         <div class="col-md-5">
-                            <label for="price">Price</label>
-                            <input type="number" name="prices[]" class="form-control" placeholder="Price">
+                            <label for="label">Label</label>
+                            <input type="text" name="label[]" class="form-control" placeholder="label">
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
                             <button type="button" class="btn btn-success add-entry">+</button>
@@ -143,10 +143,10 @@
                 let priceData = [];
                 $('#dynamicFieldsContainer .dynamic-entry').each(function() {
                     let order_no = $(this).find('input[name="order_nos[]"]').val();
-                    let price = $(this).find('input[name="prices[]"]').val();
+                    let label = $(this).find('input[name="label[]"]').val();
 
-                    if (order_no && price) {
-                        priceData.push({ order_no: order_no, price: price });
+                    if (order_no && label) {
+                        priceData.push({ order_no: order_no, label: label });
                     }
                 });
 
@@ -157,6 +157,7 @@
                         _token: '{{ csrf_token() }}',
                         _method: 'POST',
                         label: $('#label').val(),
+                        description: $('#description').val(),
                         price_type: $('#price_type').val(),
                         price_data: JSON.stringify(priceData)
                     },

@@ -59,60 +59,6 @@
                             </div>
                         </div>
 
-                        <!-- Price Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="price">Price</label>
-                                <input type="number" step="0.01" name="price" id="price" class="form-control" placeholder="Price">
-                                <p></p>
-                            </div>
-                        </div>
-                        <!-- Availability Status Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="availability_status">Availability Status</label>
-                                <select name="availability_status" id="availability_status" class="form-control">
-                                    <option value="1" selected>Available</option>
-                                    <option value="0">Not Available</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Preparation Time Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="prep_time">Preparation Time (minutes)</label>
-                                <input type="number" name="prep_time" id="prep_time" class="form-control" placeholder="e.g., 15">
-                            </div>
-                        </div>
-
-                        <!-- Discount Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="discount">Discount (%)</label>
-                                <input type="number" step="0.01" name="discount" id="discount" class="form-control" placeholder="e.g., 10">
-                            </div>
-                        </div>
-                        <!-- Size Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="size">Size</label>
-                                <select name="size" id="size" class="form-control">
-                                    <option value="" selected disabled>Select Size</option>
-                                    <option value="Small">Small</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="Large">Large</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Order Count Field -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="order_count">Order Count</label>
-                                <input type="number" name="order_count" id="order_count" class="form-control" value="0">
-                            </div>
-                        </div>
                         <!-- Description Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
@@ -120,7 +66,22 @@
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
                             </div>
                         </div>
+                        <!-- Price Type Dropdown -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="price_type">Price Type</label>
+                                <select name="price_type" id="price_type" class="form-control">
+                                    <option value="">Select Price Type</option>
+                                    <option value="{{ App\Enums\PriceTypeEnum::Quantity->value }}">Quantity</option>
+                                    <option value="{{ App\Enums\PriceTypeEnum::Size->value }}">Size</option>
+                                </select>
+                            </div>
+                        </div>
 
+                        <!-- Dynamic Fields Container -->
+                        <div id="dynamicFieldsContainer" class="col-md-12">
+                            <!-- Dynamic fields will be appended here -->
+                        </div>
                          <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
                             <div class="card mb-3">
@@ -153,44 +114,112 @@
 @section('customJs')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
-        $("#menuItemForm").submit(function(event){
-            event.preventDefault();
-            var element = $(this);
-            $("button[type=submit]").prop('disabled',true);
-            $.ajax({
-                url: '{{ route("menu-items.store") }}',
-                type: 'POST',
-                data: element.serialize(),
-                dataType: 'json',
-                success: function(response){
-                    $("button[type=submit]").prop('disabled',false);
-                    if(response.status){
-                        window.location.href = "{{ route('menu-items.index') }}";
-                    } else {
-                        var errors = response.errors;
-                        if(errors.title){
-                            $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
-                        } else {
-                            $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                        }
-                        if(errors.category_id){
-                            $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
-                        } else {
-                            $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                        }
-                        if(errors.price){
-                            $("#price").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.price);
-                        } else {
-                            $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                        }
+ $(document).ready(function() {
+    // Handle price type change
+    $('#price_type').change(function() {
+        $('#dynamicFieldsContainer').empty(); // Clear previous fields
+        addFields();
+        updateTotalPrice(); // Update the total price when price type changes
+    });
 
-                    }
-                },
-                error: function(jqXHR, exception){
-                    console.log("Something went wrong");
-                }
-            });
+    // Add fields function
+    function addFields() {
+        $('#dynamicFieldsContainer').append(`
+            <div class="row mb-3 dynamic-entry">
+                <div class="col-md-5">
+                    <label for="order_no">Order No.</label>
+                    <input type="number" name="order_nos[]" class="form-control" placeholder="Order No.">
+                </div>
+                <div class="col-md-5">
+                    <label for="price">Price</label>
+                    <input type="number" name="prices[]" class="form-control" placeholder="Price" oninput="updateTotalPrice()">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success add-entry">+</button>
+                </div>
+            </div>
+        `);
+    }
+
+    // Event delegation for dynamic add-entry button
+    $('#dynamicFieldsContainer').on('click', '.add-entry', function() {
+        let parent = $(this).closest('.dynamic-entry');
+        let newEntry = parent.clone();
+        newEntry.find('input').val(''); // Clear inputs in the cloned row
+        newEntry.find('.add-entry').removeClass('btn-success add-entry').addClass('btn-danger remove-entry').text('-');
+        $('#dynamicFieldsContainer').append(newEntry);
+        updateTotalPrice(); // Update the total price after adding a new entry
+    });
+
+    // Event delegation for dynamic remove-entry button
+    $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
+        $(this).closest('.dynamic-entry').remove();
+        updateTotalPrice(); // Update the total price after removing an entry
+    });
+
+    // Function to calculate the total price
+    function updateTotalPrice() {
+        let totalPrice = 0;
+        // Sum up all the prices entered in the dynamic fields
+        $('#dynamicFieldsContainer .dynamic-entry').each(function() {
+            let price = $(this).find('input[name="prices[]"]').val();
+            if (price) {
+                totalPrice += parseFloat(price);
+            }
         });
+        // Update the "Prices" field with the total price
+        $('#prices').val(totalPrice.toFixed(2)); // Display total price rounded to 2 decimal places
+    }
+
+    // Handle form submission with JSON data
+    $("#menuItemForm").submit(function(event) {
+        event.preventDefault();
+        var element = $(this);
+        $("button[type=submit]").prop('disabled', true);
+
+        // Collect data in JSON format
+        let priceData = [];
+        $('#dynamicFieldsContainer .dynamic-entry').each(function() {
+            let order_no = $(this).find('input[name="order_nos[]"]').val();
+            let price = $(this).find('input[name="prices[]"]').val();
+
+            if (order_no && price) {
+                priceData.push({ order_no: order_no, price: price });
+            }
+        });
+        var imageData = [];
+        $("#menu-gallery .image-row").each(function() {
+            imageData.push($(this).data('id'));
+        });
+
+        $.ajax({
+            url: '{{ route("menu-items.store") }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                category_id: $('#category_id').val(),
+                title: $('#title').val(),
+                description: $('#description').val(),
+                price_type: $('#price_type').val(),
+                price_data: JSON.stringify(priceData),
+                image_array: imageData
+            },
+            dataType: 'json',
+            success: function(response) {
+                $("button[type=submit]").prop('disabled', false);
+                if (response.status) {
+                    window.location.href = "{{ route('menu-items.index') }}";
+                } else {
+                    // Handle validation errors (e.g., label errors)
+                }
+            },
+            error: function(jqXHR, exception) {
+                console.log("Something went wrong");
+            }
+        });
+    });
+});
+
 
         // Dropzone setup for media images
         Dropzone.autoDiscover = false;

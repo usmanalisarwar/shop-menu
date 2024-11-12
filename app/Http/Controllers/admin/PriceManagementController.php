@@ -91,7 +91,7 @@ class PriceManagementController extends Controller
         $priceManagement->price_type = $request->price_type;
         $priceManagement->data = json_encode($priceData);  // Ensure price_data is stored as JSON
         $priceManagement->user_id = Auth::id();
-        $priceManagement->description = $request->description; // Assign description
+        $priceManagement->description = $request->description; 
         $priceManagement->save();
 
         $request->session()->flash('success', 'Price Management added successfully');
@@ -183,8 +183,8 @@ class PriceManagementController extends Controller
         // Update the PriceManagement record
         $priceManagement->label = $request->label;
         $priceManagement->price_type = $request->price_type;
-        $priceManagement->data = json_encode($priceData);  // Ensure price_data is stored as JSON
-        $priceManagement->description = $request->description; // Update description
+        $priceManagement->data = json_encode($priceData);  
+        $priceManagement->description = $request->description; 
         $priceManagement->save();
 
         $request->session()->flash('success', 'Price Management updated successfully');

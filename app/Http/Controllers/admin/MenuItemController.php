@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ImageSize;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\PriceTypeEnum;
+use Illuminate\Validation\Rule;
 
 class MenuItemController extends Controller
 {
@@ -60,13 +62,8 @@ class MenuItemController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:65535',
-            'availability_status' => 'boolean',
-            'prep_time' => 'integer|min:0',
-            'discount' => 'numeric|min:0|max:100',
-            'size' => 'nullable|string|max:50',
-            'order_count' => 'integer|min:0', 
+            'price_type' => ['required', 'string', Rule::in(array_column(PriceTypeEnum::cases(), 'value'))],
+            'description' => 'nullable|string|max:65535', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -100,18 +97,33 @@ class MenuItemController extends Controller
                 ]);
             }
         }
+        $existingRecords = MenuItem::get();
+           // Ensure price_data is an array, even if it's a JSON string
+        $priceData = is_array($request->price_data) ? $request->price_data : json_decode($request->price_data, true);
+
+        // Check for duplicate order_no in existing records
+        foreach ($priceData as $newData) {
+            foreach ($existingRecords as $record) {
+                $existingData = json_decode($record->data, true);
+
+                foreach ($existingData as $existingItem) {
+                    if (isset($existingItem['order_no']) && $existingItem['order_no'] == $newData['order_no']) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Order No. {$newData['order_no']} is already stored in the database.",
+                        ]);
+                    }
+                }
+            }
+        }
 
         // Create the new menu item
         $menuItem = new MenuItem();
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
-        $menuItem->price = $request->price;
+        $menuItem->price_type = $request->price_type;
+        $menuItem->data = json_encode($priceData);  
         $menuItem->description = $request->description;
-        $menuItem->availability_status = $request->get('availability_status', true);
-        $menuItem->prep_time = $request->get('prep_time', 0);
-        $menuItem->discount = $request->get('discount', 0);
-        $menuItem->size = $request->get('size');
-        $menuItem->order_count = $request->get('order_count', 0); 
         $menuItem->user_id = Auth::id();
         $menuItem->save();
 
@@ -178,13 +190,8 @@ class MenuItemController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
+            'price_type' => ['required', 'string', Rule::in(array_column(PriceTypeEnum::cases(), 'value'))],
             'description' => 'nullable|string|max:65535',
-            'availability_status' => 'boolean',
-            'prep_time' => 'integer|min:0',
-            'discount' => 'numeric|min:0|max:100',
-            'size' => 'nullable|string|max:50',
-            'order_count' => 'integer|min:0', 
             'image_array' => 'required|array',
             'image_array.*' => 'exists:menu_item_images,id',
         ]);
@@ -200,17 +207,32 @@ class MenuItemController extends Controller
             \Log::error('Menu Item not found: ' . $id);
             return response()->json(['status' => false, 'errors' => ['menu_item' => 'Menu item not found.']]);
         }
+     // Ensure price_data is an array, even if it's a JSON string
+        $priceData = is_array($request->price_data) ? $request->price_data : json_decode($request->price_data, true);
 
+        // Check for duplicate order_no in existing records
+        $existingRecords = MenuItem::where('id', '!=', $id)->get();
+
+        foreach ($priceData as $newData) {
+            foreach ($existingRecords as $record) {
+                $existingData = json_decode($record->data, true);
+
+                foreach ($existingData as $existingItem) {
+                    if (isset($existingItem['order_no']) && $existingItem['order_no'] == $newData['order_no']) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Order No. {$newData['order_no']} is already stored in the database.",
+                        ]);
+                    }
+                }
+            }
+        }
         // Update the menu item fields
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
-        $menuItem->price = $request->price;
-        $menuItem->description = $request->description;
-        $menuItem->availability_status = $request->get('availability_status', true);
-        $menuItem->prep_time = $request->get('prep_time', 0);
-        $menuItem->discount = $request->get('discount', 0);
-        $menuItem->size = $request->get('size');
-        $menuItem->order_count = $request->get('order_count', 0); 
+        $menuItem->price_type = $request->price_type;
+        $menuItem->data = json_encode($priceData); 
+        $menuItem->description = $request->description; 
         $menuItem->save();
 
         // Update the order numbers for images
