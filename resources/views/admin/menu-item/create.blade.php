@@ -172,7 +172,7 @@
         // Collect data in JSON format
         let priceData = [];
         $('#dynamicFieldsContainer .dynamic-entry').each(function() {
-            let label = $(this).find('select[name="labels[]"]').val(); // Make sure you are fetching the label correctly
+            let label = $(this).find('select[name="labels[]"]').val();
             let price = $(this).find('input[name="prices[]"]').val();
 
             if (label && price) {
