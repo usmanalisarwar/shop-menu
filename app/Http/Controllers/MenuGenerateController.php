@@ -39,13 +39,19 @@ class MenuGenerateController extends Controller
         // Fetch related MenuItems and images for categories
         $categories = Category::with('menuItems.images')->get();
 
+        // Decode price data for each menu item
+        foreach ($categories as $category) {
+            foreach ($category->menuItems as $menuItem) {
+                $menuItem->price_data = json_decode($menuItem->data, true);  // Decode the price data
+            }
+        }
+
+
         // PDF file path for menu
         $file = asset("{$menu->pdf_path}");
 
         // Pass data to the view
         return view('menu', compact('file', 'menu', 'categories'));
     }
-
-
 
 }

@@ -142,9 +142,6 @@
 .item.active .black {
     color: #FEA116; /* Active text color */
 }
-    
-
-/* section 2  pic and menu mean popular&fish */
 
 
 
@@ -257,67 +254,34 @@
     justify-content: space-between ;
    }
 
-@media (max-width: 700px) {
-    .home {
-        padding: 1rem;
-        padding-top: 60px;
-        padding-bottom: 60px;
-        background-size: cover;
+      .col-lg-3 {
+        /* flex: 0 0 auto; */
+        width: 33%;
+        padding:0px 80px;
     }
-    .img-svg{
-        width:95%;
-    }
-
-    .main-home {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .home-inner-content {
-        flex: 1 1 100%;
-    }
-    .home-text-content {
-        padding: 0 2rem;
-    }
-    .home-text-content p {
-        padding-right: 20px;
-        font-size: 16px;
-    }
-    .text-importent {
-        font-size: 40px;
-        margin-top:55px;
-    }
-    .menu {
-        max-width: 100%;
-        padding: 20px;
-    }
-    .menu h2 {
-        font-size: 20px;
-    }
-    .menu p {
-        font-size: 12px;
-    }
-    .menu-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 10px;
-    }
-    .owl-carousel .owl-stage-outer {
-        margin: 0 96px;
-    }
-    .owl-theme .owl-nav {
-        margin: -53px 0;
-    }
-
-    .owl-carousel.owl-loaded {
-    display: block;
-    padding-top: 11px;
-    padding-bottom: 78px;
-    }
-
+    .menu-item .menu-image {
+    display: inline-block;
+    margin: 10px;
+    text-align: center;
 }
+
+.menu-item .menu-image img {
+    width: 200px;
+    height: auto;
+}
+
+.menu-item .label {
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.menu-item .price {
+    color: green;
+    margin-top: 5px;
+}
+
 </style>
     
-</style>
-
 
 </head>
 <body>
@@ -379,27 +343,38 @@
 
     <!-- <div><input type="text" placeholder="Search in menu"></div> -->
 
- <div class="owl-carousel owl-theme">
-    @foreach ($categories as $category)
-        <div class="item" data-target="{{ $category->slug }}">
-            <h4 class="black">{{ $category->name }}</h4>
-        </div>
-    @endforeach
-</div>
-
+     <div class="owl-carousel owl-theme">
+        @foreach ($categories as $category)
+            <div class="item" data-target="{{ $category->slug }}">
+                <h4 class="black">{{ $category->name }}</h4>
+            </div>
+        @endforeach
+    </div>
 
 </div>
 
     <section class="menu">
-
         <div class="menu-grid">
             @foreach($categories as $category)
                 @foreach($category->menuItems as $menuItem)
                     <div class="menu-item">
-                        <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
                         <div class="item-details">
-                            <h3>{{ $menuItem->title }}</h3>
-                            <p class="price">Rs.{{ $menuItem->prices }}</p>
+                            
+                            <!-- Loop through images and price data together -->
+                            @foreach($menuItem->images as $index => $image)
+                                @if(isset($menuItem->price_data[$index]))
+                                    <div class="menu-image">
+                                        <!-- Display Image -->
+                                        <img src="{{ asset('uploads/menuItem/' . $image->image) }}" alt="{{ $menuItem->title }}" style="width:200px;">
+
+                                        <!-- Display corresponding Label and Price -->
+                                        <p class="label">{{ $menuItem->price_data[$index]['label'] }}</p>
+                                        <p class="price">Rs.{{ $menuItem->price_data[$index]['price'] }}</p>
+                                    </div>
+                                @endif
+                            @endforeach
+                            
+                            <!-- Description of the menu item -->
                             <p class="description">{{ $menuItem->description }}</p>
                         </div>
                     </div>
@@ -407,9 +382,6 @@
             @endforeach
         </div>
     </section>
-
-
-
 
 
            <!-- Footer Start -->

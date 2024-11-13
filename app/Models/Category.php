@@ -35,5 +35,5 @@ class Category extends Model
     {
         return $this->hasMany(CategoryImage::class, 'category_id');
     }
-
+ 
 }
