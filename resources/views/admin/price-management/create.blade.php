@@ -82,7 +82,7 @@
     // Handle price type change
     $('#price_type').change(function() {
         $('#dynamicFieldsContainer').empty(); // Clear previous fields
-        addFields();
+        addFields(); // Add initial field with both add and remove buttons
     });
 
     // Add fields function
@@ -99,7 +99,8 @@
                     <input type="text" name="labels[]" class="form-control" placeholder="Label">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-success add-entry">+</button>
+                    <button type="button" class="btn btn-success add-entry mr-2">+</button>
+                    <button type="button" class="btn btn-danger remove-entry">-</button>
                 </div>
             </div>
         `);
@@ -111,7 +112,6 @@
         let newEntry = parent.clone();
         newEntry.find('input').val(''); // Clear inputs in the cloned row
         newEntry.find('.order-no-error').hide(); // Hide error message in cloned row
-        newEntry.find('.add-entry').removeClass('btn-success add-entry').addClass('btn-danger remove-entry').text('-');
         $('#dynamicFieldsContainer').append(newEntry);
     });
 
@@ -194,6 +194,7 @@
         });
     });
 });
+
 
 </script>
 

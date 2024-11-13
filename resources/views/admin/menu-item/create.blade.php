@@ -114,12 +114,12 @@
 @section('customJs')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
- $(document).ready(function() {
+        $(document).ready(function() {
     // Handle price type change
     $('#price_type').change(function() {
         $('#dynamicFieldsContainer').empty(); // Clear previous fields
         addFields();
-        updateTotalPrice(); // Update the total price when price type changes
+       
     });
 
     // Add fields function
@@ -127,15 +127,22 @@
         $('#dynamicFieldsContainer').append(`
             <div class="row mb-3 dynamic-entry">
                 <div class="col-md-5">
-                    <label for="order_no">Order No.</label>
-                    <input type="number" name="order_nos[]" class="form-control" placeholder="Order No.">
+                    <label for="label">Label.</label>
+                     <select name="labels[]" id="label" class="form-control">
+                        <option value="" selected disabled>Select Label</option>
+                            @foreach($labels as $label)
+                                <option value="{{ $label->label }}">{{ $label->label }}</option>
+                            @endforeach
+
+                    </select>
                 </div>
                 <div class="col-md-5">
                     <label for="price">Price</label>
-                    <input type="number" name="prices[]" class="form-control" placeholder="Price" oninput="updateTotalPrice()">
+                    <input type="number" name="prices[]" class="form-control" placeholder="Price">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-success add-entry">+</button>
+                    <button type="button" class="btn btn-danger remove-entry ml-2">-</button>
                 </div>
             </div>
         `);
@@ -146,32 +153,17 @@
         let parent = $(this).closest('.dynamic-entry');
         let newEntry = parent.clone();
         newEntry.find('input').val(''); // Clear inputs in the cloned row
-        newEntry.find('.add-entry').removeClass('btn-success add-entry').addClass('btn-danger remove-entry').text('-');
         $('#dynamicFieldsContainer').append(newEntry);
-        updateTotalPrice(); // Update the total price after adding a new entry
+       
     });
 
     // Event delegation for dynamic remove-entry button
     $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
         $(this).closest('.dynamic-entry').remove();
-        updateTotalPrice(); // Update the total price after removing an entry
+       
     });
 
-    // Function to calculate the total price
-    function updateTotalPrice() {
-        let totalPrice = 0;
-        // Sum up all the prices entered in the dynamic fields
-        $('#dynamicFieldsContainer .dynamic-entry').each(function() {
-            let price = $(this).find('input[name="prices[]"]').val();
-            if (price) {
-                totalPrice += parseFloat(price);
-            }
-        });
-        // Update the "Prices" field with the total price
-        $('#prices').val(totalPrice.toFixed(2)); // Display total price rounded to 2 decimal places
-    }
-
-    // Handle form submission with JSON data
+        // Handle form submission with JSON data
     $("#menuItemForm").submit(function(event) {
         event.preventDefault();
         var element = $(this);
@@ -180,18 +172,20 @@
         // Collect data in JSON format
         let priceData = [];
         $('#dynamicFieldsContainer .dynamic-entry').each(function() {
-            let order_no = $(this).find('input[name="order_nos[]"]').val();
+            let label = $(this).find('select[name="labels[]"]').val(); // Make sure you are fetching the label correctly
             let price = $(this).find('input[name="prices[]"]').val();
 
-            if (order_no && price) {
-                priceData.push({ order_no: order_no, price: price });
+            if (label && price) {
+                priceData.push({ label: label, price: price }); // Store label and price as an object
             }
         });
+
         var imageData = [];
         $("#menu-gallery .image-row").each(function() {
-            imageData.push($(this).data('id'));
+            imageData.push($(this).data('id')); // Collect image IDs
         });
 
+        // Now send the collected data
         $.ajax({
             url: '{{ route("menu-items.store") }}',
             type: 'POST',
@@ -201,7 +195,7 @@
                 title: $('#title').val(),
                 description: $('#description').val(),
                 price_type: $('#price_type').val(),
-                price_data: JSON.stringify(priceData),
+                price_data: JSON.stringify(priceData), // Send priceData as JSON string
                 image_array: imageData
             },
             dataType: 'json',
@@ -211,6 +205,7 @@
                     window.location.href = "{{ route('menu-items.index') }}";
                 } else {
                     // Handle validation errors (e.g., label errors)
+                    alert(response.message);
                 }
             },
             error: function(jqXHR, exception) {
@@ -218,7 +213,9 @@
             }
         });
     });
-});
+
+    });
+
 
 
         // Dropzone setup for media images

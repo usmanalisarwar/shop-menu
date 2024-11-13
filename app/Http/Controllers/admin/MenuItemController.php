@@ -8,6 +8,7 @@ use App\Models\MenuItem;
 use App\Models\MenuItemImage;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\PriceManagement;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ImageSize;
@@ -46,7 +47,8 @@ class MenuItemController extends Controller
         }
 
         $categories = Category::all();
-        return view('admin.menu-item.create', compact('categories'));
+        $labels = PriceManagement::all();
+        return view('admin.menu-item.create', compact('categories','labels'));
     }
 
     // Store a new menu
@@ -97,25 +99,7 @@ class MenuItemController extends Controller
                 ]);
             }
         }
-        $existingRecords = MenuItem::get();
-           // Ensure price_data is an array, even if it's a JSON string
         $priceData = is_array($request->price_data) ? $request->price_data : json_decode($request->price_data, true);
-
-        // Check for duplicate order_no in existing records
-        foreach ($priceData as $newData) {
-            foreach ($existingRecords as $record) {
-                $existingData = json_decode($record->data, true);
-
-                foreach ($existingData as $existingItem) {
-                    if (isset($existingItem['order_no']) && $existingItem['order_no'] == $newData['order_no']) {
-                        return response()->json([
-                            'status' => false,
-                            'message' => "Order No. {$newData['order_no']} is already stored in the database.",
-                        ]);
-                    }
-                }
-            }
-        }
 
         // Create the new menu item
         $menuItem = new MenuItem();
@@ -172,8 +156,9 @@ class MenuItemController extends Controller
         $menuItem = MenuItem::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $menuItemImages = MenuItemImage::where('menu_item_id', $id)->orderBy('order_no')->get();
         $categories = Category::all();
+        $labels = PriceManagement::all();
 
-        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories'));
+        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories','labels'));
     }
 
     public function update(Request $request, $id)
@@ -207,26 +192,7 @@ class MenuItemController extends Controller
             \Log::error('Menu Item not found: ' . $id);
             return response()->json(['status' => false, 'errors' => ['menu_item' => 'Menu item not found.']]);
         }
-     // Ensure price_data is an array, even if it's a JSON string
-        $priceData = is_array($request->price_data) ? $request->price_data : json_decode($request->price_data, true);
-
-        // Check for duplicate order_no in existing records
-        $existingRecords = MenuItem::where('id', '!=', $id)->get();
-
-        foreach ($priceData as $newData) {
-            foreach ($existingRecords as $record) {
-                $existingData = json_decode($record->data, true);
-
-                foreach ($existingData as $existingItem) {
-                    if (isset($existingItem['order_no']) && $existingItem['order_no'] == $newData['order_no']) {
-                        return response()->json([
-                            'status' => false,
-                            'message' => "Order No. {$newData['order_no']} is already stored in the database.",
-                        ]);
-                    }
-                }
-            }
-        }
+         $priceData = is_array($request->price_data) ? $request->price_data : json_decode($request->price_data, true);
         // Update the menu item fields
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
