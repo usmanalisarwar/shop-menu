@@ -32,7 +32,7 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="label">Label</label>
-                                <input type="text" name="label" id="label" class="form-control" value="{{ old('label', $priceManagement->label) }}" placeholder="Label">
+                                <input type="text" name="label" id="label" class="form-control" value="{{ $priceManagement->label }}" placeholder="Label">
                             </div>
                         </div>
 
@@ -40,7 +40,7 @@
                         <div class="col-md-12">
                             <div class="mb-3">
                                 <label for="description">Description</label>
-                                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ old('description', $priceManagement->description) }}</textarea>
+                                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ $priceManagement->description }}</textarea>
                             </div>
                         </div>
 
@@ -58,21 +58,23 @@
 
                         <!-- Dynamic Fields Container -->
                         <div id="dynamicFieldsContainer" class="col-md-12">
-                            <!-- Existing dynamic fields will be populated here -->
-                            @foreach (json_decode($priceManagement->data, true) as $key => $item)
-                            <div class="row mb-3 dynamic-entry">
-                                <div class="col-md-5">
-                                    <label for="order_no">Order No.</label>
-                                    <input type="number" name="order_nos[]" class="form-control" value="{{ $item['order_no'] }}" placeholder="Order No.">
+                            <!-- Existing dynamic fields will be appended here -->
+                            @foreach (json_decode($priceManagement->data, true) as $item)
+                                <div class="row mb-3 dynamic-entry">
+                                    <div class="col-md-5">
+                                        <label for="order_no">Order No.</label>
+                                        <input type="number" name="order_nos[]" class="form-control order-no" value="{{ $item['order_no'] }}" placeholder="Order No.">
+                                        <small class="text-danger order-no-error" style="display: none;">This Order No. is already taken.</small>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label for="label">Label</label>
+                                        <input type="text" name="labels[]" class="form-control" value="{{ $item['label'] }}" placeholder="Label">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button type="button" class="btn btn-success add-entry mr-2">+</button>
+                                        <button type="button" class="btn btn-danger remove-entry">-</button>
+                                    </div>
                                 </div>
-                                <div class="col-md-5">
-                                    <label for="label">Label</label>
-                                    <input type="text" name="label[]" class="form-control" value="{{ $item['label'] }}" placeholder="Label">
-                                </div>
-                                <div class="col-md-2 d-flex align-items-end">
-                                    <button type="button" class="btn btn-success add-entry">+</button>
-                                </div>
-                            </div>
                             @endforeach
                         </div>
 
@@ -92,89 +94,115 @@
 
 @section('customJs')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Handle price type change
-            $('#price_type').change(function() {
-                $('#dynamicFieldsContainer').empty(); // Clear previous fields
-                addFields();
-            });
+   <script>
+  $(document).ready(function() {
+    // Handle price type change
+    $('#price_type').change(function() {
+        $('#dynamicFieldsContainer').empty();
+        addFields(); 
+    });
 
-            // Add fields function
-            function addFields() {
-                $('#dynamicFieldsContainer').append(`
-                    <div class="row mb-3 dynamic-entry">
-                        <div class="col-md-5">
-                            <label for="order_no">Order No.</label>
-                            <input type="number" name="order_nos[]" class="form-control" placeholder="Order No.">
-                        </div>
-                        <div class="col-md-5">
-                            <label for="label">Label</label>
-                            <input type="text" name="label[]" class="form-control" placeholder="label">
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-success add-entry">+</button>
-                        </div>
-                    </div>
-                `);
+    // Add fields function
+    function addFields() {
+        $('#dynamicFieldsContainer').append(`
+            <div class="row mb-3 dynamic-entry">
+                <div class="col-md-5">
+                    <label for="order_no">Order No.</label>
+                    <input type="number" name="order_nos[]" class="form-control order-no" placeholder="Order No.">
+                    <small class="text-danger order-no-error" style="display: none;">This Order No. is already taken.</small>
+                </div>
+                <div class="col-md-5">
+                    <label for="label">Label</label>
+                    <input type="text" name="labels[]" class="form-control" placeholder="Label">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success add-entry mr-2">+</button>
+                    <button type="button" class="btn btn-danger remove-entry">-</button>
+                </div>
+            </div>
+        `);
+    }
+
+    $('#dynamicFieldsContainer').on('click', '.add-entry', function() {
+        let parent = $(this).closest('.dynamic-entry');
+        let newEntry = parent.clone();
+        newEntry.find('input').val('');
+        newEntry.find('.order-no-error').hide();
+        $('#dynamicFieldsContainer').append(newEntry);
+    });
+
+    $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
+        $(this).closest('.dynamic-entry').remove();
+    });
+
+    $('#dynamicFieldsContainer').on('input', '.order-no', function() {
+        let currentOrderNo = $(this).val();
+        let hasDuplicate = false;
+
+        $('.order-no').each(function() {
+            if ($(this).val() === currentOrderNo && $(this).get(0) !== event.target) {
+                hasDuplicate = true;
+                return false;
+            }
+        });
+
+        if (hasDuplicate) {
+            $(this).siblings('.order-no-error').show();
+        } else {
+            $(this).siblings('.order-no-error').hide();
+        }
+    });
+
+    $("#priceManagementForm").submit(function(event) {
+        event.preventDefault();
+        $("button[type=submit]").prop('disabled', true);
+
+        let priceData = [];
+        let hasDuplicateError = false;
+
+        $('#dynamicFieldsContainer .dynamic-entry').each(function() {
+            let order_no = $(this).find('input[name="order_nos[]"]').val();
+            let label = $(this).find('input[name="labels[]"]').val();
+
+            if ($(this).find('.order-no-error').is(':visible')) {
+                hasDuplicateError = true;
             }
 
-            // Event delegation for dynamic add-entry button
-            $('#dynamicFieldsContainer').on('click', '.add-entry', function() {
-                let parent = $(this).closest('.dynamic-entry');
-                let newEntry = parent.clone();
-                newEntry.find('input').val(''); // Clear inputs in the cloned row
-                newEntry.find('.add-entry').removeClass('btn-success add-entry').addClass('btn-danger remove-entry').text('-');
-                $('#dynamicFieldsContainer').append(newEntry);
-            });
-
-            // Event delegation for dynamic remove-entry button
-            $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
-                $(this).closest('.dynamic-entry').remove();
-            });
-
-            // Handle form submission with JSON data
-            $("#priceManagementForm").submit(function(event) {
-                event.preventDefault();
-                var element = $(this);
-                $("button[type=submit]").prop('disabled', true);
-
-                // Collect data in JSON format
-                let priceData = [];
-                $('#dynamicFieldsContainer .dynamic-entry').each(function() {
-                    let order_no = $(this).find('input[name="order_nos[]"]').val();
-                    let label = $(this).find('input[name="label[]"]').val();
-
-                    if (order_no && label) {
-                        priceData.push({ order_no: order_no, label: label });
-                    }
-                });
-
-                $.ajax({
-                    url: '{{ route("price-managements.update", $priceManagement->id) }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'POST',
-                        label: $('#label').val(),
-                        description: $('#description').val(),
-                        price_type: $('#price_type').val(),
-                        price_data: JSON.stringify(priceData)
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        $("button[type=submit]").prop('disabled', false);
-                        if (response.status) {
-                            window.location.href = "{{ route('price-managements.index') }}";
-                        } else {
-                            // Handle validation errors (e.g., label errors)
-                        }
-                    },
-                    error: function(jqXHR, exception) {
-                        console.log("Something went wrong");
-                    }
-                });
-            });
+            if (order_no && label) {
+                priceData.push({ order_no: order_no, label: label });
+            }
         });
-    </script>
+
+        if (hasDuplicateError) {
+            $("button[type=submit]").prop('disabled', false);
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("price-managements.update", $priceManagement->id) }}',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                label: $('#label').val(),
+                description: $('#description').val(),
+                price_type: $('#price_type').val(),
+                price_data: JSON.stringify(priceData)
+            },
+            dataType: 'json',
+            success: function(response) {
+                $("button[type=submit]").prop('disabled', false);
+                if (response.status) {
+                    window.location.href = "{{ route('price-managements.index') }}";
+                } else {
+                    // Handle validation errors
+                }
+            },
+            error: function(jqXHR, exception) {
+                console.log("Something went wrong");
+            }
+        });
+    });
+});
+
+</script>
 @endsection
