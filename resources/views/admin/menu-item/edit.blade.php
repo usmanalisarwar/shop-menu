@@ -66,43 +66,7 @@
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ old('description', $menuItem->description) }}</textarea>
                             </div>
                         </div>
-                      <!-- Price Type Dropdown -->
-                        <div class="col-md-12">
-                            <div class="mb-3">
-                                <label for="price_type">Price Type</label>
-                                <select name="price_type" id="price_type" class="form-control">
-                                    <option value="">Select Price Type</option>
-                                    <option value="{{ App\Enums\PriceTypeEnum::Quantity->value }}" {{ $menuItem->price_type == App\Enums\PriceTypeEnum::Quantity->value ? 'selected' : '' }}>Quantity</option>
-                                    <option value="{{ App\Enums\PriceTypeEnum::Size->value }}" {{ $menuItem->price_type == App\Enums\PriceTypeEnum::Size->value ? 'selected' : '' }}>Size</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <!-- Dynamic Fields Container -->
-                        <div id="dynamicFieldsContainer" class="col-md-12">
-                            <!-- Existing price data will be populated here dynamically -->
-                            @foreach(json_decode($menuItem->data) ?? [] as $priceData)
-                                <div class="row mb-3 dynamic-entry">
-                                    <div class="col-md-5">
-                                        <label for="label">Label</label>
-                                        <select name="labels[]" class="form-control">
-                                            <option value="" selected disabled>Select Label</option>
-                                            @foreach($labels as $label)
-                                                <option value="{{ $label->label }}" {{ $label->label == $priceData->label ? 'selected' : '' }}>{{ $label->label }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <label for="price">Price</label>
-                                        <input type="number" name="prices[]" class="form-control" value="{{ $priceData->price }}" placeholder="Price">
-                                    </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button type="button" class="btn btn-success add-entry">+</button>
-                                        <button type="button" class="btn btn-danger remove-entry ml-2">-</button>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
                             <div class="card mb-3">
@@ -148,106 +112,43 @@
 @section('customJs')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
-            $(document).ready(function() {
-            // Handle price type change
-            $('#price_type').change(function() {
-                $('#dynamicFieldsContainer').empty(); // Clear previous fields
-                addFields();
-            });
-
-            // Add fields function
-            function addFields() {
-                $('#dynamicFieldsContainer').append(`
-                    <div class="row mb-3 dynamic-entry">
-                        <div class="col-md-5">
-                            <label for="label">Label.</label>
-                            <select name="labels[]" class="form-control">
-                                <option value="" selected disabled>Select Label</option>
-                                @foreach($labels as $label)
-                                    <option value="{{ $label->label }}">{{ $label->label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-5">
-                            <label for="price">Price</label>
-                            <input type="number" name="prices[]" class="form-control" placeholder="Price">
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-success add-entry">+</button>
-                            <button type="button" class="btn btn-danger remove-entry ml-2">-</button>
-                        </div>
-                    </div>
-                `);
+$("#menuItemForm").submit(function(event){
+    event.preventDefault();
+    var element = $(this);
+    $("button[type=submit]").prop('disabled',true);
+    $.ajax({
+        url: '{{ route("menu-items.update", $menuItem->id) }}',
+        type: 'POST',
+        data: element.serialize(),
+        dataType: 'json',
+        success: function(response){
+            $("button[type=submit]").prop('disabled',false);
+            if(response.status){
+                window.location.href = "{{ route('menu-items.index') }}";
+            } else {
+                var errors = response.errors;
+                if(errors.title){
+                    $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
+                } else {
+                    $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                 if(errors.title){
+                    $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
+                } else {
+                    $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.image){
+                    $("#image").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.image);
+                } else {
+                    $("#image").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
             }
-
-            // Event delegation for dynamic add-entry button
-            $('#dynamicFieldsContainer').on('click', '.add-entry', function() {
-                let parent = $(this).closest('.dynamic-entry');
-                let newEntry = parent.clone();
-                newEntry.find('input').val(''); // Clear inputs in the cloned row
-                $('#dynamicFieldsContainer').append(newEntry);
-            });
-
-            // Event delegation for dynamic remove-entry button
-            $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
-                $(this).closest('.dynamic-entry').remove();
-            });
-
-            // Handle form submit via AJAX
-            $('#menuItemForm').submit(function(event) {
-                event.preventDefault();  // Prevent default form submission
-
-                // Collect data
-                var formData = {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    category_id: $('#category_id').val(),
-                    title: $('#title').val(),
-                    description: $('#description').val(),
-                    price_type: $('#price_type').val(),
-                    price_data: JSON.stringify(getPriceData()),
-                    image_array: getImageArray()
-                };
-
-                // Send AJAX request
-                $.ajax({
-                    url: '{{ route("menu-items.update", $menuItem->id) }}',
-                    type: 'POST',
-                    data: formData,
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status) {
-                            window.location.href = "{{ route('menu-items.index') }}";
-                        } else {
-                            // Handle validation errors or any issues from the server
-                            alert('Something went wrong.');
-                        }
-                    },
-                    error: function(jqXHR, exception) {
-                        console.log("Something went wrong");
-                    }
-                });
-            });
-
-            // Function to get the price data from the form
-            function getPriceData() {
-                var priceData = [];
-                $('input[name="prices[]"]').each(function(index) {
-                    var label = $('select[name="labels[]"]')[index].value;
-                    var price = $(this).val();
-                    priceData.push({ label: label, price: price });
-                });
-                return priceData;
-            }
-
-            // Function to get image array from the gallery
-            function getImageArray() {
-                var imageData = [];
-                $("#menu-gallery .image-row").each(function() {
-                    imageData.push($(this).data('id'));
-                });
-                return imageData;
-            }
-        });
+        },
+        error: function(jqXHR, exception){
+            console.log("Something went wrong");
+        }
+    });
+});
 
 
         // Dropzone setup for media images

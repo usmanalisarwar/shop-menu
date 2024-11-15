@@ -99,6 +99,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::delete('/menu-items/{id}', [MenuItemController::class, 'destroy'])
         ->name('menu-items.delete')
         ->middleware(['checkRolePermission:menu-items,delete-menu-item']);
+    Route::get('/price-detail/{id}', [MenuItemController::class, 'getPriceDetail'])->name('getPriceDetail');
 
     // Categories routes
     Route::get('/categories', [CategoryController::class, 'index'])

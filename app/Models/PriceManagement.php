@@ -14,4 +14,10 @@ class PriceManagement extends Model
     {
         return $this->belongsTo(User::class);
     }
+    // In PriceManagement model
+    public function details()
+    {
+        return $this->hasMany(PriceManagementDetail::class, 'price_management_id');
+    }
+
 }

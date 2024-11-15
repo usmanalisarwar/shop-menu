@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('description')->nullable()->after('user_id');
             $table->string('price_type')->nullable()->after('description'); 
-            $table->string('data')->after('price_type');
         });
     }
 
@@ -29,10 +28,7 @@ return new class extends Migration
             $table->dropForeign(['user_id']);
             $table->dropColumn('user_id');
             $table->dropColumn('description');
-            $table->dropColumn('price_type');
-            $table->dropColumn('data');
-           
- 
+            $table->dropColumn('price_type');           
         });
     }
 };

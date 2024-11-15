@@ -20,5 +20,10 @@ class MenuItem extends Model
     {
         return $this->hasMany(MenuItemImage::class, 'menu_item_id');
     }
+
+    public function details()
+    {
+        return $this->hasMany(MenuItemDetail::class, 'menu_item_id');
+    }
      
 }

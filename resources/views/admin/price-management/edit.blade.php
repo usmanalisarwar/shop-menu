@@ -58,25 +58,44 @@
 
                         <!-- Dynamic Fields Container -->
                         <div id="dynamicFieldsContainer" class="col-md-12">
-                            <!-- Existing dynamic fields will be appended here -->
-                            @foreach (json_decode($priceManagement->data, true) as $item)
+                            @if($details && $details->isNotEmpty()) 
+                                @foreach ($details as $detail)
+                                    <div class="row mb-3 dynamic-entry">
+                                        <div class="col-md-5">
+                                            <label for="order_no">Order No.</label>
+                                            <input type="number" name="order_nos[]" class="form-control order-no" placeholder="Order No." value="{{ old('order_nos[]', $detail->order_no) }}">
+                                            <small class="text-danger order-no-error" style="display: none;">This Order No. is already taken.</small>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label for="label">Label</label>
+                                            <input type="text" name="labels[]" class="form-control" placeholder="Label" value="{{ old('labels[]', $detail->label) }}">
+                                        </div>
+                                        <div class="col-md-2 d-flex align-items-end">
+                                            <button type="button" class="btn btn-success add-entry mr-2">+</button>
+                                            <button type="button" class="btn btn-danger remove-entry">-</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <!-- Default empty fields if no details exist -->
                                 <div class="row mb-3 dynamic-entry">
                                     <div class="col-md-5">
                                         <label for="order_no">Order No.</label>
-                                        <input type="number" name="order_nos[]" class="form-control order-no" value="{{ $item['order_no'] }}" placeholder="Order No.">
+                                        <input type="number" name="order_nos[]" class="form-control order-no" placeholder="Order No.">
                                         <small class="text-danger order-no-error" style="display: none;">This Order No. is already taken.</small>
                                     </div>
                                     <div class="col-md-5">
                                         <label for="label">Label</label>
-                                        <input type="text" name="labels[]" class="form-control" value="{{ $item['label'] }}" placeholder="Label">
+                                        <input type="text" name="labels[]" class="form-control" placeholder="Label">
                                     </div>
                                     <div class="col-md-2 d-flex align-items-end">
                                         <button type="button" class="btn btn-success add-entry mr-2">+</button>
                                         <button type="button" class="btn btn-danger remove-entry">-</button>
                                     </div>
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
+
 
                     </div>
                 </div>
