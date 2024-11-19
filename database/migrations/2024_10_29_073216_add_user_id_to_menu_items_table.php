@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable()->after('id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('description')->nullable()->after('user_id');
-            $table->string('price_type')->nullable()->after('description'); 
+            $table->string('label')->nullable()->after('description');
         });
     }
 
@@ -28,7 +28,8 @@ return new class extends Migration
             $table->dropForeign(['user_id']);
             $table->dropColumn('user_id');
             $table->dropColumn('description');
-            $table->dropColumn('price_type');           
+            $table->dropColumn('label');
+
         });
     }
 };

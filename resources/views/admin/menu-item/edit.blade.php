@@ -66,6 +66,35 @@
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ old('description', $menuItem->description) }}</textarea>
                             </div>
                         </div>
+                        <!-- Label Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="label">Label</label>
+                                <select name="label" id="label" class="form-control">
+                                    <option value="">Select label</option>
+                                    @foreach($labels as $label)
+                                        <option value="{{ $label->id }}" {{ old('label', $menuItem->label) == $label->id ? 'selected' : '' }}>{{ $label->label }}</option>
+                                    @endforeach
+                                </select>
+                                <p></p>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Label Field -->
+                        <div class="col-md-6" id="label-field" style="{{ isset($menuItemDetails) && $menuItemDetails->label ? 'display:block' : 'display:none' }}">
+                            <div class="mb-3">
+                                <label for="dynamic_label">Label</label>
+                                <input type="text" name="dynamic_label" id="dynamic_label" class="form-control" placeholder="Label" value="{{ old('dynamic_label', $menuItemDetails->label ?? '') }}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" id="price-field" style="{{ isset($menuItemDetails) && !empty($menuItemDetails->price) ? 'display:block' : 'display:none' }}">
+                            <div class="mb-3">
+                                <label for="dynamic_price">Price</label>
+                                <input type="number" name="dynamic_price" id="dynamic_price" class="form-control" placeholder="Price" value="{{ old('dynamic_price', $menuItemDetails->price ?? '') }}">
+                            </div>
+                        </div>
+
 
                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
@@ -112,6 +141,60 @@
 @section('customJs')
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
+$(document).ready(function () {
+    var initialLabel = $('#label').val();
+    if (initialLabel || menuItemDetails) {
+        toggleLabelPriceFields(initialLabel || menuItemDetails.label);
+        if (menuItemDetails.label) {
+            $('#dynamic_label').val(menuItemDetails.label);
+        }
+        if (menuItemDetails.price) {
+            $('#dynamic_price').val(menuItemDetails.price); // Set initial dynamic price
+            $('#price-field').show(); // Ensure the price field is visible
+        }
+    }
+
+    // Handle label change
+    $('#label').on('change', function () {
+        var selectedLabel = $(this).val();
+        toggleLabelPriceFields(selectedLabel);
+    });
+
+    function toggleLabelPriceFields(labelId) {
+        if (labelId) {
+            $.ajax({
+                url: '{{ route("getPriceDetail", ["id" => ":id"]) }}'.replace(':id', labelId),
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status && response.priceDetails) {
+                        // Show the fields if there is valid price detail
+                        $('#label-field').show();
+                        $('#price-field').show();
+                        $('#dynamic_label').val(response.priceDetails.label);
+                        $('#dynamic_price').val(response.priceDetails.price); // Set price value
+                    } else {
+                        // Hide if no price details are available
+                        $('#label-field').hide();
+                        $('#price-field').hide();
+                    }
+                },
+                error: function() {
+                    $('#label-field').hide();
+                    $('#price-field').hide();
+                }
+            });
+        } else {
+            // Hide fields if no label is selected
+            $('#label-field').hide();
+            $('#price-field').hide();
+            $('#dynamic_price').val(''); // Clear price when label is deselected
+        }
+    }
+});
+
+
+
 $("#menuItemForm").submit(function(event){
     event.preventDefault();
     var element = $(this);
@@ -127,12 +210,12 @@ $("#menuItemForm").submit(function(event){
                 window.location.href = "{{ route('menu-items.index') }}";
             } else {
                 var errors = response.errors;
-                if(errors.title){
+                if(errors.category_id){
                     $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
                 } else {
                     $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
-                 if(errors.title){
+                if(errors.title){
                     $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
                 } else {
                     $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");

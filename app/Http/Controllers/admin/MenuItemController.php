@@ -10,10 +10,12 @@ use App\Models\Category;
 use App\Models\User;
 use App\Models\PriceManagement;
 use App\Models\PriceManagementDetail;
+use App\Models\menuItemDetail;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use App\Rules\ImageSize;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 
 class MenuItemController extends Controller
@@ -104,8 +106,10 @@ class MenuItemController extends Controller
         $menuItem->category_id  = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->description = $request->description;
+        $menuItem->label = $request->label;
         $menuItem->user_id = Auth::id();
         $menuItem->save();
+
         // Save the menu images
         foreach ($request->image_array as $menuItemImageId) {
             $menuItemImage = MenuItemImage::find($menuItemImageId);
@@ -130,7 +134,16 @@ class MenuItemController extends Controller
             $newMenuItemImage->image = $imageName;
             $newMenuItemImage->save();
         }
-
+        // Save menu item details (label and price)
+            if ($request->label && $request->price) {
+                DB::table('menu_item_details')->insert([
+                    'menu_item_id' => $menuItem->id,
+                    'label' => $request->label,
+                    'price' => $request->price,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         $request->session()->flash('success', 'Menu Item added successfully');
 
         return response()->json([
@@ -152,8 +165,10 @@ class MenuItemController extends Controller
         $menuItemImages = MenuItemImage::where('menu_item_id', $id)->orderBy('order_no')->get();
         $categories = Category::all();
         $labels = PriceManagement::all();
-
-        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories','labels',));
+        $menuItemDetails = DB::table('menu_item_details')
+        ->where('menu_item_id', $id)
+        ->first();
+        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories','labels','menuItemDetails'));
     }
 
     public function update(Request $request, $id)
@@ -191,6 +206,7 @@ class MenuItemController extends Controller
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
         $menuItem->description = $request->description; 
+        $menuItem->label = $request->label;
         $menuItem->save();
         // Update the order numbers for images
         foreach ($request->image_array as $order => $imageId) {
@@ -202,7 +218,16 @@ class MenuItemController extends Controller
         }
 
         \Log::info('Menu Item updated successfully: ', $menuItem->toArray());
-        
+         // Update menu item details (label and price)
+        if ($request->label && $request->price) {
+            DB::table('menu_item_details')
+                ->where('menu_item_id', $menuItem->id) // Update existing record
+                ->update([
+                    'label' => $request->label,
+                    'price' => $request->price,
+                    'updated_at' => now(),
+                ]);
+        }
         $request->session()->flash('success', 'Menu Item updated successfully');
 
 
@@ -238,7 +263,8 @@ class MenuItemController extends Controller
 
         return response()->json(['status' => true, 'message' => 'Menu Item deleted successfully']);
     }
-    public function getPriceDetail($id)
+
+     public function getPriceDetail($id)
     {
         $priceDetails = PriceManagement::with('details')->find($id);
 
@@ -246,7 +272,12 @@ class MenuItemController extends Controller
             return response()->json(['status' => false, 'message' => 'Price details not found']);
         }
 
-        return response()->json(['status' => true, 'priceDetails' => $priceDetails]);
+        $detail = $priceDetails->details->first();
+
+        return response()->json([
+            'status' => true,
+            'priceDetails' => $detail ? $detail : null,
+        ]);
     }
 
 

@@ -79,20 +79,23 @@
                                 <p></p>
                             </div>
                         </div>
-                         <!-- Label Field (Initially Hidden) -->
+                        <!-- Label Field (Dynamic Value from price_management_details table) -->
                         <div class="col-md-6" id="label-field" style="display: none;">
                             <div class="mb-3">
-                                <label for="label">Label</label>
-                                <input type="text" name="label" id="label" class="form-control" placeholder="Label" readonly>
+                                <label for="dynamic_label">Label</label>
+                                <input type="text" name="dynamic_label" id="dynamic_label" class="form-control" placeholder="Label" readonly>
                             </div>
                         </div>
-                        <!-- Price Field (Initially Hidden) -->
+
+
+                        <!-- Price Field (Initially Null) -->
                         <div class="col-md-6" id="price-field" style="display: none;">
                             <div class="mb-3">
                                 <label for="price">Price</label>
-                                <input type="number" name="price" id="price" class="form-control" placeholder="Price">
+                                <input type="number" name="price" id="price" class="form-control" placeholder="Price" value="">
                             </div>
                         </div>
+
 
                          <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
@@ -127,47 +130,39 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
     <script>
 $(document).ready(function () {
-    // Listen for changes to the label dropdown
-    $('#label').on('change', function () {
+     $('#label').on('change', function () {
         var selectedLabel = $(this).val();
 
-        // If a label is selected, make an AJAX call to get the price details based on the selected label
         if (selectedLabel) {
-            // Make AJAX call to get the price details based on the selected label
             $.ajax({
                 url: '{{ route("getPriceDetail", ["id" => ":id"]) }}'.replace(':id', selectedLabel),
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
                     if (response.status) {
-                        // If price detail is found, show the fields and set the price
+                        // Show fields and set the dynamic label value
                         $('#label-field').show();
                         $('#price-field').show();
-                        
-                        // Assuming the response has a `price` field
-                        $('#price').val(response.price); // Set the price field to the price from the response
+                        $('#dynamic_label').val(response.priceDetails.label); // Set label value
+                        $('#price').val(null); // Keep price field null
                     } else {
-                        // If no price detail is found, hide the fields and set price to null
-                        $('#label-field').show(); // Always show the label field
-                        $('#price-field').show();
-                        $('#price').val(null); // Reset the price field to null
+                        $('#label-field').hide();
+                        $('#price-field').hide();
                     }
                 },
                 error: function() {
-                    // In case of error, hide the fields and reset price to null
-                    $('#label-field').show(); // Always show the label field
-                    $('#price-field').show();
-                    $('#price').val(null); // Reset the price field to null
+                    $('#label-field').hide();
+                    $('#price-field').hide();
                 }
             });
         } else {
-            // Hide the fields if no label is selected
             $('#label-field').hide();
             $('#price-field').hide();
-            $('#price').val(null); // Reset the price field to null
         }
     });
+
 });
+
 
 $("#menuItemForm").submit(function(event){
     event.preventDefault();
