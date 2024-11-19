@@ -259,26 +259,32 @@
         width: 33%;
         padding:0px 80px;
     }
-    .menu-item .menu-image {
-    display: inline-block;
-    margin: 10px;
-    text-align: center;
-}
+ .menu-images-row {
+        display: flex;
+        gap: 20px; /* Space between images */
+        flex-wrap: wrap; /* Wrap to next line if there are too many images */
+        align-items: center;
+    }
 
-.menu-item .menu-image img {
-    width: 200px;
-    height: auto;
-}
+    .menu-image {
+        text-align: center;
+    }
 
-.menu-item .label {
-    font-weight: bold;
-    margin-top: 5px;
-}
+    .menu-image img {
+        display: block;
+        margin: 0 auto;
+        border-radius: 5px;
+    }
 
-.menu-item .price {
-    color: green;
-    margin-top: 5px;
-}
+    .menu-image .label {
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .menu-image .price {
+        color: green;
+        font-size: 14px;
+    }
 
 </style>
     
@@ -353,35 +359,38 @@
 
 </div>
 
-    <section class="menu">
-        <div class="menu-grid">
-            @foreach($categories as $category)
-                @foreach($category->menuItems as $menuItem)
-                    <div class="menu-item">
-                        <div class="item-details">
-                            
-                            <!-- Loop through images and price data together -->
+<section class="menu">
+    <div class="menu-grid">
+        @foreach($categories as $category)
+            @foreach($category->menuItems as $menuItem)
+                <div class="menu-item">
+                    <div class="item-details">
+                        <!-- Row layout for images and details -->
+                        <div class="menu-images-row">
                             @foreach($menuItem->images as $index => $image)
-                                @if(isset($menuItem->price_data[$index]))
-                                    <div class="menu-image">
-                                        <!-- Display Image -->
-                                        <img src="{{ asset('uploads/menuItem/' . $image->image) }}" alt="{{ $menuItem->title }}" style="width:200px;">
+                                <div class="menu-image">
+                                    <!-- Display Image -->
+                                    <img src="{{ asset('uploads/menuItem/' . $image->image) }}" alt="{{ $menuItem->title }}" style="width:200px;">
 
-                                        <!-- Display corresponding Label and Price -->
-                                        <p class="label">{{ $menuItem->price_data[$index]['label'] }}</p>
-                                        <p class="price">Rs.{{ $menuItem->price_data[$index]['price'] }}</p>
-                                    </div>
-                                @endif
+                                    <!-- Display corresponding Label and Price -->
+                                    @if($menuItem->details->count() > $index)
+                                        <p class="label">{{ $menuItem->details[$index]->label }}</p>                                    
+                                        <p class="price">Rs.{{ $menuItem->details[$index]->price }}</p>
+                                    @endif
+                                </div>
                             @endforeach
-                            
-                            <!-- Description of the menu item -->
-                            <p class="description">{{ $menuItem->description }}</p>
                         </div>
+                        
+                        <!-- Description of the menu item -->
+                        <p class="description">{{ $menuItem->description }}</p>
                     </div>
-                @endforeach
+                </div>
             @endforeach
-        </div>
-    </section>
+        @endforeach
+    </div>
+</section>
+
+
 
 
            <!-- Footer Start -->
