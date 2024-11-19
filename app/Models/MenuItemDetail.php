@@ -10,8 +10,8 @@ class MenuItemDetail extends Model
     use HasFactory;
     protected $fillable = ['menu_item_id', 'label', 'price'];
     
-    public function getLabelAttribute($value)
+    public function menuItem()
     {
-        return (string)$value;
+        return $this->belongsTo(MenuItem::class, 'menu_item_id');
     }
 }
