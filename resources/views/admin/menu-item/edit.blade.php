@@ -139,16 +139,17 @@
 @endsection
 
 @section('customJs')
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
 $(document).ready(function () {
+    var menuItemDetails = @json($menuItemDetails ?? 'null');
     var initialLabel = $('#label').val();
-    if (initialLabel || menuItemDetails) {
+    if (initialLabel || (typeof menuItemDetails !== 'undefined' && menuItemDetails)) {
         toggleLabelPriceFields(initialLabel || menuItemDetails.label);
-        if (menuItemDetails.label) {
+        if (menuItemDetails && menuItemDetails.label) {
             $('#dynamic_label').val(menuItemDetails.label);
         }
-        if (menuItemDetails.price) {
+        if (menuItemDetails && menuItemDetails.price) {
             $('#dynamic_price').val(menuItemDetails.price); // Set initial dynamic price
             $('#price-field').show(); // Ensure the price field is visible
         }
@@ -192,6 +193,7 @@ $(document).ready(function () {
         }
     }
 });
+
 
 
 
