@@ -150,8 +150,8 @@ $(document).ready(function () {
             $('#dynamic_label').val(menuItemDetails.label);
         }
         if (menuItemDetails && menuItemDetails.price) {
-            $('#dynamic_price').val(menuItemDetails.price); // Set initial dynamic price
-            $('#price-field').show(); // Ensure the price field is visible
+            $('#dynamic_price').val(menuItemDetails.price); 
+            $('#price-field').show(); 
         }
     }
 
@@ -173,7 +173,7 @@ $(document).ready(function () {
                         $('#label-field').show();
                         $('#price-field').show();
                         $('#dynamic_label').val(response.priceDetails.label);
-                        $('#dynamic_price').val(response.priceDetails.price); // Set price value
+                        $('#dynamic_price').val(response.priceDetails.price); 
                     } else {
                         // Hide if no price details are available
                         $('#label-field').hide();

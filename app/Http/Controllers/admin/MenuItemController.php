@@ -62,7 +62,6 @@ class MenuItemController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        // Validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -88,7 +87,6 @@ class MenuItemController extends Controller
 
             $imagePath = public_path('temp/' . $menuItemImage->name);
 
-            // Validate image size
             $imageSizeValidator = Validator::make(['image' => $imagePath], [
                 'image' => [new ImageSize()],
             ]);
@@ -181,7 +179,6 @@ class MenuItemController extends Controller
 
         \Log::info('Update request received for Menu Item ID: ' . $id);
 
-        // Validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
@@ -195,7 +192,6 @@ class MenuItemController extends Controller
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
 
-        // Find the existing menu item
         $menuItem = MenuItem::where('id', $id)->where('user_id', Auth::id())->first();
         if (!$menuItem) {
             \Log::error('Menu Item not found: ' . $id);
@@ -208,11 +204,12 @@ class MenuItemController extends Controller
         $menuItem->description = $request->description; 
         $menuItem->label = $request->label;
         $menuItem->save();
+
         // Update the order numbers for images
         foreach ($request->image_array as $order => $imageId) {
             $menuItemImage = MenuItemImage::find($imageId);
             if ($menuItemImage) {
-                $menuItemImage->order_no = $order + 1; // Update order number (starting from 1)
+                $menuItemImage->order_no = $order + 1; 
                 $menuItemImage->save();
             }
         }
@@ -249,7 +246,6 @@ class MenuItemController extends Controller
             return response()->json(['status' => false, 'message' => 'Menu Item not found']);
         }
 
-        // Delete associated images
         $menuItemImages = MenuItemImage::where('menu_item_id', $id)->get();
         foreach ($menuItemImages as $image) {
             $imagePath = public_path('uploads/menuItem/' . $image->image);
