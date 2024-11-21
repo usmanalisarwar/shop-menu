@@ -53,12 +53,13 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                       <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="order_no">Order No</label>
-                                <input type="number" name="order_no" id="order_no" class="form-control" placeholder="Order No" value="{{ old('order_no', $category->order_no) }}>
+                                <input type="number" name="order_no" id="order_no" class="form-control" placeholder="Order No" value="{{ old('order_no', $category->order_no) }}">
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="parent_id">Parent Category</label>
