@@ -38,7 +38,8 @@ class MenuGenerateController extends Controller
 
         // Find the associated MenuItems for the menu
         $menuItems = MenuItem::with(['images', 'details'])->get();
-        $categories = Category::where('status', 1)->get();
+        $categories = Category::all();
+
         // PDF file path for menu
         $file = asset("{$menu->pdf_path}");
 
