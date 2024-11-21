@@ -41,6 +41,7 @@
 
     <!-- Custom Styles to make Flipbook full-screen -->
     
+   
     <style>
     * {
         margin: 0;
@@ -143,6 +144,7 @@
     color: #FEA116; /* Active text color */
 }
 
+/* section 2  pic and menu mean popular&fish */
 
 
         .menu {
@@ -209,6 +211,8 @@
 }
 
 
+
+
 /* Owl carsoul start */
 
 .black{
@@ -227,6 +231,8 @@
     overflow: hidden;
     margin: 0 129px;
     -webkit-transform: translate3d(0, 0, 0);}
+
+
 
     .owl-carousel.owl-loaded {
     display: block;
@@ -254,40 +260,72 @@
     justify-content: space-between ;
    }
 
-      .col-lg-3 {
+@media (max-width: 700px) {
+    .home {
+        padding: 1rem;
+        padding-top: 60px;
+        padding-bottom: 60px;
+        background-size: cover;
+    }
+    .img-svg{
+        width:95%;
+    }
+
+    .main-home {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .home-inner-content {
+        flex: 1 1 100%;
+    }
+    .home-text-content {
+        padding: 0 2rem;
+    }
+    .home-text-content p {
+        padding-right: 20px;
+        font-size: 16px;
+    }
+    .text-importent {
+        font-size: 40px;
+        margin-top:55px;
+    }
+    .menu {
+        max-width: 100%;
+        padding: 20px;
+    }
+    .menu h2 {
+        font-size: 20px;
+    }
+    .menu p {
+        font-size: 12px;
+    }
+    .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+    }
+    .owl-carousel .owl-stage-outer {
+        margin: 0 96px;
+    }
+    .owl-theme .owl-nav {
+        margin: -53px 0;
+    }
+
+    .owl-carousel.owl-loaded {
+    display: block;
+    padding-top: 11px;
+    padding-bottom: 78px;
+}
+}
+    .col-lg-3 {
         /* flex: 0 0 auto; */
         width: 33%;
         padding:0px 80px;
     }
- .menu-images-row {
-        display: flex;
-        gap: 20px; /* Space between images */
-        flex-wrap: wrap; /* Wrap to next line if there are too many images */
-        align-items: center;
-    }
-
-    .menu-image {
-        text-align: center;
-    }
-
-    .menu-image img {
-        display: block;
-        margin: 0 auto;
-        border-radius: 5px;
-    }
-
-    .menu-image .label {
-        font-weight: bold;
-        margin-top: 5px;
-    }
-
-    .menu-image .price {
-        color: green;
-        font-size: 14px;
-    }
 
 </style>
     
+</style>
+
 
 </head>
 <body>
@@ -337,7 +375,7 @@
                             <h1 class="text-importent"> Order and Menu elevate Your<br> Dining Experience</h1>
                             
                             <p>Order and Menu, transform your dining experience by crafting unique, delicious menus that showcase your restaurant's style and flavor. </p>
-                            <a class="color-a"  href="{{ route('home.contact-us') }}"> Contact Us</a>
+                            <a class="color-a"  href="#"> Contact Us</a>
 
                         </div>
                         
@@ -347,55 +385,50 @@
 
              </div>
 
-    <!-- <div><input type="text" placeholder="Search in menu"></div> -->
+        <!-- <div><input type="text" placeholder="Search in menu"></div> -->
 
-     <div class="owl-carousel owl-theme">
-        @foreach ($categories as $category)
-            <div class="item" data-target="{{ $category->slug }}">
-                <h4 class="black">{{ $category->name }}</h4>
-            </div>
-        @endforeach
-    </div>
-
-</div>
-
-<section class="menu">
-    <div class="menu-grid">
-        @foreach($categories as $category)
-            @foreach($category->menuItems as $menuItem)
-                <div class="menu-item">
-                    <div class="item-details">
-                        <!-- Row layout for images and details -->
-                        <div class="menu-images-row">
-                            @foreach($menuItem->images as $index => $image)
-                                <div class="menu-image">
-                                    <!-- Display Image -->
-                                    <img src="{{ asset('uploads/menuItem/' . $image->image) }}" alt="{{ $menuItem->title }}" style="width:200px;">
-
-                                    <!-- Display corresponding Label and Price -->
-                                    @if($menuItem->details->count() > $index)
-                                        <p class="label">{{ $menuItem->details[$index]->label }}</p>                                    
-                                        <p class="price">Rs.{{ $menuItem->details[$index]->price }}</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                        
-                        <!-- Description of the menu item -->
-                        <p class="description">{{ $menuItem->description }}</p>
-                    </div>
+         <div class="owl-carousel owl-theme">
+            @foreach($categories as $category)
+                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
+                    <h4 class="black">{{ $category->name }}</h4>
                 </div>
             @endforeach
-        @endforeach
+        </div>
+
+        <section class="menu">
+            <h2>🔥 Popular</h2>
+            <p>Most ordered right now.</p>
+            
+            <div class="menu-grid">
+                @foreach($menuItems as $menuItem)
+                    <div class="menu-item">
+                      @if($menuItem->images->isNotEmpty())
+                            <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
+                        @else
+                            <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
+                        @endif
+
+                        <div class="item-details">
+                            <!-- Show title -->
+                            <!-- <h3>{{ $menuItem->details->first()->label }}</h3> -->
+
+                            <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
+
+                            <!-- Show description -->
+                            <p class="description">{{ $menuItem->description }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
     </div>
-</section>
+</div>
 
 
 
-
-           <!-- Footer Start -->
-           <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-                <div class="container py-5">
+<!-- Footer Start -->
+        <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+            <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
                         <h4 class="section-title ff-secondary text-start text-primary fw-normal mb-4">Company</h4>
@@ -433,6 +466,7 @@
                 </div>
             </div>
 
+        </div>
         <!-- Footer End -->
 
 <!-- jQuery -->
@@ -450,8 +484,6 @@
     <script src="{{ asset('front-assets/lib/tempusdominus/js/moment.min.js')}}"></script>
     <script src="{{ asset('front-assets/lib/tempusdominus/js/moment-timezone.min.js')}}"></script>
     <script src="{{ asset('front-assets/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js')}}"></script>
-
-
 
     <script>
     $('.owl-carousel').owlCarousel({
@@ -476,10 +508,7 @@
         }
         
     });
-   
-  
 </script>
-
 
 <!-- new script  -->
 <script>
@@ -494,7 +523,7 @@
 
     <!-- Template Javascript -->
     <script src="{{ asset('front-assets/js/main.js')}}"></script>
-
+   
     <script>
 function showContent(index) {
     // Hide all content divs
@@ -517,7 +546,6 @@ document.addEventListener('DOMContentLoaded', () => showContent(0));
 </script>
 
     <!-- end -->
-
     <!-- popular and fish script -->
 
     <script>
@@ -548,6 +576,8 @@ document.querySelectorAll('.item').forEach(item => {
     });
 });
 </script>
+
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

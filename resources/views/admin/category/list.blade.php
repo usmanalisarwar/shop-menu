@@ -48,7 +48,6 @@
 							<th width="60">ID</th>
 							<th>Name</th>
 							<th>Slug</th>
-							<th>User</th>
 							<th>Parent</th>
 							<th>Image</th>
 							<th>Status</th>
@@ -62,7 +61,6 @@
 							<td>{{$category->id}}</td>
 							<td>{{$category->name}}</td>
 							<td>{{$category->slug}}</td>
-							<td>{{ $category->user->name ?? 'No User' }}</td>
 							<td>{{ $category->parent->name ?? 'No Parent' }}</td>
 							<td>
 							    @if($category->images->isNotEmpty())

@@ -53,16 +53,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="user_id">User</label>
-                                <select name="user_id" id="user_id" class="form-control">
-                                    <option value="">Select a User</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                    @endforeach
-                                </select>
-                                <p></p>
+                                <label for="order_no">Order No</label>
+                                <input type="number" name="order_no" id="order_no" class="form-control" placeholder="Order No">
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -74,7 +68,6 @@
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                     @endforeach
                                 </select>
-                                <p></p>
                             </div>
                         </div>
                         <div id="subcategory-container" class="row"></div>

@@ -222,11 +222,7 @@ $("#menuItemForm").submit(function(event){
                 } else {
                     $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
-                if(errors.image){
-                    $("#image").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.image);
-                } else {
-                    $("#image").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
+
             }
         },
         error: function(jqXHR, exception){

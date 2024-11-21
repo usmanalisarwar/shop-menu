@@ -45,7 +45,7 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $query = Category::with('user')->orderBy('id', 'asc'); 
+        $query = Category::where('user_id', Auth::id())->latest(); 
 
         if ($keyword = $request->get('keyword')) {
             $query->where('name', 'like', '%' . $keyword . '%');
@@ -63,9 +63,8 @@ class CategoryController extends Controller
         if (!hasPermissions($permissions, 'add-new-category')) {
             abort(403, 'Unauthorized');
         }
-        $users = User::all();
         $categories = Category::whereNull('parent_id')->get();
-        return view('admin.category.create', compact('categories','users'));
+        return view('admin.category.create', compact('categories'));
     }
 
     public function store(Request $request)
@@ -79,14 +78,19 @@ class CategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
-            'image_array' => 'required|array',
-            'image_array.*' => 'exists:category_images,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
+            ]);
+        }
+        // Check if the order_no already exists
+        if (Category::where('order_no', $request->order_no)->exists()) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['order_no' => 'The order number has already been taken. Please choose another one.']
             ]);
         }
         // Validate image sizes for each image in the array
@@ -116,8 +120,9 @@ class CategoryController extends Controller
         $category->name = $request->name;
         $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
         $category->status = $request->status;
+        $category->order_no = $request->order_no;
         $category->parent_id = $request->parent_id;
-        $category->user_id = Auth::id(); // Assign the authenticated user's ID
+        $category->user_id = Auth::id(); 
 
         $category->save();
 
@@ -160,12 +165,11 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $users = User::all();
-        $category = Category::findOrFail($id);
+        $category = Category::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $categories = Category::whereNull('parent_id')->get();
         $categoryImages = CategoryImage::where('category_id', $id)->orderBy('order_no')->get();
 
-        return view('admin.category.edit', compact('category', 'categories','users','categoryImages'));
+        return view('admin.category.edit', compact('category', 'categories','categoryImages'));
     }
 
     public function update(Request $request, $id)
@@ -176,15 +180,13 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $category = Category::findOrFail($id);
+        $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
 
         // Validate input data
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
             'user_id' => 'nullable|exists:users,id', 
-            'image_array' => 'required|array',
-            'image_array.*' => 'exists:category_images,id',
         ]);
 
         if ($validator->fails()) {
@@ -193,10 +195,18 @@ class CategoryController extends Controller
                 'errors' => $validator->errors()
             ]);
         }
+        // Check if the order_no already exists (except for the current category)
+        if (Category::where('order_no', $request->order_no)->where('id', '!=', $id)->exists()) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['order_no' => 'The order number has already been taken. Please choose another one.']
+            ]);
+        }
 
         $category->name = $request->name;
         $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name, $id);
         $category->status = $request->status;
+        $category->order_no = $request->order_no;
         $category->parent_id = $request->parent_id;
 
         // Update user_id if provided in the request
@@ -230,7 +240,7 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $category = Category::findOrFail($id);
+        $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
         // Delete associated images
         $categoryImages = CategoryImage::where('category_id', $id)->get();
         foreach ($categoryImages as $image) {

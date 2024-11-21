@@ -2,8 +2,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
-use App\Models\Category;
 use App\Models\MenuItem;
+use App\Models\Category;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MenuGenerateController extends Controller
@@ -36,15 +36,16 @@ class MenuGenerateController extends Controller
             return abort(404, 'Menu not found');
         }
 
-        // Fetch related MenuItems, images, and details for categories
-        $categories = Category::with(['menuItems.images', 'menuItems.details'])->get();
-
+        // Find the associated MenuItems for the menu
+        $menuItems = MenuItem::with(['images', 'details'])->get();
+        $categories = Category::where('status', 1)->get();
         // PDF file path for menu
         $file = asset("{$menu->pdf_path}");
 
         // Pass data to the view
-        return view('menu', compact('file', 'menu', 'categories'));
+        return view('menu', compact('file', 'menu', 'menuItems','categories'));
     }
+
 
 
 }

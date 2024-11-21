@@ -66,8 +66,7 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string|max:65535', 
-            'image_array' => 'required|array',
-            'image_array.*' => 'exists:menu_item_images,id',
+
         ]);
 
         if ($validator->fails()) {
@@ -183,8 +182,7 @@ class MenuItemController extends Controller
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string|max:65535',
-            'image_array' => 'required|array',
-            'image_array.*' => 'exists:menu_item_images,id',
+
         ]);
 
         if ($validator->fails()) {

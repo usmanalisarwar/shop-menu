@@ -29,7 +29,8 @@ class CategorySeeder extends Seeder
             'slug' => 'electronics',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null // Top-level category
+            'parent_id' => null, // Top-level category
+            'order_no' => 1 // Set order number
         ]);
 
         $fashion = Category::create([
@@ -37,7 +38,8 @@ class CategorySeeder extends Seeder
             'slug' => 'fashion',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null // Top-level category
+            'parent_id' => null, // Top-level category
+            'order_no' => 2 // Set order number
         ]);
 
         $homeLiving = Category::create([
@@ -45,7 +47,8 @@ class CategorySeeder extends Seeder
             'slug' => 'home-living',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null // Top-level category
+            'parent_id' => null, // Top-level category
+            'order_no' => 3 // Set order number
         ]);
 
         // ----------- SUBCATEGORIES (Second-level) -----------
@@ -55,7 +58,8 @@ class CategorySeeder extends Seeder
             'slug' => 'mobiles',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $electronics->id // Subcategory of Electronics
+            'parent_id' => $electronics->id, // Subcategory of Electronics
+            'order_no' => 1 // Set order number
         ]);
 
         $laptops = Category::create([
@@ -63,7 +67,8 @@ class CategorySeeder extends Seeder
             'slug' => 'laptops',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $electronics->id // Subcategory of Electronics
+            'parent_id' => $electronics->id, // Subcategory of Electronics
+            'order_no' => 2 // Set order number
         ]);
 
         // Create subcategories under Fashion
@@ -72,7 +77,8 @@ class CategorySeeder extends Seeder
             'slug' => 'clothing',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $fashion->id // Subcategory of Fashion
+            'parent_id' => $fashion->id, // Subcategory of Fashion
+            'order_no' => 1 // Set order number
         ]);
 
         $footwear = Category::create([
@@ -80,7 +86,8 @@ class CategorySeeder extends Seeder
             'slug' => 'footwear',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $fashion->id // Subcategory of Fashion
+            'parent_id' => $fashion->id, // Subcategory of Fashion
+            'order_no' => 2 // Set order number
         ]);
 
         // Create subcategories under Home & Living
@@ -89,7 +96,8 @@ class CategorySeeder extends Seeder
             'slug' => 'furniture',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $homeLiving->id // Subcategory of Home & Living
+            'parent_id' => $homeLiving->id, // Subcategory of Home & Living
+            'order_no' => 1 // Set order number
         ]);
 
         $decor = Category::create([
@@ -97,7 +105,8 @@ class CategorySeeder extends Seeder
             'slug' => 'decor',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $homeLiving->id // Subcategory of Home & Living
+            'parent_id' => $homeLiving->id, // Subcategory of Home & Living
+            'order_no' => 2 // Set order number
         ]);
 
         // ----------- SUB-SUBCATEGORIES (Third-level) -----------
@@ -107,7 +116,8 @@ class CategorySeeder extends Seeder
             'slug' => 'smartphones',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $mobiles->id // Sub-subcategory of Mobiles
+            'parent_id' => $mobiles->id, // Sub-subcategory of Mobiles
+            'order_no' => 1 // Set order number
         ]);
 
         Category::create([
@@ -115,7 +125,8 @@ class CategorySeeder extends Seeder
             'slug' => 'feature-phones',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $mobiles->id // Sub-subcategory of Mobiles
+            'parent_id' => $mobiles->id, // Sub-subcategory of Mobiles
+            'order_no' => 2 // Set order number
         ]);
 
         // Create sub-subcategories under Clothing
@@ -124,7 +135,8 @@ class CategorySeeder extends Seeder
             'slug' => 'mens-clothing',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $clothing->id // Sub-subcategory of Clothing
+            'parent_id' => $clothing->id, // Sub-subcategory of Clothing
+            'order_no' => 1 // Set order number
         ]);
 
         Category::create([
@@ -132,7 +144,8 @@ class CategorySeeder extends Seeder
             'slug' => 'womens-clothing',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $clothing->id // Sub-subcategory of Clothing
+            'parent_id' => $clothing->id, // Sub-subcategory of Clothing
+            'order_no' => 2 // Set order number
         ]);
     }
 }
