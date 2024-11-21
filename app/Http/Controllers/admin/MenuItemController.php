@@ -39,7 +39,7 @@ class MenuItemController extends Controller
         return view('admin.menu-item.list', compact('menuItems'));
     }
 
-    // Create new menu form
+    // Create new menuitem form
     public function create()
     {
         $permissions = getAuthUserModulePermissions();
@@ -53,7 +53,7 @@ class MenuItemController extends Controller
         return view('admin.menu-item.create', compact('categories','labels'));
     }
 
-    // Store a new menu
+    // Store a new menuitem
     public function store(Request $request)
     {
         $permissions = getAuthUserModulePermissions();
@@ -165,7 +165,12 @@ class MenuItemController extends Controller
         $menuItemDetails = DB::table('menu_item_details')
         ->where('menu_item_id', $id)
         ->first();
-        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories','labels','menuItemDetails'));
+        if ($menuItemDetails && $menuItemDetails->label) {
+        $labelName = PriceManagement::find($menuItemDetails->label)->label;
+        } else {
+            $labelName = null;
+        }
+        return view('admin.menu-item.edit', compact('menuItem', 'menuItemImages', 'categories','labels','menuItemDetails','labelName'));
     }
 
     public function update(Request $request, $id)
@@ -213,16 +218,19 @@ class MenuItemController extends Controller
         }
 
         \Log::info('Menu Item updated successfully: ', $menuItem->toArray());
-         // Update menu item details (label and price)
+        // Update menu item details (label and price)
         if ($request->label && $request->price) {
             DB::table('menu_item_details')
-                ->where('menu_item_id', $menuItem->id) // Update existing record
-                ->update([
-                    'label' => $request->label,
-                    'price' => $request->price,
-                    'updated_at' => now(),
-                ]);
+                ->updateOrInsert(
+                    ['menu_item_id' => $menuItem->id],
+                    [
+                        'label' => $request->label,
+                        'price' => $request->price,
+                        'updated_at' => now(),
+                    ]
+                );
         }
+        
         $request->session()->flash('success', 'Menu Item updated successfully');
 
 
