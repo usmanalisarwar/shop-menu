@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Menu;
 use App\Models\MenuItem;
 use App\Models\Category;
+use App\Models\PriceManagement;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MenuGenerateController extends Controller
@@ -37,7 +38,8 @@ class MenuGenerateController extends Controller
         }
 
         // Find the associated MenuItems for the menu
-        $menuItems = MenuItem::with(['images', 'details'])->get();
+        $menuItems = MenuItem::with(['images', 'details'])->paginate(8);
+
         $categories = Category::all();
 
         // PDF file path for menu
