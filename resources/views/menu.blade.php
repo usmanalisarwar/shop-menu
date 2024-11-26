@@ -375,7 +375,7 @@
                             <h1 class="text-importent"> Order and Menu elevate Your<br> Dining Experience</h1>
                             
                             <p>Order and Menu, transform your dining experience by crafting unique, delicious menus that showcase your restaurant's style and flavor. </p>
-                            <a class="color-a"  href="#"> Contact Us</a>
+                            <a class="color-a"  href="{{ route('home.contact-us') }}"> Contact Us</a>
 
                         </div>
                         
