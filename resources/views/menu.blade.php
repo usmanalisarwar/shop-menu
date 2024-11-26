@@ -409,7 +409,7 @@
                     @endif
 
                     <div class="item-details">
-                        <!-- <p class="label">{{ $menuItem->details->first()->label }}</p> -->
+                        <p class="title">{{ $menuItem->title }}</p>
                         <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
                         <p class="description">{{ $menuItem->description }}</p>
                     </div>
