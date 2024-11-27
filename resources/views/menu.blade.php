@@ -390,52 +390,59 @@
          <div class="owl-carousel owl-theme">
             @foreach($categories as $category)
                 <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
-                    <h4 class="black">{{ $category->name }}</h4>
+                    <h4 class="black">
+                        <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">{{ $category->name }}</a>
+                    </h4>
                 </div>
             @endforeach
         </div>
 
-       <section class="menu">
-        <h2>🔥 Popular</h2>
-        <p>Most ordered right now.</p>
-        
-        <div class="menu-grid">
-            @foreach($menuItems as $menuItem)
-                <div class="menu-item">
-                  @if($menuItem->images->isNotEmpty())
-                        <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
-                    @else
-                        <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
-                    @endif
+        <!-- Display Category Name if Selected -->
+        @if($categoryId)
+            <h3>Category Name: {{ $categories->firstWhere('id', $categoryId)->name }}</h3>
+        @else
+            <h3>Showing all items</h3>
+        @endif
 
-                    <div class="item-details">
-                        <p class="title">{{ $menuItem->title }}</p>
-                        <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
-                        <p class="description">{{ $menuItem->description }}</p>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+        <section class="menu">
+            <div class="menu-grid">
+                @if($menuItems->isEmpty())
+                    <p>No records found for this category.</p>
+                @else
+                    @foreach($menuItems as $menuItem)
+                        <div class="menu-item">
+                            @if($menuItem->images->isNotEmpty())
+                                <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
+                            @else
+                                <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
+                            @endif
 
-       <!-- Pagination -->
+                            <div class="item-details">
+                                <p class="title">{{ $menuItem->title }}</p>
+                                <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
+                                <p class="description">{{ $menuItem->description }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
+            <!-- Pagination -->
             <div class="card-footer clearfix">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-end">
-                        {{-- Previous Page Link --}}
                         <li class="page-item {{ $menuItems->onFirstPage() ? 'disabled' : '' }}">
                             <a class="page-link" href="{{ $menuItems->previousPageUrl() }}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
 
-                        {{-- Pagination Elements --}}
                         @foreach ($menuItems->getUrlRange(1, $menuItems->lastPage()) as $page => $url)
                             <li class="page-item {{ $page == $menuItems->currentPage() ? 'active' : '' }}">
                                 <a class="page-link" href="{{ $url }}">{{ $page }}</a>
                             </li>
                         @endforeach
 
-                        {{-- Next Page Link --}}
                         <li class="page-item {{ $menuItems->hasMorePages() ? '' : 'disabled' }}">
                             <a class="page-link" href="{{ $menuItems->nextPageUrl() }}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
@@ -444,9 +451,9 @@
                     </ul>
                 </nav>
             </div>
+        </section>
 
-            <!-- End of Pagination -->
-    </section>
+
 
     </div>
 </div>
