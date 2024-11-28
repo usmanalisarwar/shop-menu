@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -387,71 +388,92 @@
 
         <!-- <div><input type="text" placeholder="Search in menu"></div> -->
 
-         <div class="owl-carousel owl-theme">
-            @foreach($categories as $category)
-                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
-                    <h4 class="black">
-                        <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">{{ $category->name }}</a>
-                    </h4>
-                </div>
-            @endforeach
+      <div class="owl-carousel owl-theme">
+        @foreach($categories as $category)
+            <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
+                <h4 class="black">
+                    <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">
+                        {{ $category->name }}
+                    </a>
+                </h4>
+
+             @if($category->children && $category->children->isNotEmpty())
+                <ul class="subcategories">
+                    @foreach($category->children as $subcategory)
+                        <li>
+                            <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $subcategory->id, 'subcategory_slug' => $subcategory->slug]) }}">
+                                {{ $subcategory->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+
+            @endif
+
+            </div>
+        @endforeach
+    </div>
+
+    <!-- Display Category Name if Selected -->
+    @if(isset($subcategorySlug) && $subcategorySlug)
+        <h3>Subcategory Name: {{ $categories->firstWhere('slug', $subcategorySlug)->name }}</h3>
+    @elseif($categoryId)
+        <h3>Category Name: {{ $categories->firstWhere('id', $categoryId)->name }}</h3>
+    @else
+        <h3>Showing all items</h3>
+    @endif
+
+
+
+    <section class="menu">
+        <div class="menu-grid">
+            @if($menuItems->isEmpty())
+                <p>No records found for this category.</p>
+            @else
+                @foreach($menuItems as $menuItem)
+                    <div class="menu-item">
+                        @if($menuItem->images->isNotEmpty())
+                            <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
+                        @else
+                            <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
+                        @endif
+
+                        <div class="item-details">
+                            <p class="title">{{ $menuItem->title }}</p>
+                            <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
+                            <p class="description">{{ $menuItem->description }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            @endif
         </div>
 
-        <!-- Display Category Name if Selected -->
-        @if($categoryId)
-            <h3>Category Name: {{ $categories->firstWhere('id', $categoryId)->name }}</h3>
-        @else
-            <h3>Showing all items</h3>
-        @endif
+        <!-- Pagination -->
+        <div class="card-footer clearfix">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-end">
+                    <li class="page-item {{ $menuItems->onFirstPage() ? 'disabled' : '' }}">
+                        <a class="page-link" href="{{ $menuItems->previousPageUrl() }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
 
-        <section class="menu">
-            <div class="menu-grid">
-                @if($menuItems->isEmpty())
-                    <p>No records found for this category.</p>
-                @else
-                    @foreach($menuItems as $menuItem)
-                        <div class="menu-item">
-                            @if($menuItem->images->isNotEmpty())
-                                <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
-                            @else
-                                <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
-                            @endif
-
-                            <div class="item-details">
-                                <p class="title">{{ $menuItem->title }}</p>
-                                <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
-                                <p class="description">{{ $menuItem->description }}</p>
-                            </div>
-                        </div>
+                    @foreach ($menuItems->getUrlRange(1, $menuItems->lastPage()) as $page => $url)
+                        <li class="page-item {{ $page == $menuItems->currentPage() ? 'active' : '' }}">
+                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                        </li>
                     @endforeach
-                @endif
-            </div>
 
-            <!-- Pagination -->
-            <div class="card-footer clearfix">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-end">
-                        <li class="page-item {{ $menuItems->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $menuItems->previousPageUrl() }}" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
+                    <li class="page-item {{ $menuItems->hasMorePages() ? '' : 'disabled' }}">
+                        <a class="page-link" href="{{ $menuItems->nextPageUrl() }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </section>
 
-                        @foreach ($menuItems->getUrlRange(1, $menuItems->lastPage()) as $page => $url)
-                            <li class="page-item {{ $page == $menuItems->currentPage() ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                            </li>
-                        @endforeach
-
-                        <li class="page-item {{ $menuItems->hasMorePages() ? '' : 'disabled' }}">
-                            <a class="page-link" href="{{ $menuItems->nextPageUrl() }}" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </section>
 
     </div>
 </div>
