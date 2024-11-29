@@ -426,40 +426,36 @@
              </div>
 
         <!-- <div><input type="text" placeholder="Search in menu"></div> -->
-<div class="owl-carousel owl-theme">
-    @foreach($categories as $category)
-        <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}" style="margin-bottom: 100px;">
-            <h4 class="black">
-                <!-- Link to the category page -->
-                <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">
-                    {{ $category->name }}
-                </a>
-            </h4>
+        <div class="owl-carousel owl-theme">
+            @foreach($categories as $category)
+                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}" style="margin-bottom: 100px;">
+                    <h4 class="black">
+                        <!-- Link to the category page -->
+                        <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">
+                            {{ $category->name }}
+                        </a>
+                    </h4>
 
-            <!-- Subcategories -->
-            @if($category->children && $category->children->isNotEmpty())
-                <ul class="subcategories">
-                    @foreach($category->children as $subcategory)
-                        <li>
-                            <!-- Link to the subcategory page -->
-                            <a href="{{ route('book.show', [
-                                'slug' => $menu->slug, 
-                                'category_id' => $subcategory->id, 
-                                'subcategory_slug' => $subcategory->slug
-                            ]) }}">
-                                {{ $subcategory->name }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
+                    <!-- Subcategories -->
+                    @if($category->children && $category->children->isNotEmpty())
+                        <ul class="subcategories">
+                            @foreach($category->children as $subcategory)
+                                <li>
+                                    <!-- Link to the subcategory page -->
+                                    <a href="{{ route('book.show', [
+                                        'slug' => $menu->slug, 
+                                        'category_id' => $subcategory->id, 
+                                        'subcategory_slug' => $subcategory->slug
+                                    ]) }}">
+                                        {{ $subcategory->name }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endforeach
         </div>
-    @endforeach
-</div>
-
-
-
-
 
 
     <!-- Display Category Name if Selected -->
