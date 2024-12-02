@@ -28,7 +28,7 @@ class MenuGenerateController extends Controller
         return view('qrcode', compact('qrCode','menu','menuImage'));
     }
 
- 
+
 public function showBook($slug, Request $request)
 {
     // Find the menu by slug
@@ -42,7 +42,7 @@ public function showBook($slug, Request $request)
     // Retrieve category_id and subcategory_slug from the request
     $categoryId = $request->input('category_id');
     $subcategorySlug = $request->input('subcategory_slug'); // Capture the subcategory slug
-    
+
     // Find the category or subcategory
     $category = null;
     if ($subcategorySlug) {
@@ -53,7 +53,7 @@ public function showBook($slug, Request $request)
     }
 
     // Query MenuItems
-    $menuItemsQuery = MenuItem::with(['images', 'details']);
+    $menuItemsQuery = MenuItem::with(['images', 'details'])->where('user_id',$menu->user_id);
 
     if ($categoryId) {
         $menuItemsQuery->where('category_id', $categoryId);
