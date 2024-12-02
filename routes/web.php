@@ -163,22 +163,22 @@ Route::group(['middleware' => ['auth']], function () {
     // Price Management routes (already set up)
     Route::get('price-managements', [PriceManagementController::class, 'index'])
         ->name('price-managements.index')
-        ->middleware(['checkRolePermission:price-management,read-price-management']);
+        ->middleware(['checkRolePermission:price-managements,read-price-management']);
     Route::get('price-managements/create', [PriceManagementController::class, 'create'])
         ->name('price-managements.create')
-        ->middleware(['checkRolePermission:price-management,add-new-price-management']);
+        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
     Route::post('price-managements', [PriceManagementController::class, 'store'])
         ->name('price-managements.store')
-        ->middleware(['checkRolePermission:price-management,add-new-price-management']);
+        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
      Route::get('price-managements/{priceMangement}/edit', [PriceManagementController::class, 'edit'])
         ->name('price-managements.edit')
-        ->middleware(['checkRolePermission:price-management,edit-price-management']);
+        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
     Route::post('price-managements/{priceMangement}', [PriceManagementController::class, 'update'])
         ->name('price-managements.update')
-        ->middleware(['checkRolePermission:price-management,edit-price-management']);
+        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
     Route::delete('price-managements/{id}', [PriceManagementController::class, 'destroy'])
     ->name('price-managements.delete')
-    ->middleware(['checkRolePermission:price-management,delete-price-management']);
+    ->middleware(['checkRolePermission:price-managements,delete-price-management']);
 });
 
 

@@ -428,7 +428,7 @@
         <!-- <div><input type="text" placeholder="Search in menu"></div> -->
         <div class="owl-carousel owl-theme">
             @foreach($categories as $category)
-                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}" style="margin-bottom: 100px;">
+                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
                     <h4 class="black">
                         <!-- Link to the category page -->
                         <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">
@@ -484,6 +484,7 @@
 
                         <div class="item-details">
                             <p class="title">{{ $menuItem->title }}</p>
+                            <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
                             <p class="description">{{ $menuItem->description }}</p>
                         </div>
                     </div>

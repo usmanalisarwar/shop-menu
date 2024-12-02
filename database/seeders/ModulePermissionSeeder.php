@@ -87,9 +87,9 @@ class ModulePermissionSeeder extends Seeder
                 ],
             ],
              [
-                'name'=>'Price Management',
+                'name'=>'Price Managements',
                 'url'=>'price-managements',
-                'active'=>'price-management',
+                'active'=>'price-managements',
                 'icon'=>'tag',
                 'permissions'=>[
                     'Read Price Management',
