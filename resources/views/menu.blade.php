@@ -41,8 +41,8 @@
     <link href="{{ asset('dflip/css/themify-icons.min.css')}}" rel="stylesheet" type="text/css">
 
     <!-- Custom Styles to make Flipbook full-screen -->
-    
-   
+
+
     <style>
     * {
         margin: 0;
@@ -60,9 +60,9 @@
       .home{
         padding:1.5rem;
         background:url({{ asset('front-assets/img/background.png')}});
-        
+
         background-position:center;
-        
+
         flex-wrap:wrap;
         padding-top:105px;
         padding-bottom:105px;
@@ -100,13 +100,13 @@
         padding: 0.6rem 1.5rem;
         border: 1px solid orange;
         border-radius: 10px;
-      
+
         font-size: 18px;
         transition: 0.5s;
         display: inline-block;
          }
          /* .color-a :hover{
-          
+
             border:1px solid #fff;
             background-color:#FEA116;
          } */
@@ -124,7 +124,7 @@
     border-radius: 50px;
     width: 162px;
     height: 47px; /* Smooth scaling effect on hover */
-    
+
 }
 
 .item:hover {
@@ -138,7 +138,7 @@
 
 .item.active {
     background-color: #000 /* Active background color */
-    
+
     /* box-shadow: 0 4px 12px rgba(240, 165, 0, 0.6); Emphasized shadow for active} */
 }
 .item.active .black {
@@ -394,7 +394,7 @@
                         <a href="{{ route('home.about-us') }}" class="nav-item nav-link">About US</a>
                         <a href="{{ route('home.contact-us') }}" class="nav-item nav-link">Contact Us</a>
                         <a href="{{ route('home.services') }}" class="nav-item nav-link active">Disclaimer</a>
-                        
+
                     </div>
                     <a href="{{ route('home.login') }}" class="btn btn-primary py-2 px-4">Sign In</a>
                 </div>
@@ -413,12 +413,12 @@
                     <div class="home-inner-content">
                         <div class="home-text-content">
                             <h1 class="text-importent"> Order and Menu elevate Your<br> Dining Experience</h1>
-                            
+
                             <p>Order and Menu, transform your dining experience by crafting unique, delicious menus that showcase your restaurant's style and flavor. </p>
                             <a class="color-a"  href="{{ route('home.contact-us') }}"> Contact Us</a>
 
                         </div>
-                        
+
                     </div>
 
                 </div>
@@ -443,8 +443,8 @@
                                 <li>
                                     <!-- Link to the subcategory page -->
                                     <a href="{{ route('book.show', [
-                                        'slug' => $menu->slug, 
-                                        'category_id' => $subcategory->id, 
+                                        'slug' => $menu->slug,
+                                        'category_id' => $subcategory->id,
                                         'subcategory_slug' => $subcategory->slug
                                     ]) }}">
                                         {{ $subcategory->name }}
@@ -484,7 +484,6 @@
 
                         <div class="item-details">
                             <p class="title">{{ $menuItem->title }}</p>
-                            <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
                             <p class="description">{{ $menuItem->description }}</p>
                         </div>
                     </div>
@@ -604,7 +603,7 @@
                 items: 7
             }
         }
-        
+
     });
 </script>
 
@@ -615,13 +614,13 @@
       $(".content").hide(); // Hide all content divs
       $("#content-" + target).show(); // Show the targeted content div
     });
-  
+
 </script>
 
 
     <!-- Template Javascript -->
     <script src="{{ asset('front-assets/js/main.js')}}"></script>
-   
+
     <script>
 function showContent(index) {
     // Hide all content divs
@@ -647,7 +646,7 @@ document.addEventListener('DOMContentLoaded', () => showContent(0));
     <!-- popular and fish script -->
 
     <script>
-  
+
 
     // Show/Hide Sections on Carousel Item Click
     $(".owl-carousel .item").click(function() {
@@ -657,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => showContent(0));
       $("section.menu").hide();
       $("#" + target).show();
     });
-  
+
 </script>
 
 <!-- for carsul active box -->
@@ -668,7 +667,7 @@ document.querySelectorAll('.item').forEach(item => {
     item.addEventListener('click', () => {
         // Remove 'active' class from all items
         document.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
-        
+
         // Add 'active' class to the clicked item
         item.classList.add('active');
     });
