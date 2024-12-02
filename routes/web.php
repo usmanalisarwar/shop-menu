@@ -78,7 +78,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/menus/{id}/pdf', [MenuController::class, 'generatePdf'])
         ->name('menus.pdf');
     Route::get('/logout', [MenuController::class, 'logout'])->name('admin.logout');
-  
+
 
     // Menu-item routes
     Route::get('/menu-items', [MenuItemController::class, 'index'])
@@ -121,7 +121,7 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('categories.delete')
         ->middleware(['checkRolePermission:categories,delete-category']);
     Route::get('/categories/subcategories', [CategoryController::class, 'getSubCategories'])->name('categories.subcategories');
-    
+
     // Menu Image routes
     Route::post('/upload-menu-image', [MenuImageController::class, 'create'])
         ->name('menu-images.create');
@@ -163,22 +163,22 @@ Route::group(['middleware' => ['auth']], function () {
     // Price Management routes (already set up)
     Route::get('price-managements', [PriceManagementController::class, 'index'])
         ->name('price-managements.index')
-        ->middleware(['checkRolePermission:price-managements,read-price-management']);
+        ->middleware(['checkRolePermission:price-management,read-price-management']);
     Route::get('price-managements/create', [PriceManagementController::class, 'create'])
         ->name('price-managements.create')
-        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
+        ->middleware(['checkRolePermission:price-management,add-new-price-management']);
     Route::post('price-managements', [PriceManagementController::class, 'store'])
         ->name('price-managements.store')
-        ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
+        ->middleware(['checkRolePermission:price-management,add-new-price-management']);
      Route::get('price-managements/{priceMangement}/edit', [PriceManagementController::class, 'edit'])
         ->name('price-managements.edit')
-        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
+        ->middleware(['checkRolePermission:price-management,edit-price-management']);
     Route::post('price-managements/{priceMangement}', [PriceManagementController::class, 'update'])
         ->name('price-managements.update')
-        ->middleware(['checkRolePermission:price-managements,edit-price-management']);
+        ->middleware(['checkRolePermission:price-management,edit-price-management']);
     Route::delete('price-managements/{id}', [PriceManagementController::class, 'destroy'])
     ->name('price-managements.delete')
-    ->middleware(['checkRolePermission:price-managements,delete-price-management']);
+    ->middleware(['checkRolePermission:price-management,delete-price-management']);
 });
 
 
