@@ -2,11 +2,11 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-        width: 100%; /* Make sure the image takes the full width of the card */
-        height: auto; /* Maintain aspect ratio */
+        width: 100%;
+        height: auto;
     }
     .image-row {
-        margin-bottom: 15px; /* Add spacing between rows */
+        margin-bottom: 15px;
     }
 </style>
 
@@ -36,10 +36,10 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                    	 <!-- Category Field -->
-                        <div class="col-md-12">
+                        <!-- Category Field -->
+                        <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="category_id">Category</label>
+                                <label for="category_id">Category<span class="text-danger">*</span></label>
                                 <select name="category_id" id="category_id" class="form-control">
                                     <option value="" selected disabled>Select Category</option>
                                     @foreach($categories as $category)
@@ -49,32 +49,63 @@
                                 <p></p>
                             </div>
                         </div>
+                        
                         <!-- Title Field -->
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="title">Title</label>
+                                <label for="title">Title<span class="text-danger">*</span></label>
                                 <input type="text" name="title" id="title" class="form-control" placeholder="Title">
                                 <p></p>
                             </div>
                         </div>
 
-                        <!-- Price Field -->
+                        <!-- Description Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="price">Price</label>
-                                <input type="number" step="0.01" name="price" id="price" class="form-control" placeholder="Price">
+                                <label for="description">Description<span class="text-danger">*</span></label>
+                                <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
                                 <p></p>
                             </div>
                         </div>
+                        <!-- Label Field -->
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="label">Price Type<span class="text-danger">*</span></label>
+                                <select name="label" id="label" class="form-control">
+                                    <option value="">Select Price Type</option>
+                                    @foreach($labels as $label)
+                                        <option value="{{ $label->id }}">{{ $label->label }}</option>
+                                    @endforeach
+                                </select>
+                                <p></p>
+                            </div>
+                        </div>
+                        <!-- Label Field (Dynamic Value from price_management_details table) -->
+                        <div class="col-md-6" id="label-field" style="display: none;">
+                            <div class="mb-3">
+                                <label for="dynamic_label">Label</label>
+                                <input type="text" name="dynamic_label" id="dynamic_label" class="form-control" placeholder="Label" readonly>
+                            </div>
+                        </div>
 
-                        <!-- Media Images Dropzone -->
+
+                        <!-- Price Field (Initially Null) -->
+                        <div class="col-md-6" id="price-field" style="display: none;">
+                            <div class="mb-3">
+                                <label for="price">Price</label>
+                                <input type="number" name="price" id="price" class="form-control" placeholder="Price" value="">
+                            </div>
+                        </div>
+
+
+                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
-                            <div class="card mb-3">
+                            <div class="card mb-3 d-none">
                                 <div class="card-body">
                                     <h2 class="h4 mb-3">Media</h2>                              
                                     <div id="image" class="dropzone dz-clickable">
                                         <div class="dz-message needsclick">    
-                                            <br>Drop files here or click to upload.<br><br>                               <p></p>          
+                                            <br>Drop files here or click to upload.<br><br>
                                         </div>
                                     </div>
                                 </div>                                                                        
@@ -82,7 +113,6 @@
                         </div>
                         <!-- Image Gallery -->
                         <div class="row" id="menu-gallery" class="sortable-gallery"></div>
-
                     </div>
                 </div>
             </div>
@@ -98,8 +128,43 @@
 @endsection
 
 @section('customJs')
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script>
+$(document).ready(function () {
+     $('#label').on('change', function () {
+        var selectedLabel = $(this).val();
+
+        if (selectedLabel) {
+            $.ajax({
+                url: '{{ route("getPriceDetail", ["id" => ":id"]) }}'.replace(':id', selectedLabel),
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status) {
+                        // Show fields and set the dynamic label value
+                        $('#label-field').show();
+                        $('#price-field').show();
+                        $('#dynamic_label').val(response.priceDetails.label); // Set label value
+                        $('#price').val(null); // Keep price field null
+                    } else {
+                        $('#label-field').hide();
+                        $('#price-field').hide();
+                    }
+                },
+                error: function() {
+                    $('#label-field').hide();
+                    $('#price-field').hide();
+                }
+            });
+        } else {
+            $('#label-field').hide();
+            $('#price-field').hide();
+        }
+    });
+
+});
+
+
 $("#menuItemForm").submit(function(event){
     event.preventDefault();
     var element = $(this);
@@ -115,21 +180,27 @@ $("#menuItemForm").submit(function(event){
                 window.location.href = "{{ route('menu-items.index') }}";
             } else {
                 var errors = response.errors;
-                if(errors.title){
-                    $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
-                } else {
-                    $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
                 if(errors.category_id){
                     $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
                 } else {
                     $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
-                if(errors.price){
-                    $("#price").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.price);
+                if(errors.title){
+                    $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
                 } else {
-                    $("#price").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                    $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
+                if(errors.description){
+                    $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
+                } else {
+                    $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.label){
+                    $("#label").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.label);
+                } else {
+                    $("#label").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+
             }
         },
         error: function(jqXHR, exception){
@@ -138,69 +209,70 @@ $("#menuItemForm").submit(function(event){
     });
 });
 
-// Dropzone setup for media images
-Dropzone.autoDiscover = false;
-const dropzone = $("#image").dropzone({
-    url: "{{ route('menu-item-images.menuItemCreate') }}",
-    maxFiles: 10,
-    paramName: 'image',
-    acceptedFiles: "image/jpeg,image/png,image/gif",
-    thumbnailWidth: 300,
-    thumbnailHeight: 275,
-    headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    },
-    success: function(file, response) {
-        if (response.status) {
-            const existingImages = $('#menu-gallery .image-row').map(function() {
-                return $(this).data('id');
-            }).get();
 
-            if (existingImages.includes(response.image_id)) {
+        // Dropzone setup for media images
+        Dropzone.autoDiscover = false;
+        const dropzone = $("#image").dropzone({
+            url: "{{ route('menu-item-images.menuItemCreate') }}",
+            maxFiles: 10,
+            paramName: 'image',
+            acceptedFiles: "image/jpeg,image/png,image/gif",
+            thumbnailWidth: 300,
+            thumbnailHeight: 275,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(file, response) {
+                if (response.status) {
+                    const existingImages = $('#menu-gallery .image-row').map(function() {
+                        return $(this).data('id');
+                    }).get();
+
+                    if (existingImages.includes(response.image_id)) {
+                        this.removeFile(file);
+                        return;
+                    }
+
+                    var html = `
+                        <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
+                            <input type="hidden" name="image_array[]" value="${response.image_id}">
+                            <div class="card">
+                                <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                                <div class="card-body text-center">
+                                    <span class="image-number">${$('.image-row').length + 1}</span>
+                                    <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    $("#menu-gallery").append(html);
+                    updateImageNumbers();
+                }
+            },
+            complete: function(file){
                 this.removeFile(file);
-                return;
             }
+        });
 
-            var html = `
-                <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
-                    <input type="hidden" name="image_array[]" value="${response.image_id}">
-                    <div class="card">
-                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
-                        <div class="card-body text-center">
-                            <span class="image-number">${$('.image-row').length + 1}</span>
-                            <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
-                        </div>
-                    </div>
-                </div>`;
-            $("#menu-gallery").append(html);
+        // Initialize Sortable for image swapping
+        const gallery = document.getElementById('menu-gallery');
+        Sortable.create(gallery, {
+            animation: 150,
+            onEnd: function (evt) {
+                updateImageNumbers();
+            }
+        });
+
+        // Update the image numbers after sorting or deleting
+        function updateImageNumbers() {
+            $('#menu-gallery .image-row').each(function (index, element) {
+                $(element).find('.image-number').text(index + 1);
+            });
+        }
+
+        function deleteImage(id){
+            $("#image-row-" + id).remove();
             updateImageNumbers();
         }
-    },
-    complete: function(file){
-        this.removeFile(file);
-    }
-});
 
-// Initialize Sortable for image swapping
-const gallery = document.getElementById('menu-gallery');
-Sortable.create(gallery, {
-    animation: 150,
-    onEnd: function (evt) {
-        updateImageNumbers(); // Update the numbering after sorting
-    }
-});
-
-// Update the image numbers after sorting or deleting
-function updateImageNumbers() {
-    $('#menu-gallery .image-row').each(function (index, element) {
-        $(element).find('.image-number').text(index + 1);
-    });
-}
-
-function deleteImage(id){
-    $("#image-row-" + id).remove();
-    updateImageNumbers(); // Update numbers after deletion
-}
-
-</script>
+    </script>
 @endsection

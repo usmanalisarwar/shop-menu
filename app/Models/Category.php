@@ -9,7 +9,7 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'parent_id', 'status'];
+    protected $fillable = ['user_id','name', 'slug', 'parent_id', 'status','order_no'];
 
     // Define a parent relationship
     public function parent()
@@ -31,5 +31,9 @@ class Category extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    public function images()
+    {
+        return $this->hasMany(CategoryImage::class, 'category_id');
+    }
+ 
 }

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use App\Helpers\SlugHelper;
+use App\Models\MenuItemImage;
 use App\Rules\ImageSize;
 
 class MenuController extends Controller
@@ -82,12 +83,11 @@ class MenuController extends Controller
         }
 
         // Get menus only for the authenticated user
-        $query = Menu::where('user_id', Auth::id())->latest();
+        $query = Menu::where('user_id', Auth::id())->with('images')->latest();
 
         if ($keyword = $request->get('keyword')) {
             $query->where('title', 'like', '%' . $keyword . '%');
         }
-
         $menus = $query->paginate(10);
         return view('admin.menu.list', compact('menus'));
     }
@@ -96,7 +96,7 @@ class MenuController extends Controller
     // Create new menu form
     public function create()
     {
-         $permissions = getAuthUserModulePermissions();
+        $permissions = getAuthUserModulePermissions();
 
         if (!hasPermissions($permissions, 'add-new-menu')) {
             abort(403, 'Unauthorized');
@@ -107,7 +107,7 @@ class MenuController extends Controller
     // Store a new menu
     public function store(Request $request)
     {
-         $permissions = getAuthUserModulePermissions();
+        $permissions = getAuthUserModulePermissions();
 
         if (!hasPermissions($permissions, 'add-new-menu')) {
             abort(403, 'Unauthorized');
@@ -115,9 +115,9 @@ class MenuController extends Controller
 
         $validator = Validator::make($request->all(), [
             'title' => 'required',
-            'image_array' => 'required|array',
+            'image_array' => 'nullable|array',
             'image_array.*' => [
-                'required',
+                'nullable',
                 'exists:menu_images,id',
                 function ($attribute, $value, $fail) use ($request) {
                     // Retrieve the image from the request based on the current looped value
@@ -142,12 +142,29 @@ class MenuController extends Controller
 
 
         // Check the size of each image
-        foreach ($request->image_array as $menuImageId) {
-            $menuImage = MenuImage::find($menuImageId);
-            $imagePath = public_path('temp/' . $menuImage->name);
+        if (isset($request->image_array)) {
+            // foreach ($request->image_array as $menuImageId) {
+            //     $menuImage = MenuImage::find($menuImageId);
+            //     $imagePath = public_path('temp/' . $menuImage->name);
+            //     $imageSize = getimagesize($imagePath);
+            //     if (!$imageSize) {
+            //         return redirect()->back()->withErrors(['image_array' => 'The uploaded file is not a valid image.'])->withInput();
+            //     } elseif ($imageSize[0] != 2481 || $imageSize[1] != 3507) {
+            //         return redirect()->back()->withErrors(['image_array' => 'The image must be an A4 size image (2481x3507 pixels).'])->withInput();
+            //     }
+            // }
 
-
+            foreach ($request->image_array as $menuImageId) {
+                $menuImage = MenuImage::find($menuImageId);
+                $imagePath = public_path('temp/' . $menuImage->name);
+            }
         }
+        // foreach ($request->image_array as $menuImageId) {
+        //     $menuImage = MenuImage::find($menuImageId);
+        //     $imagePath = public_path('temp/' . $menuImage->name);
+
+
+        // }
 
         $menu = new Menu();
         $menu->title = $request->title;
@@ -156,25 +173,43 @@ class MenuController extends Controller
         $menu->save();
 
         // Save Menu images
-        foreach ($request->image_array as $menuImageId) {
-            $menuImage = MenuImage::find($menuImageId);
-            $ext = pathinfo($menuImage->name, PATHINFO_EXTENSION);
+        if (isset($request->image_array)) {
+            foreach ($request->image_array as $menuImageId) {
+                $menuImage = MenuImage::find($menuImageId);
+                $ext = pathinfo($menuImage->name, PATHINFO_EXTENSION);
 
-            $newMenuImage = new MenuImage();
-            $newMenuImage->menu_id = $menu->id;
-            $newMenuImage->order_no = $menuImage->order_no;
-            $newMenuImage->name = $menuImage->name;
-            $newMenuImage->image = $menuImage->image;
-            $newMenuImage->save();
+                $newMenuImage = new MenuImage();
+                $newMenuImage->menu_id = $menu->id;
+                $newMenuImage->save();
 
-            $imageName = $menu->id . '-' . $newMenuImage->id . '-' . time() . '.' . $ext;
-            $sourcePath = public_path('temp/' . $menuImage->name);
-            $destinationPath = public_path('uploads/menu/' . $imageName);
+                $imageName = $menu->id . '-' . $newMenuImage->id . '-' . time() . '.' . $ext;
+                $sourcePath = public_path('temp/' . $menuImage->name);
+                $destinationPath = public_path('uploads/menu/' . $imageName);
 
-            File::copy($sourcePath, $destinationPath);
-            $newMenuImage->image = $imageName;
-            $newMenuImage->save();
+                File::copy($sourcePath, $destinationPath);
+                $newMenuImage->image = $imageName;
+                $newMenuImage->save();
+            }
         }
+        // foreach ($request->image_array as $menuImageId) {
+        //     $menuImage = MenuImage::find($menuImageId);
+        //     $ext = pathinfo($menuImage->name, PATHINFO_EXTENSION);
+
+        //     $newMenuImage = new MenuImage();
+        //     $newMenuImage->menu_id = $menu->id;
+        //     $newMenuImage->order_no = $menuImage->order_no;
+        //     $newMenuImage->name = $menuImage->name;
+        //     $newMenuImage->image = $menuImage->image;
+        //     $newMenuImage->save();
+
+        //     $imageName = $menu->id . '-' . $newMenuImage->id . '-' . time() . '.' . $ext;
+        //     $sourcePath = public_path('temp/' . $menuImage->name);
+        //     $destinationPath = public_path('uploads/menu/' . $imageName);
+
+        //     File::copy($sourcePath, $destinationPath);
+        //     $newMenuImage->image = $imageName;
+        //     $newMenuImage->save();
+        // }
 
         $request->session()->flash('success', 'Menu added successfully');
 
@@ -203,7 +238,6 @@ class MenuController extends Controller
     public function update(Request $request, $id)
     {
         $permissions = getAuthUserModulePermissions();
-
         if (!hasPermissions($permissions, 'edit-menu')) {
             abort(403, 'Unauthorized');
         }
@@ -214,33 +248,80 @@ class MenuController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'new_images' => 'nullable|array',
-            'image_array.*' => 'exists:menu_images,id',
+            // 'image_array.*' => 'exists:menu_images,id',
         ]);
 
         if ($validator->fails()) {
             \Log::warning('Validation errors: ', $validator->errors()->toArray());
             return response()->json(['status' => false, 'errors' => $validator->errors()]);
         }
-        
+
         // Find the existing menu owned by the authenticated user
         $menu = Menu::where('id', $id)->where('user_id', Auth::id())->first();
-            if (!$menu) {
-                \Log::error('Menu not found or does not belong to the user: ' . $id);
-                return response()->json(['status' => false, 'errors' => ['menu' => 'Menu not found or does not belong to you.']]);
-            }
+        if (!$menu) {
+            \Log::error('Menu not found or does not belong to the user: ' . $id);
+            return response()->json(['status' => false, 'errors' => ['menu' => 'Menu not found or does not belong to you.']]);
+        }
 
         $menu->title = $request->title;
         $menu->slug = $this->slugHelper->slug('menus', 'slug', $request->title, $id);
-        $menu->save();;
+        $menu->save();
 
         // Update the order numbers for images
-        foreach ($request->image_array as $order => $imageId) {
-            $menuImage = MenuImage::find($imageId);
-            if ($menuImage) {
-                $menuImage->order_no = $order + 1; // Update order number (starting from 1)
-                $menuImage->save();
+        if (isset($request->image_array)) {
+            $existingImageIds = $menu->images->pluck('id')->toArray();
+
+            $imagesToDelete = array_diff($existingImageIds, $request->image_array);
+
+            foreach ($imagesToDelete as $removedImageId) {
+                $imageToDelete = MenuImage::find($removedImageId);
+                if ($imageToDelete) {
+                    $imageToDelete->delete();
+                }
             }
+
+            $menuItemImages = MenuItemImage::whereIn('id', $request->image_array)->get();
+            foreach ($request->image_array as $index => $menuImageId) {
+                $menuImage = MenuImage::find($menuImageId);
+
+                if (!$menuImage) {
+                    // $ext = pathinfo($menuImage->name, PATHINFO_EXTENSION);
+
+                    $newMenuImage = new MenuImage();
+                    $newMenuImage->menu_id = $menu->id;
+                    $newMenuImage->order_no = $index + 1;
+                    $newMenuImage->name = $menuItemImages->where('id', $menuImageId)->first()->name;
+                    $newMenuImage->image = $menuItemImages->where('id', $menuImageId)->first()->image;
+                    $newMenuImage->save();
+
+                    $ext = pathinfo($menuItemImages->where('id', $menuImageId)->first()->name, PATHINFO_EXTENSION);
+
+                    $imageName = $menu->id . '-' . $newMenuImage->id . '-' . time() . '.' . $ext;
+                    $sourcePath = public_path('temp/' . $menuItemImages->where('id', $menuImageId)->first()->name);
+                    $destinationPath = public_path('uploads/menu/' . $imageName);
+
+                    File::copy($sourcePath, $destinationPath);
+                    $newMenuImage->image = $imageName;
+                    $newMenuImage->save();
+                } else {
+                    $menuImage->order_no = $index + 1;
+                    $menuImage->save();
+                }
+            }
+            // foreach ($request->image_array as $order => $imageId) {
+            //     $menuImage = MenuImage::find($imageId);
+            //     if ($menuImage) {
+            //         $menuImage->order_no = $order + 1; // Update order number (starting from 1)
+            //         $menuImage->save();
+            //     }
+            // }
         }
+        // else {
+        //     // If no images are provided, delete all menu images
+        //     // MenuImage::query()->delete();
+            MenuImage::where('menu_id', $menu->id)->delete();
+        // }
+
 
         \Log::info('Menu  updated successfully: ', $menu->toArray());
 
@@ -256,7 +337,7 @@ class MenuController extends Controller
             abort(403, 'Unauthorized');
         }
 
-    // Find the menu that belongs to the logged-in user
+        // Find the menu that belongs to the logged-in user
         $menu = Menu::where('id', $id)->where('user_id', Auth::id())->first();
 
         if (!$menu) {
@@ -265,13 +346,30 @@ class MenuController extends Controller
 
         // Delete associated images
         $menuImages = MenuImage::where('menu_id', $id)->get();
-        foreach ($menuImages as $image) {
-            $imagePath = public_path('uploads/menu/' . $image->image);
-            if (File::exists($imagePath)) {
-                File::delete($imagePath);
+        if (isset($menuImages)) {
+            // foreach ($menuImages as $image) {
+            //     $imagePath = public_path('uploads/menu/' . $image->image);
+            // if (File::exists($imagePath)) {
+            //     File::delete($imagePath);
+            // }
+            // $image->delete();
+            // }
+
+            foreach ($menuImages as $image) {
+                $imagePath = public_path('uploads/menu/' . $image->image);
+                if (File::exists($imagePath)) {
+                    File::delete($imagePath);
+                }
+                $image->delete();
             }
-            $image->delete();
         }
+        // foreach ($menuImages as $image) {
+        //     $imagePath = public_path('uploads/menu/' . $image->image);
+        //     if (File::exists($imagePath)) {
+        //         File::delete($imagePath);
+        //     }
+        //     $image->delete();
+        // }
 
         $menu->delete();
 
@@ -285,3 +383,4 @@ class MenuController extends Controller
         return redirect()->route('home.login');
     }
 }
+

@@ -48,8 +48,8 @@
 							<th width="60">ID</th>
 							<th>Name</th>
 							<th>Slug</th>
-							<th>User</th>
 							<th>Parent</th>
+							<th>Image</th>
 							<th>Status</th>
 							<th width="100">Action</th>
 						</tr>
@@ -61,8 +61,16 @@
 							<td>{{$category->id}}</td>
 							<td>{{$category->name}}</td>
 							<td>{{$category->slug}}</td>
-							<td>{{ $category->user->name ?? 'No User' }}</td>
 							<td>{{ $category->parent->name ?? 'No Parent' }}</td>
+							<td>
+							    @if($category->images->isNotEmpty())
+							        <a href="javascript:void(0);" onclick="showImageModal({{ $category->id }})">
+							            <img src="{{ asset('uploads/category/' . $category->images->first()->image) }}" alt="{{ $category->name }}" width="50" height="50">
+							        </a>
+							    @else
+							        <p>No image available</p>
+							    @endif
+							</td>
 							<td>
                                 @if($category->status == 1)
 								<svg class="text-success-500 h-6 w-6 text-success" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">

@@ -1,8 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Menu;
+use App\Models\MenuItem;
+use App\Models\Category;
+use App\Models\PriceManagement;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Http\Request;
 
 class MenuGenerateController extends Controller
 {
@@ -11,7 +16,11 @@ class MenuGenerateController extends Controller
     {
         // Example: Find the book by slug from the database
         $menu = Menu::where('slug', $slug)->first();
+
         $menuImage = $menu->images[0];
+        // $menuImage = $menu->images->first() ?? null;
+        // $menuImage = $menu->images[0] ?? null;
+
 
         // Check if the book exists
         if (!$menu) {
@@ -20,21 +29,53 @@ class MenuGenerateController extends Controller
         // Generate the book URL using the slug
         $bookUrl = route('book.show', $slug);
         $qrCode = QrCode::size(350)->generate($bookUrl);
+
         // Generate QR code and return it as a response
-        return view('qrcode', compact('qrCode','menu','menuImage'));
+        return view('qrcode', compact('qrCode', 'menu', 'menuImage'));
     }
 
-    // Method to show the book (PDF view)
-    public function showBook($slug)
+
+    public function showBook($slug, Request $request)
     {
-        // Example: Find the book by slug from the database
+        // Find the menu by slug
         $menu = Menu::where('slug', $slug)->first();
 
-        // Check if the book exists
+        // Check if the menu exists
         if (!$menu) {
             return abort(404, 'Menu not found');
         }
+
+        // Retrieve category_id and subcategory_slug from the request
+        $categoryId = $request->input('category_id');
+        $subcategorySlug = $request->input('subcategory_slug'); // Capture the subcategory slug
+
+        // Find the category or subcategory
+        $category = null;
+        if ($subcategorySlug) {
+            $category = Category::where('slug', $subcategorySlug)->first();
+            if ($category) {
+                $categoryId = $category->id; // Update the category ID based on subcategory
+            }
+        }
+
+        // Query MenuItems
+        $menuItemsQuery = MenuItem::with(['images', 'details'])->where('user_id', $menu->user_id);
+
+        if ($categoryId) {
+            $menuItemsQuery->where('category_id', $categoryId);
+        }
+
+        // Paginate the results
+        $menuItems = $menuItemsQuery->paginate(8);
+
+        // Retrieve all categories and their subcategories
+        $categories = Category::with('children')->get();
+
+        // PDF file path for menu
         $file = asset("{$menu->pdf_path}");
-        return view('menu', compact('file','menu'));
+        $menuImage = $menu->images->first() ?? null;
+
+        // Pass data to the view
+        return view('menu', compact('file', 'menu', 'menuImage', 'menuItems', 'categories', 'categoryId', 'subcategorySlug'));
     }
 }

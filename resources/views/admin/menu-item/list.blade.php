@@ -44,9 +44,8 @@
 					<thead>
 						<tr>
 							<th width="60">ID</th>
-							<th>Title</th>
-							<th>Category</th> <!-- Category name column -->
-							<th>Price</th>    <!-- Price column -->
+							<th>Category</th> 
+							<th>Title</th>   
 							<th>Image</th>
 							<th width="100">Action</th>
 						</tr>
@@ -56,9 +55,8 @@
                         @foreach($menuItems as $menu)
                         <tr>
 							<td>{{ $menu->id }}</td>
+							<td>{{ $menu->category->name ?? 'Uncategorized' }}</td>
 							<td>{{ $menu->title }}</td>
-							<td>{{ $menu->category->name ?? 'Uncategorized' }}</td> <!-- Show category name or default to 'Uncategorized' -->
-							<td>{{ number_format($menu->price, 2) }}</td> <!-- Format price with two decimals -->
 							<td>
 							    @if($menu->images->isNotEmpty())
 							        <a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})">

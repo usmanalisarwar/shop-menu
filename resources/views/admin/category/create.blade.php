@@ -1,5 +1,15 @@
 @extends('admin.layouts.app')
+
 @section('content')
+<style type="text/css">
+    .card-img-top {
+        width: 100%; /* Make sure the image takes the full width of the card */
+        height: auto; /* Maintain aspect ratio */
+    }
+    .image-row {
+        margin-bottom: 15px; /* Add spacing between rows */
+    }
+</style>
 
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -14,10 +24,11 @@
         </div>
     </div>
 </section>
+
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
-         @php
+        @php
             $permissions = getAuthUserModulePermissions();
         @endphp
         @if (hasPermissions($permissions, 'add-new-category'))
@@ -28,7 +39,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="name">Name</label>
+                                <label for="name">Name<span class="text-danger">*</span></label>
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Name">
                                 <p></p>
                             </div>
@@ -42,19 +53,14 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- User (User ID) -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="user_id">User</label>
-                                <select name="user_id" id="user_id" class="form-control">
-                                    <option value="">Select a User</option>
-                                    @foreach($users as $user)  <!-- Assuming $users is passed from the controller -->
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="order_no">Order No<span class="text-danger">*</span></label>
+                                <input type="number" name="order_no" id="order_no" class="form-control" placeholder="Order No">
                                 <p></p>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="parent_id">Parent Category</label>
@@ -64,10 +70,25 @@
                                         <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                                     @endforeach
                                 </select>
-                                <p></p>
                             </div>
                         </div>
                         <div id="subcategory-container" class="row"></div>
+
+                        <!-- Media Images Dropzone -->
+                        <div class="col-md-12">  
+                            <div class="card mb-3 d-none">
+                                <div class="card-body">
+                                    <h2 class="h4 mb-3">Media</h2>                              
+                                    <div id="image" class="dropzone dz-clickable">
+                                        <div class="dz-message needsclick">    
+                                            <br>Drop files here or click to upload.<br><br>                               <p></p>          
+                                        </div>
+                                    </div>
+                                </div>                                                                        
+                            </div>
+                        </div>
+                        <!-- Image Gallery -->
+                        <div class="row" id="menu-gallery" class="sortable-gallery"></div>
                     </div>
                 </div>
             </div>
@@ -83,9 +104,15 @@
 @endsection
 
 @section('customJs')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+
 <script>
    $(document).ready(function () {
+        // Initialize Summernote
+        $('.summernote').summernote({
+            height: 250 // Set the editor height
+        });
+
         $('#parent_id').on('change', function () {
             let parent_id = $(this).val();
             loadSubCategories(parent_id, 1);
@@ -157,7 +184,74 @@
         if (errors.name) {
             $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.name);
         }
+        if (errors.order_no) {
+            $("#order_no").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.order_no);
+        }
         // Add other field validations as needed
     }
+
+// Dropzone setup for media images
+Dropzone.autoDiscover = false;
+const dropzone = $("#image").dropzone({
+    url: "{{ route('category-images.categoryCreate') }}",
+    maxFiles: 10,
+    paramName: 'image',
+    acceptedFiles: "image/jpeg,image/png,image/gif",
+    thumbnailWidth: 300,
+    thumbnailHeight: 275,
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    },
+    success: function(file, response) {
+        if (response.status) {
+            const existingImages = $('#menu-gallery .image-row').map(function() {
+                return $(this).data('id');
+            }).get();
+
+            if (existingImages.includes(response.image_id)) {
+                this.removeFile(file);
+                return;
+            }
+
+            var html = `
+                <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
+                    <input type="hidden" name="image_array[]" value="${response.image_id}">
+                    <div class="card">
+                        <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+                        <div class="card-body text-center">
+                            <span class="image-number">${$('.image-row').length + 1}</span>
+                            <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>`;
+            $("#menu-gallery").append(html);
+            updateImageNumbers();
+        }
+    },
+    complete: function(file){
+        this.removeFile(file);
+    }
+});
+
+// Initialize Sortable for image swapping
+const gallery = document.getElementById('menu-gallery');
+Sortable.create(gallery, {
+    animation: 150,
+    onEnd: function (evt) {
+        updateImageNumbers(); // Update the numbering after sorting
+    }
+});
+
+// Update the image numbers after sorting or deleting
+function updateImageNumbers() {
+    $('#menu-gallery .image-row').each(function (index, element) {
+        $(element).find('.image-number').text(index + 1);
+    });
+}
+
+function deleteImage(id){
+    $("#image-row-" + id).remove();
+    updateImageNumbers(); // Update numbers after deletion
+}
 </script>
 @endsection

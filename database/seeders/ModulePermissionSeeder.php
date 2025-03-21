@@ -17,20 +17,20 @@ class ModulePermissionSeeder extends Seeder
     public function run(): void
     {
         $roles = [
-            ['name'=>'Super Admin'],
-            ['name'=>'Admin'],
-            ['name'=>'User'],
+            ['name' => 'Super Admin'],
+            ['name' => 'Admin'],
+            ['name' => 'User'],
         ];
-        foreach ($roles as $role){
-            Role::updateOrCreate($role,$role);
+        foreach ($roles as $role) {
+            Role::updateOrCreate($role, $role);
         }
         $modulesAndPermissions = [
             [
-                'name'=>'Users',
-                'url'=>'users',
-                'active'=>'users',
-                'icon'=>'user-tie',
-                'permissions'=>[
+                'name' => 'Users',
+                'url' => 'users',
+                'active' => 'users',
+                'icon' => 'user-tie',
+                'permissions' => [
                     'Read User',
                     'Add New User',
                     'Edit user',
@@ -38,11 +38,11 @@ class ModulePermissionSeeder extends Seeder
                 ],
             ],
             [
-                'name'=>'Roles',
-                'url'=>'roles',
-                'active'=>'roles',
-                'icon'=>'key',
-                'permissions'=>[
+                'name' => 'Roles',
+                'url' => 'roles',
+                'active' => 'roles',
+                'icon' => 'key',
+                'permissions' => [
                     'Read Role',
                     'Add New Role',
                     'Edit Role',
@@ -51,64 +51,82 @@ class ModulePermissionSeeder extends Seeder
                 ],
             ],
             [
-                'name'=>'Categories',
-                'url'=>'categories',
-                'active'=>'categories',
-                'icon'=>'list-alt',
-                'permissions'=>[
+                'name' => 'Categories',
+                'url' => 'categories',
+                'active' => 'categories',
+                'icon' => 'list-alt',
+                'permissions' => [
                     'Read Category',
                     'Add New Category',
                     'Edit Category',
                     'Delete Category',
                 ],
             ],
-             [
-                'name'=>'Menus',
-                'url'=>'menus',
-                'active'=>'menus',
-                'icon'=>'bars',
-                'permissions'=>[
+            [
+                'name' => 'Menus',
+                'url' => 'menus',
+                'active' => 'menus',
+                'icon' => 'bars',
+                'permissions' => [
                     'Read Menu',
                     'Add New Menu',
                     'Edit Menu',
                     'Delete Menu',
                 ],
             ],
-              [
-                'name'=>'Menu Items',
-                'url'=>'menu-items',
-                'active'=>'menu-item',
-                'icon'=>'utensils',
-                'permissions'=>[
+            [
+                'name' => 'Menu Items',
+                'url' => 'menu-items',
+                'active' => 'menu-item',
+                'icon' => 'utensils',
+                'permissions' => [
                     'Read Menu Item',
                     'Add New Menu Item',
                     'Edit Menu Item',
                     'Delete Menu Item',
                 ],
             ],
+            [
+                'name' => 'Price Managements',
+                'url' => 'price-managements',
+                'active' => 'price-managements',
+                'icon' => 'tag',
+                'permissions' => [
+                    'Read Price Management',
+                    'Add New Price Management',
+                    'Edit Price Management',
+                    'Delete Price Management',
+                ],
+            ],
+            [
+                'name' => 'Contact',
+                'url' => 'contacts',
+                'active' => 'contacts',
+                'icon' => 'phone', // Add this line
+            ],            
+
         ];
-        foreach ($modulesAndPermissions as $modulesAndPermission){
-            $module = Module::where('name',$modulesAndPermission['name'])->where('url',$modulesAndPermission['url'])->first();
-            if(!$module){
+        foreach ($modulesAndPermissions as $modulesAndPermission) {
+            $module = Module::where('name', $modulesAndPermission['name'])->where('url', $modulesAndPermission['url'])->first();
+            if (!$module) {
                 $createdModule = Module::create([
-                    'name'=>$modulesAndPermission['name'],
-                    'slug'=>str_replace(' ','-',strtolower($modulesAndPermission['name'])),
-                    'url'=>$modulesAndPermission['url'],
-                    'active'=>$modulesAndPermission['active'],
-                    'icon'=>$modulesAndPermission['icon'],
+                    'name' => $modulesAndPermission['name'],
+                    'slug' => str_replace(' ', '-', strtolower($modulesAndPermission['name'])),
+                    'url' => $modulesAndPermission['url'],
+                    'active' => $modulesAndPermission['active'],
+                    'icon' => $modulesAndPermission['icon'],
                 ]);
-                foreach ($modulesAndPermission['permissions'] as $permission){
-                    $checkPermission = Permission::where('module_id',$createdModule->id)->where('name',$permission)->first();
-                    if(!$checkPermission){
+                foreach ($modulesAndPermission['permissions'] as $permission) {
+                    $checkPermission = Permission::where('module_id', $createdModule->id)->where('name', $permission)->first();
+                    if (!$checkPermission) {
                         Permission::create([
-                            'module_id'=>$createdModule->id,
-                            'name'=>$permission,
-                            'slug'=>str_replace(' ','-',strtolower($permission)),
+                            'module_id' => $createdModule->id,
+                            'name' => $permission,
+                            'slug' => str_replace(' ', '-', strtolower($permission)),
                         ]);
                     }
                 }
             }
         }
-
     }
 }
