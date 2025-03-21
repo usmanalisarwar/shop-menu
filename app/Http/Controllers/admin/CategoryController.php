@@ -194,7 +194,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'status' => 'required|boolean',
             'user_id' => 'nullable|exists:users,id',
-            'order_no' => 'required|integer|unique:categories,order_no',
+            // 'order_no' => 'required|integer|unique:categories,order_no',
         ]);
 
         if ($validator->fails()) {
