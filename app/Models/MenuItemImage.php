@@ -11,4 +11,9 @@ class MenuItemImage extends Model
 
     protected $fillable = ['menu_item_id', 'image', 'order_no'];
 
+    public function menuItem()
+    {
+        return $this->belongsTo(MenuItem::class);
+    }
+
 }

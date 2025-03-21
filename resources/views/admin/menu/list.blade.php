@@ -2,14 +2,14 @@
 @section('content')
 
 <!-- Content Header (Page header) -->
-<section class="content-header">					
+<section class="content-header">
 	<div class="container-fluid my-2">
 		<div class="row mb-2">
 			<div class="col-sm-6">
 				<h1>Menus</h1>
 			</div>
 			<div class="col-sm-6 text-right">
-                @if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu'))		<a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
+				@if(hasPermissions(getAuthUserModulePermissions(), 'add-new-menu')) <a href="{{route('menus.create')}}" class="btn btn-primary">New Menu</a>
 				@endif
 			</div>
 		</div>
@@ -36,10 +36,10 @@
 								</button>
 							</div>
 						</div>
-					</div>                
+					</div>
 				</div>
 			</form>
-			<div class="card-body table-responsive p-0">								
+			<div class="card-body table-responsive p-0">
 				<table class="table table-hover text-nowrap">
 					<thead>
 						<tr>
@@ -50,26 +50,25 @@
 						</tr>
 					</thead>
 					<tbody>
-                        @if($menus->isNotEmpty())
-                        @foreach($menus as $menu)
-                        <tr>
+						@if($menus->isNotEmpty())
+						@foreach($menus as $menu)
+						<tr>
 							<td>{{$menu->id}}</td>
 							<td>{{$menu->title}}</td>
 							<td>
-							    @if($menu->images->isNotEmpty())
-							        {{-- Display the first image with a tooltip --}}
-							        <a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})" 
-							           data-toggle="tooltip" title="This is the first menu page this menu page show on bar code page">
-							            <img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50">
-							        </a>
-							    @else
-							        <p>No image available</p>
-							    @endif
+								@if($menu->images->isNotEmpty())
+								{{-- Display the first image with a tooltip --}}
+								<a href="javascript:void(0);" onclick="showImageModal({{ $menu->id }})"
+									data-toggle="tooltip" title="This is the first menu page this menu page show on bar code page">
+									<img src="{{ asset('uploads/menu/' . $menu->images->first()->image) }}" alt="{{ $menu->title }}" width="50" height="50"> </a>
+								@else
+								<p>No image available</p>
+								@endif
 							</td>
 
 							<td>
 								<button onclick="copyLink('{{ route('generate.qrcode', $menu->slug) }}')" class="btn btn-warning btn-sm mr-1"> <!-- Add btn-sm for small size -->
-							        Copy QR Code Link
+								Copy QR Code Link
 							    </button>
 							    <a href="{{ route('menus.pdf', $menu->id) }}" target="_blank" class="btn btn-secondary">
 							        Generate PDF
@@ -91,14 +90,14 @@
 							</td>
 
 						</tr>
-                        @endforeach
-                        @else
-                       <td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
-			                <strong>No Records Found</strong>
-			            </td>
-                        @endif
+						@endforeach
+						@else
+						<td colspan="7" class="text-center"> <!-- span across 7 columns, text centered -->
+							<strong>No Records Found</strong>
+						</td>
+						@endif
 					</tbody>
-				</table>										
+				</table>
 			</div>
 			<!-- Pagination -->
 			<div class="card-footer clearfix">
@@ -113,9 +112,9 @@
 
 						{{-- Pagination Elements --}}
 						@foreach ($menus->getUrlRange(1, $menus->lastPage()) as $page => $url)
-							<li class="page-item {{ $page == $menus->currentPage() ? 'active' : '' }}">
-								<a class="page-link" href="{{ $url }}">{{ $page }}</a>
-							</li>
+						<li class="page-item {{ $page == $menus->currentPage() ? 'active' : '' }}">
+							<a class="page-link" href="{{ $url }}">{{ $page }}</a>
+						</li>
 						@endforeach
 
 						{{-- Next Page Link --}}
@@ -138,21 +137,23 @@
 
 @section('customJs')
 <script>
-	<script>
-$(document).ready(function(){
+	// $(document).ready(function() {
+	// 	$('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
+	// });
+	$(document).ready(function(){
     $('[data-toggle="tooltip"]').tooltip(); // Initialize tooltips
 });
 </script>
 <script type="text/javascript">
-function deleteMenu(id) {
-    var url = '{{ route("menus.delete", ":id") }}';
-    url = url.replace(':id', id);
+	function deleteMenu(id) {
+		var url = '{{ route("menus.delete", ":id") }}';
+		url = url.replace(':id', id);
 
-    if (confirm("Are you sure you want to delete this menu?")) {
-        // Disable button to prevent multiple clicks
-        $('a[onclick="deleteMenu('+id+')"]').attr('disabled', 'disabled');
+		if (confirm("Are you sure you want to delete this menu?")) {
+			// Disable button to prevent multiple clicks
+			$('a[onclick="deleteMenu(' + id + ')"]').attr('disabled', 'disabled');
 
-        $.ajax({
+			$.ajax({
             url: url,
             type: 'DELETE',
             data: {
@@ -176,9 +177,9 @@ function deleteMenu(id) {
             }
         });
     }
-}
+	}
 
-function copyLink(link) {
+	function copyLink(link) {
     navigator.clipboard.writeText(link).then(function() {
         alert('QR Code link copied to clipboard!');
     }, function(err) {
@@ -187,4 +188,3 @@ function copyLink(link) {
 }
 </script>
 @endsection
-

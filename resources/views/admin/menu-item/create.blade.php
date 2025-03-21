@@ -39,7 +39,7 @@
                         <!-- Category Field -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="category_id">Category</label>
+                                <label for="category_id">Category<span class="text-danger">*</span></label>
                                 <select name="category_id" id="category_id" class="form-control">
                                     <option value="" selected disabled>Select Category</option>
                                     @foreach($categories as $category)
@@ -53,7 +53,7 @@
                         <!-- Title Field -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="title">Title</label>
+                                <label for="title">Title<span class="text-danger">*</span></label>
                                 <input type="text" name="title" id="title" class="form-control" placeholder="Title">
                                 <p></p>
                             </div>
@@ -62,16 +62,17 @@
                         <!-- Description Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="description">Description</label>
+                                <label for="description">Description<span class="text-danger">*</span></label>
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
+                                <p></p>
                             </div>
                         </div>
                         <!-- Label Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="label">Label</label>
+                                <label for="label">Price Type<span class="text-danger">*</span></label>
                                 <select name="label" id="label" class="form-control">
-                                    <option value="">Select label</option>
+                                    <option value="">Select Price Type</option>
                                     @foreach($labels as $label)
                                         <option value="{{ $label->id }}">{{ $label->label }}</option>
                                     @endforeach
@@ -99,7 +100,7 @@
 
                          <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
-                            <div class="card mb-3">
+                            <div class="card mb-3 d-none">
                                 <div class="card-body">
                                     <h2 class="h4 mb-3">Media</h2>                              
                                     <div id="image" class="dropzone dz-clickable">
@@ -188,6 +189,16 @@ $("#menuItemForm").submit(function(event){
                     $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
                 } else {
                     $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.description){
+                    $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
+                } else {
+                    $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                }
+                if(errors.label){
+                    $("#label").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.label);
+                } else {
+                    $("#label").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                 }
 
             }

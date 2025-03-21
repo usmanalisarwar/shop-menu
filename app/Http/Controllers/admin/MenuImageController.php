@@ -20,7 +20,6 @@ class MenuImageController extends Controller
    public function create(Request $request)
     {
         $image = $request->file('image');
-
         if ($image) {
             $ext = $image->getClientOriginalExtension();
             $newName = time().'.'.$ext;
@@ -48,7 +47,6 @@ class MenuImageController extends Controller
     public function menuItemCreate(Request $request)
     {
         $image = $request->file('image');
-
         if ($image) {
             $ext = $image->getClientOriginalExtension();
             $newName = time().'.'.$ext;
@@ -58,7 +56,6 @@ class MenuImageController extends Controller
             $menuItemImage->save();
 
             $image->move(public_path('temp'), $newName);
-            
             return response()->json([
                 'status' => true,
                 'image_id' => $menuItemImage->id,

@@ -3,11 +3,12 @@
 @section('content')
 <style type="text/css">
     .card-img-top {
-        width: 100%; 
-        height: auto; 
+        width: 100%;
+        height: auto;
     }
+
     .image-row {
-        margin-bottom: 15px; 
+        margin-bottom: 15px;
     }
 </style>
 
@@ -28,8 +29,8 @@
 <!-- Main content -->
 <section class="content">
     <div class="container-fluid">
-         @php
-            $permissions = getAuthUserModulePermissions();
+        @php
+        $permissions = getAuthUserModulePermissions();
         @endphp
         @if (hasPermissions($permissions, 'edit-menu-item'))
         <form action="" method="POST" id="menuItemForm" name="menuItemForm">
@@ -40,11 +41,11 @@
                         <!-- Category Field -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="category_id">Category</label>
+                                <label for="category_id">Category<span class="text-danger">*</span></label>
                                 <select name="category_id" id="category_id" class="form-control">
                                     <option value="" disabled>Select Category</option>
                                     @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ $category->id == $menuItem->category_id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ $category->id == $menuItem->category_id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                                 <p></p>
@@ -53,7 +54,7 @@
                         <!-- Title Field -->
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="title">Title</label>
+                                <label for="title">Title<span class="text-danger">*</span></label>
                                 <input type="text" name="title" id="title" class="form-control" placeholder="Title" value="{{ old('title', $menuItem->title) }}">
                                 <p></p>
                             </div>
@@ -62,26 +63,27 @@
                         <!-- Description Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="description">Description</label>
+                                <label for="description">Description<span class="text-danger">*</span></label>
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4">{{ old('description', $menuItem->description) }}</textarea>
+                                <p></p>
                             </div>
                         </div>
-    <!-- Label Field -->
+                        <!-- Label Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="label">Label</label>
+                                <label for="label">Price Type</label>
                                 <select name="label" id="label" class="form-control">
-                                    <option value="">Select label</option>
+                                    <option value="">Select Price Type</option>
                                     @foreach($labels as $label)
-                                        <option value="{{ $label->id }}" {{ $menuItemDetails->label == $label->id ? 'selected' : '' }}>
-                                            {{ $label->label }}
-                                        </option>
+                                    <option value="{{ $label->id }}" {{ $menuItemDetails->label == $label->id ? 'selected' : '' }}>
+                                        {{ $label->label }}
+                                    </option>
                                     @endforeach
                                 </select>
                                 <p></p>
                             </div>
                         </div>
-                        
+
                         <!-- Dynamic Label Field (only if the label is not available in select) -->
                         <div class="col-md-6" id="label-field" style="display: {{ isset($labelName) ? 'block' : 'none' }};">
                             <div class="mb-3">
@@ -101,37 +103,37 @@
 
 
                         <!-- Media Images Dropzone -->
-                        <div class="col-md-12">  
-                            <div class="card mb-3">
+                        <div class="col-md-12">
+                            <div class="card mb-3 d-none">
                                 <div class="card-body">
-                                    <h2 class="h4 mb-3">Media</h2>                              
+                                    <h2 class="h4 mb-3">Media</h2>
                                     <div id="image" class="dropzone dz-clickable">
-                                        <div class="dz-message needsclick">    
+                                        <div class="dz-message needsclick">
                                             <br>Drop files here or click to upload.<br><br>
                                         </div>
                                     </div>
-                                </div>                                                                        
+                                </div>
                             </div>
                         </div>
                         <!-- Image Gallery -->
                         <div class="row" id="menu-gallery" class="sortable-gallery">
                             @foreach($menuItemImages as $image)
-                                <div class="col-md-4 image-row" id="image-row-{{ $image->id }}" data-id="{{ $image->id }}">
-                                    <input type="hidden" name="image_array[]" value="{{ $image->id }}">
-                                    <div class="card">
-                                        <img src="{{ asset('uploads/menuItem/' . $image->image) }}" class="card-img-top img-fluid" alt="">
-                                        <div class="card-body text-center">
-                                            <span class="image-number">{{ $loop->index + 1 }}</span>
-                                            <a href="javascript:void(0)" onclick="deleteImage({{ $image->id }})" class="btn btn-danger">Delete</a>
-                                        </div>
+                            <div class="col-md-4 image-row" id="image-row-{{ $image->id }}" data-id="{{ $image->id }}">
+                                <input type="hidden" name="image_array[]" value="{{ $image->id }}">
+                                <div class="card">
+                                    <img src="{{ asset('uploads/menuItem/' . $image->image) }}" class="card-img-top img-fluid" alt="">
+                                    <div class="card-body text-center">
+                                        <span class="image-number">{{ $loop->index + 1 }}</span>
+                                        <a href="javascript:void(0)" onclick="deleteImage({{ $image->id }})" class="btn btn-danger">Delete</a>
                                     </div>
                                 </div>
+                            </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="pb-5 pt-3">
                 <button type="submit" class="btn btn-primary">Update</button>
                 <a href="{{ route('menu-items.index') }}" class="btn btn-outline-dark ml-3">Cancel</a>
@@ -145,94 +147,99 @@
 @section('customJs')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
 <script>
-     $(document).ready(function () {
-            // Prepopulate and handle label/price fields logic
-            $('#label').on('change', function () {
-                var selectedLabel = $(this).val();
-                if (selectedLabel) {
-                    $.ajax({
-                        url: '{{ route("getPriceDetail", ["id" => ":id"]) }}'.replace(':id', selectedLabel),
-                        type: 'GET',
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status) {
-                                $('#label-field').show();
-                                $('#price-field').show();
-                                $('#dynamic_label').val(response.priceDetails.label);
-                                $('#price').val(null);
-                            } else {
-                                $('#label-field, #price-field').hide();
-                            }
-                        },
-                        error: function() {
+    $(document).ready(function() {
+        // Prepopulate and handle label/price fields logic
+        $('#label').on('change', function() {
+            var selectedLabel = $(this).val();
+            if (selectedLabel) {
+                $.ajax({
+                    url: '{{ route("getPriceDetail", ["id" => ":id"]) }}'.replace(':id', selectedLabel),
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status) {
+                            $('#label-field').show();
+                            $('#price-field').show();
+                            $('#dynamic_label').val(response.priceDetails.label);
+                            $('#price').val(null);
+                        } else {
                             $('#label-field, #price-field').hide();
                         }
-                    });
-                } else {
-                    $('#label-field, #price-field').hide();
-                }
-            });
-        });
-
-$("#menuItemForm").submit(function(event){
-    event.preventDefault();
-    var element = $(this);
-    $("button[type=submit]").prop('disabled',true);
-    $.ajax({
-        url: '{{ route("menu-items.update", $menuItem->id) }}',
-        type: 'POST',
-        data: element.serialize(),
-        dataType: 'json',
-        success: function(response){
-            $("button[type=submit]").prop('disabled',false);
-            if(response.status){
-                window.location.href = "{{ route('menu-items.index') }}";
+                    },
+                    error: function() {
+                        $('#label-field, #price-field').hide();
+                    }
+                });
             } else {
-                var errors = response.errors;
-                if(errors.category_id){
-                    $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
-                } else {
-                    $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
-                if(errors.title){
-                    $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
-                } else {
-                    $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
-                }
-
+                $('#label-field, #price-field').hide();
             }
-        },
-        error: function(jqXHR, exception){
-            console.log("Something went wrong");
-        }
+        });
     });
-});
 
-
-        // Dropzone setup for media images
-        Dropzone.autoDiscover = false;
-        const dropzone = $("#image").dropzone({
-            url: "{{ route('menu-item-images.menuItemCreate') }}",
-            maxFiles: 10,
-            paramName: 'image',
-            acceptedFiles: "image/jpeg,image/png,image/gif",
-            thumbnailWidth: 300,
-            thumbnailHeight: 275,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(file, response) {
+    $("#menuItemForm").submit(function(event) {
+        event.preventDefault();
+        var element = $(this);
+        $("button[type=submit]").prop('disabled', true);
+        $.ajax({
+            url: '{{ route("menu-items.update", $menuItem->id) }}',
+            type: 'POST',
+            data: element.serialize(),
+            dataType: 'json',
+            success: function(response) {
+                $("button[type=submit]").prop('disabled', false);
                 if (response.status) {
-                    const existingImages = $('#menu-gallery .image-row').map(function() {
-                        return $(this).data('id');
-                    }).get();
-
-                    if (existingImages.includes(response.image_id)) {
-                        this.removeFile(file);
-                        return;
+                    window.location.href = "{{ route('menu-items.index') }}";
+                } else {
+                    var errors = response.errors;
+                    if (errors.category_id) {
+                        $("#category_id").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.category_id);
+                    } else {
+                        $("#category_id").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                    }
+                    if (errors.title) {
+                        $("#title").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.title);
+                    } else {
+                        $("#title").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
+                    }
+                    if (errors.description) {
+                        $("#description").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.description);
+                    } else {
+                        $("#description").removeClass('is-invalid').siblings('p').removeClass('invalid-feedback').html("");
                     }
 
-                    var html = `
+                }
+            },
+            error: function(jqXHR, exception) {
+                console.log("Something went wrong");
+            }
+        });
+    });
+
+
+    // Dropzone setup for media images
+    Dropzone.autoDiscover = false;
+    const dropzone = $("#image").dropzone({
+        url: "{{ route('menu-item-images.menuItemCreate') }}",
+        maxFiles: 10,
+        paramName: 'image',
+        acceptedFiles: "image/jpeg,image/png,image/gif",
+        thumbnailWidth: 300,
+        thumbnailHeight: 275,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(file, response) {
+            if (response.status) {
+                const existingImages = $('#menu-gallery .image-row').map(function() {
+                    return $(this).data('id');
+                }).get();
+
+                if (existingImages.includes(response.image_id)) {
+                    this.removeFile(file);
+                    return;
+                }
+
+                var html = `
                         <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
                             <input type="hidden" name="image_array[]" value="${response.image_id}">
                             <div class="card">
@@ -243,34 +250,34 @@ $("#menuItemForm").submit(function(event){
                                 </div>
                             </div>
                         </div>`;
-                    $("#menu-gallery").append(html);
-                    updateImageNumbers();
-                }
-            },
-            complete: function(file){
-                this.removeFile(file);
+                $("#menu-gallery").append(html);
+                updateImageNumbers();
             }
-        });
-
-        // Initialize Sortable for image swapping
-        const gallery = document.getElementById('menu-gallery');
-        Sortable.create(gallery, {
-            animation: 150,
-            onEnd: function (evt) {
-                updateImageNumbers(); // Update the numbering after sorting
-            }
-        });
-
-        // Update the image numbers after sorting or deleting
-        function updateImageNumbers() {
-            $('#menu-gallery .image-row').each(function (index, element) {
-                $(element).find('.image-number').text(index + 1);
-            });
+        },
+        complete: function(file) {
+            this.removeFile(file);
         }
+    });
 
-        function deleteImage(id){
-            $("#image-row-" + id).remove();
-            updateImageNumbers(); // Update numbers after deletion
+    // Initialize Sortable for image swapping
+    const gallery = document.getElementById('menu-gallery');
+    Sortable.create(gallery, {
+        animation: 150,
+        onEnd: function(evt) {
+            updateImageNumbers(); // Update the numbering after sorting
         }
-    </script>
+    });
+
+    // Update the image numbers after sorting or deleting
+    function updateImageNumbers() {
+        $('#menu-gallery .image-row').each(function(index, element) {
+            $(element).find('.image-number').text(index + 1);
+        });
+    }
+
+    function deleteImage(id) {
+        $("#image-row-" + id).remove();
+        updateImageNumbers(); // Update numbers after deletion
+    }
+</script>
 @endsection

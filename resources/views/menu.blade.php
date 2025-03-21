@@ -60,9 +60,7 @@
       .home{
         padding:1.5rem;
         background:url({{ asset('front-assets/img/background.png')}});
-
         background-position:center;
-
         flex-wrap:wrap;
         padding-top:105px;
         padding-bottom:105px;
@@ -362,8 +360,109 @@
 }
 
 
+/* menu css */
+.container {
+    max-width: 1100px;
+    margin: auto;
+    position: relative; /* For positioning the overlay */
+}
 
+.category-container {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    background: transparent;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
+.category-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Dark overlay for better readability */
+    z-index: 1;
+    border-radius: 12px;
+}
+
+.category-list {
+    width: 280px;
+    background: #C49A6C;
+    padding: 15px;
+    border-radius: 8px;
+    position: relative; /* Ensure it's above the overlay */
+    z-index: 2;
+}
+
+.category-item {
+    padding: 12px;
+    cursor: pointer;
+    color: #000;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.category-item:hover, .category-item.active {
+    background: black;
+    color: white;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+    position: relative; /* Ensure it sits above the overlay */
+    z-index: 2;
+}
+
+.category-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #C49A6C;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.menu-item {
+    background: #333;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+}
+
+.menu-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+}
+
+.item-details {
+    margin-top: 10px;
+}
+
+.title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.price {
+    font-size: 1rem;
+    color: #C49A6C;
+    font-weight: bold;
+}
 
 </style>
 
@@ -426,74 +525,59 @@
              </div>
 
         <!-- <div><input type="text" placeholder="Search in menu"></div> -->
-        <div class="owl-carousel owl-theme">
+        <div class="container align-self-start" style="background-image: url('{{  asset(path: 'temp/' . $menuImage->name) }}'); background-size: cover; background-position: center;">
+    <div class="category-container mt-4 p-3" style="background: transparent;">
+        <div class="category-list">
             @foreach($categories as $category)
-                <div class="item" data-target="{{ strtolower(str_replace(' ', '-', $category->name)) }}">
-                    <h4 class="black">
-                        <!-- Link to the category page -->
-                        <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}">
-                            {{ $category->name }}
-                        </a>
-                    </h4>
-
-                    <!-- Subcategories -->
-                    @if($category->children && $category->children->isNotEmpty())
-                        <ul class="subcategories">
-                            @foreach($category->children as $subcategory)
-                                <li>
-                                    <!-- Link to the subcategory page -->
-                                    <a href="{{ route('book.show', [
-                                        'slug' => $menu->slug,
-                                        'category_id' => $subcategory->id,
-                                        'subcategory_slug' => $subcategory->slug
-                                    ]) }}">
-                                        {{ $subcategory->name }}
-                                    </a>
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
+                <div class="category-item @if(request('category_id') == $category->id) active @endif">
+                    <a href="{{ route('book.show', ['slug' => $menu->slug, 'category_id' => $category->id]) }}" 
+                       class="text-decoration-none d-block">{{ $category->name }}</a>
                 </div>
             @endforeach
         </div>
 
-
-    <!-- Display Category Name if Selected -->
-    @if(isset($subcategorySlug) && $subcategorySlug)
-        <h3>Subcategory Name: {{ $categories->firstWhere('slug', $subcategorySlug)->name }}</h3>
-    @elseif($categoryId)
-        <h3>Category Name: {{ $categories->firstWhere('id', $categoryId)->name }}</h3>
-    @else
-        <h3>Showing all items</h3>
-    @endif
-
-
-
-    <section class="menu">
-        <div class="menu-grid">
-            @if($menuItems->isEmpty())
-                <p>No records found for this category.</p>
+        <div class="content">
+            @if(isset($subcategorySlug) && $subcategorySlug)
+                @php
+                    $selectedSubcategory = $categories->flatMap(fn($cat) => $cat->children)->firstWhere('slug', $subcategorySlug);
+                @endphp
+                <h3 class="category-header">Subcategory: {{ $selectedSubcategory->name ?? 'Unknown' }}</h3>
+            @elseif(isset($categoryId) && $categoryId)
+                @php
+                    $selectedCategory = $categories->firstWhere('id', $categoryId);
+                @endphp
+                <h3 class="category-header">Category: {{ $selectedCategory->name ?? 'Unknown' }}</h3>
             @else
-                @foreach($menuItems as $menuItem)
-                    <div class="menu-item">
-                        @if($menuItem->images->isNotEmpty())
-                            <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" style="width:200px">
-                        @else
-                            <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image">
-                        @endif
-
-                        <div class="item-details">
-                            <p class="title">{{ $menuItem->title }}</p>
-                            <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
-                            <p class="description">{{ $menuItem->description }}</p>
-                        </div>
-                    </div>
-                @endforeach
+                <h3 class="category-header">All Items</h3>
             @endif
+            <section class="menu">
+                <div class="menu-grid">
+                    @if($menuItems->isEmpty())
+                        <p>No records found for this category.</p>
+                    @else
+                        @foreach($menuItems as $menuItem)
+                            <div class="menu-item">
+                                @if($menuItem->images->isNotEmpty())
+                                    <img src="{{ asset('uploads/menuItem/' . $menuItem->images->first()->image) }}" alt="{{ $menuItem->title }}" />
+                                @else
+                                    <img src="{{ asset('path_to_default_image.jpg') }}" alt="Default Image" />
+                                @endif
+                                <div class="item-details mt-2">
+                                    <p class="title">{{ $menuItem->title }}</p>
+                                    <p class="price">Rs. {{ $menuItem->details->first()->price }}</p>
+                                    <p class="description">{{ $menuItem->description }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </section>
         </div>
+    </div>
+ </div>
 
         <!-- Pagination -->
-        <div class="card-footer clearfix">
+        <!-- <div class="card-footer clearfix">
             <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-end">
                     <li class="page-item {{ $menuItems->onFirstPage() ? 'disabled' : '' }}">
@@ -515,7 +599,7 @@
                     </li>
                 </ul>
             </nav>
-        </div>
+        </div> -->
     </section>
 
 
@@ -674,6 +758,8 @@ document.querySelectorAll('.item').forEach(item => {
     });
 });
 </script>
+
+
 
 
 

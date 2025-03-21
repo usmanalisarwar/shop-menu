@@ -105,6 +105,21 @@ class PriceManagementController extends Controller
                 }
             }
         }
+        // Check for duplicate order_no in the price_management_details table
+        if(isset($request->price_data)){
+            foreach ($priceData as $newData) {
+                $existingOrder = \DB::table('price_management_details')
+                    ->where('order_no', $newData['order_no'])
+                    ->exists();
+                
+                if ($existingOrder) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Order No. {$newData['order_no']} is already stored in the database.",
+                    ]);
+                }
+            }
+        }
 
         // Store the new price management entry
         $priceManagement = new PriceManagement();

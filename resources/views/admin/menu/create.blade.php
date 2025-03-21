@@ -53,14 +53,14 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="title">Title</label>
+                                <label for="title">Title<span class="text-danger">*</span></label>
                                 <input type="text" name="title" id="title" class="form-control" placeholder="Title">
                                 <p></p>
                             </div>
                         </div>
                          
                         <div class="col-md-12">  
-                            <div class="card mb-3">
+                            <div class="card mb-3 d-none">
                                 <div class="card-body">
                                     <h2 class="h4 mb-3">Media</h2>                              
                                     <div id="image" class="dropzone dz-clickable">
@@ -85,7 +85,7 @@
     </div>
 </section>
 @endsection
-
+    
 @section('customJs')
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
 <script>
@@ -123,7 +123,48 @@ $("#menuForm").submit(function(event){
 });
 
 // Dropzone setup
-Dropzone.autoDiscover = false;
+// Dropzone.autoDiscover = false;
+// const dropzone = $("#image").dropzone({
+//     url: "{{ route('menu-images.create') }}",
+//     maxFiles: 1, // Allow only one file
+//     paramName: 'image',
+//     acceptedFiles: "image/jpeg,image/png,image/gif",
+//     thumbnailWidth: 300,
+//     thumbnailHeight: 275,
+//     headers: {
+//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+//     },
+//     init: function() {
+//         this.on("maxfilesexceeded", function(file) {
+//             this.removeAllFiles(); // Remove any existing files
+//             this.addFile(file); // Add the new file
+//         });
+//     },
+//     success: function(file, response) {
+//         if (response.status) {
+//             $("#menu-gallery").html(""); // Clear previous images
+//             var html = `
+//             <div class="col-md-4 image-row" id="image-row-${response.image_id}" data-id="${response.image_id}">
+//                 <input type="hidden" name="image_array[]" value="${response.image_id}">
+//                 <div class="card">
+//                     <div class="image-container" style="position: relative;">
+//                         <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
+//                         <div class="image-overlay-text">First Page of menu Also show this first Page of menu on barcode page</div>
+//                     </div>
+//                     <div class="card-body text-center">
+//                         <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
+//                     </div>
+//                 </div>
+//             </div>`;
+//             $("#menu-gallery").append(html);
+//         }
+//     },
+//     complete: function(file) {
+//         this.removeFile(file); // Remove file preview after upload
+//     }
+// });
+
+// Dropzone.autoDiscover = false;
 const dropzone = $("#image").dropzone({
     url: "{{ route('menu-images.create') }}",
     maxFiles: 10,
@@ -153,7 +194,7 @@ const dropzone = $("#image").dropzone({
                             <img src="${response.ImagePath}" class="card-img-top img-fluid" alt="" style="width: 100%; height: auto;"> 
                             <div class="image-overlay-text">First Page of menu Also show this first Page of menu on bar code page</div>
                         </div>
-                        <div class="card-body text-center">
+                         <div class="card-body text-center">
                             <span class="image-number">${$('.image-row').length + 1}</span>
                             <a href="javascript:void(0)" onclick="deleteImage(${response.image_id})" class="btn btn-danger">Delete</a>
                         </div>

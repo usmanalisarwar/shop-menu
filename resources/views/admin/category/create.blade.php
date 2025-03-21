@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="name">Name</label>
+                                <label for="name">Name<span class="text-danger">*</span></label>
                                 <input type="text" name="name" id="name" class="form-control" placeholder="Name">
                                 <p></p>
                             </div>
@@ -55,8 +55,9 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="order_no">Order No</label>
+                                <label for="order_no">Order No<span class="text-danger">*</span></label>
                                 <input type="number" name="order_no" id="order_no" class="form-control" placeholder="Order No">
+                                <p></p>
                             </div>
                         </div>
 
@@ -75,7 +76,7 @@
 
                         <!-- Media Images Dropzone -->
                         <div class="col-md-12">  
-                            <div class="card mb-3">
+                            <div class="card mb-3 d-none">
                                 <div class="card-body">
                                     <h2 class="h4 mb-3">Media</h2>                              
                                     <div id="image" class="dropzone dz-clickable">
@@ -182,6 +183,9 @@
 
         if (errors.name) {
             $("#name").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.name);
+        }
+        if (errors.order_no) {
+            $("#order_no").addClass('is-invalid').siblings('p').addClass('invalid-feedback').html(errors.order_no);
         }
         // Add other field validations as needed
     }

@@ -27,13 +27,12 @@ class ContactController extends Controller
         ];
 
         // Store the contact form data into the contacts table
-        Contact::create([
+        $c=Contact::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'subject' => $data['subject'],
             'message' => $data['userMessage'], // Save the message
         ]);
-
         // Send the email using Laravel's Mail facade
         Mail::send('emails.contact', $data, function ($message) use ($data) {
             $message->to('your-email@example.com')

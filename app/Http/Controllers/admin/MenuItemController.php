@@ -65,7 +65,7 @@ class MenuItemController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string|max:65535', 
+            'description' => 'required|string|max:65535', 
 
         ]);
 
@@ -77,26 +77,48 @@ class MenuItemController extends Controller
         }
 
         // Validate image sizes for each image in the array
-        foreach ($request->image_array as $menuItemImageId) {
-            $menuItemImage = MenuItemImage::find($menuItemImageId);
-
-            if (!$menuItemImage) {
-                continue; // Skip if image is not found
-            }
-
-            $imagePath = public_path('temp/' . $menuItemImage->name);
-
-            $imageSizeValidator = Validator::make(['image' => $imagePath], [
-                'image' => [new ImageSize()],
-            ]);
-
-            if ($imageSizeValidator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'errors' => ['image' => 'The image ' . $menuItemImage->name . ' is not A4 size or smaller.'],
+        if(isset($request->image_array) && !is_array($request->image_array)) {
+            foreach ($request->image_array as $menuItemImageId) {
+                $menuItemImage = MenuItemImage::find($menuItemImageId);
+    
+                if (!$menuItemImage) {
+                    continue; // Skip if image is not found
+                }
+    
+                $imagePath = public_path('temp/' . $menuItemImage->name);
+    
+                $imageSizeValidator = Validator::make(['image' => $imagePath], [
+                    'image' => [new ImageSize()],
                 ]);
+    
+                if ($imageSizeValidator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'errors' => ['image' => 'The image ' . $menuItemImage->name . ' is not A4 size or smaller.'],
+                    ]);
+                }
             }
         }
+        // foreach ($request->image_array as $menuItemImageId) {
+        //     $menuItemImage = MenuItemImage::find($menuItemImageId);
+
+        //     if (!$menuItemImage) {
+        //         continue; // Skip if image is not found
+        //     }
+
+        //     $imagePath = public_path('temp/' . $menuItemImage->name);
+
+        //     $imageSizeValidator = Validator::make(['image' => $imagePath], [
+        //         'image' => [new ImageSize()],
+        //     ]);
+
+        //     if ($imageSizeValidator->fails()) {
+        //         return response()->json([
+        //             'status' => false,
+        //             'errors' => ['image' => 'The image ' . $menuItemImage->name . ' is not A4 size or smaller.'],
+        //         ]);
+        //     }
+        // }
 
         // Create the new menu item
         $menuItem = new MenuItem();
@@ -108,29 +130,54 @@ class MenuItemController extends Controller
         $menuItem->save();
 
         // Save the menu images
-        foreach ($request->image_array as $menuItemImageId) {
-            $menuItemImage = MenuItemImage::find($menuItemImageId);
-
-            if (!$menuItemImage) {
-                continue; // Skip if image is not found
+        if($request->has('image_array')) {
+            foreach ($request->image_array as $menuItemImageId) {
+                $menuItemImage = MenuItemImage::find($menuItemImageId);
+    
+                if (!$menuItemImage) {
+                    continue; // Skip if image is not found
+                }
+    
+                $ext = pathinfo($menuItemImage->name, PATHINFO_EXTENSION);
+                $newMenuItemImage = new MenuItemImage(); 
+                $newMenuItemImage->menu_item_id = $menuItem->id;
+                $newMenuItemImage->order_no = $menuItemImage->order_no;
+                $newMenuItemImage->name = $menuItemImage->name;
+                $newMenuItemImage->image = $menuItemImage->image;
+                $newMenuItemImage->save();
+    
+                $imageName = $menuItem->id . '-' . $newMenuItemImage->id . '-' . time() . '.' . $ext;
+                $sourcePath = public_path('temp/' . $menuItemImage->name);
+                $destinationPath = public_path('uploads/menuItem/' . $imageName);
+    
+                File::copy($sourcePath, $destinationPath);
+                $newMenuItemImage->image = $imageName;
+                $newMenuItemImage->save();
             }
-
-            $ext = pathinfo($menuItemImage->name, PATHINFO_EXTENSION);
-            $newMenuItemImage = new MenuItemImage(); 
-            $newMenuItemImage->menu_item_id = $menuItem->id;
-            $newMenuItemImage->order_no = $menuItemImage->order_no;
-            $newMenuItemImage->name = $menuItemImage->name;
-            $newMenuItemImage->image = $menuItemImage->image;
-            $newMenuItemImage->save();
-
-            $imageName = $menuItem->id . '-' . $newMenuItemImage->id . '-' . time() . '.' . $ext;
-            $sourcePath = public_path('temp/' . $menuItemImage->name);
-            $destinationPath = public_path('uploads/menuItem/' . $imageName);
-
-            File::copy($sourcePath, $destinationPath);
-            $newMenuItemImage->image = $imageName;
-            $newMenuItemImage->save();
         }
+        // foreach ($request->image_array as $menuItemImageId) {
+        //     $menuItemImage = MenuItemImage::find($menuItemImageId);
+
+        //     if (!$menuItemImage) {
+        //         continue; // Skip if image is not found
+        //     }
+
+        //     $ext = pathinfo($menuItemImage->name, PATHINFO_EXTENSION);
+        //     $newMenuItemImage = new MenuItemImage(); 
+        //     $newMenuItemImage->menu_item_id = $menuItem->id;
+        //     $newMenuItemImage->order_no = $menuItemImage->order_no;
+        //     $newMenuItemImage->name = $menuItemImage->name;
+        //     $newMenuItemImage->image = $menuItemImage->image;
+        //     $newMenuItemImage->save();
+
+        //     $imageName = $menuItem->id . '-' . $newMenuItemImage->id . '-' . time() . '.' . $ext;
+        //     $sourcePath = public_path('temp/' . $menuItemImage->name);
+        //     $destinationPath = public_path('uploads/menuItem/' . $imageName);
+
+        //     File::copy($sourcePath, $destinationPath);
+        //     $newMenuItemImage->image = $imageName;
+        //     $newMenuItemImage->save();
+        // }
         // Save menu item details (label and price)
             if ($request->label && $request->price) {
                 DB::table('menu_item_details')->insert([
@@ -186,7 +233,7 @@ class MenuItemController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'description' => 'nullable|string|max:65535',
+            'description' => 'required|string|max:65535',
 
         ]);
 
@@ -202,13 +249,64 @@ class MenuItemController extends Controller
         }
     
         // Update the menu item fields
+        // $menuItem->category_id = $request->category_id;
+        // $menuItem->title = $request->title;
+        // $menuItem->description = $request->description; 
+        // $menuItem->label = $request->label;
+        // $menuItem->save();
+
+        $menuItem = MenuItem::findOrFail($id); // Find the existing MenuItem
+
+        // Update menu item fields
         $menuItem->category_id = $request->category_id;
         $menuItem->title = $request->title;
-        $menuItem->description = $request->description; 
+        $menuItem->description = $request->description;
         $menuItem->label = $request->label;
+        $menuItem->user_id = Auth::id();
         $menuItem->save();
+    
+        // Handle menu images update
+        if ($request->has('image_array')) {
+            // Remove old images if needed (optional)
+            MenuItemImage::where('menu_item_id', $menuItem->id)->delete();
+    
+            foreach ($request->image_array as $menuItemImageId) {
+                $menuItemImage = MenuItemImage::find($menuItemImageId);
+                if (!$menuItemImage) {
+                    continue; // Skip if image is not found
+                }
+    
+                $ext = pathinfo($menuItemImage->name, PATHINFO_EXTENSION);
+                $newMenuItemImage = new MenuItemImage(); 
+                $newMenuItemImage->menu_item_id = $menuItem->id;
+                $newMenuItemImage->order_no = $menuItemImage->order_no;
+                $newMenuItemImage->name = $menuItemImage->name;
+                $newMenuItemImage->image = $menuItemImage->image;
+                $newMenuItemImage->save();
+    
+                $imageName = $menuItem->id . '-' . $newMenuItemImage->id . '-' . time() . '.' . $ext;
+                $sourcePath = public_path('temp/' . $menuItemImage->name);
+                $destinationPath = public_path('uploads/menuItem/' . $imageName);
+    
+                File::copy($sourcePath, $destinationPath);
+                $newMenuItemImage->image = $imageName;
+                $newMenuItemImage->save();
+            }
+        }
+    
+        // Update or insert menu item details (label and price)
+        DB::table('menu_item_details')
+            ->updateOrInsert(
+                ['menu_item_id' => $menuItem->id],
+                [
+                    'label' => $request->label,
+                    'price' => $request->price,
+                    'updated_at' => now(),
+                ]
+            );
 
         // Update the order numbers for images
+        if($request->image_array) {
         foreach ($request->image_array as $order => $imageId) {
             $menuItemImage = MenuItemImage::find($imageId);
             if ($menuItemImage) {
@@ -216,6 +314,7 @@ class MenuItemController extends Controller
                 $menuItemImage->save();
             }
         }
+    }
 
         \Log::info('Menu Item updated successfully: ', $menuItem->toArray());
         // Update menu item details (label and price)
@@ -231,7 +330,7 @@ class MenuItemController extends Controller
                 );
         }
         
-        $request->session()->flash('success', 'Menu Item updated successfully');
+        // $request->session()->flash('success', 'Menu Item updated successfully');
 
 
         return response()->json(['status' => true, 'message' => 'Menu Item updated successfully']);

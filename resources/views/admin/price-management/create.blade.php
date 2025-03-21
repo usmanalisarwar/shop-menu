@@ -31,8 +31,9 @@
                         <!-- Label Field -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="label">Label</label>
+                                <label for="label">Label<span class="text-danger">*</span></label>
                                 <input type="text" name="label" id="label" class="form-control" placeholder="Label">
+                                <p class="text-danger invalid-feedback" id="label-error"></p> <!-- Error message -->
                             </div>
                         </div>
 
@@ -41,18 +42,20 @@
                             <div class="mb-3">
                                 <label for="description">Description</label>
                                 <textarea name="description" id="description" class="form-control" placeholder="Description" rows="4"></textarea>
+                                <p class="text-danger invalid-feedback" id="description-error"></p> <!-- Error message -->
                             </div>
                         </div>
 
                         <!-- Price Type Dropdown -->
                         <div class="col-md-12">
                             <div class="mb-3">
-                                <label for="price_type">Price Type</label>
+                                <label for="price_type">Price Type<span class="text-danger">*</span></label>
                                 <select name="price_type" id="price_type" class="form-control">
                                     <option value="">Select Price Type</option>
                                     <option value="{{ App\Enums\PriceTypeEnum::Quantity->value }}">Quantity</option>
                                     <option value="{{ App\Enums\PriceTypeEnum::Size->value }}">Size</option>
                                 </select>
+                                <p class="text-danger invalid-feedback" id="price_type-error"></p> <!-- Error message -->
                             </div>
                         </div>
 
@@ -73,12 +76,13 @@
         @endif
     </div>
 </section>
+
 @endsection
 
 @section('customJs')
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
-   <script>
-  $(document).ready(function() {
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<script>
+$(document).ready(function() {
     // Handle price type change
     $('#price_type').change(function() {
         $('#dynamicFieldsContainer').empty(); // Clear previous fields
@@ -90,12 +94,12 @@
         $('#dynamicFieldsContainer').append(`
             <div class="row mb-3 dynamic-entry">
                 <div class="col-md-5">
-                    <label for="order_no">Order No.</label>
+                    <label for="order_no">Order No.<span class="text-danger">*</span></label>
                     <input type="number" name="order_nos[]" class="form-control order-no" placeholder="Order No.">
                     <small class="text-danger order-no-error" style="display: none;">This Order No. is already taken.</small>
                 </div>
                 <div class="col-md-5">
-                    <label for="label">Label</label>
+                    <label for="label">Label<span class="text-danger">*</span></label>
                     <input type="text" name="labels[]" class="form-control" placeholder="Label">
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
@@ -118,26 +122,6 @@
     // Event delegation for dynamic remove-entry button
     $('#dynamicFieldsContainer').on('click', '.remove-entry', function() {
         $(this).closest('.dynamic-entry').remove();
-    });
-
-    // Check for duplicate order numbers
-    $('#dynamicFieldsContainer').on('input', '.order-no', function() {
-        let currentOrderNo = $(this).val();
-        let hasDuplicate = false;
-
-        $('.order-no').each(function() {
-            if ($(this).val() === currentOrderNo && $(this).get(0) !== event.target) {
-                hasDuplicate = true;
-                return false; // Exit loop if duplicate is found
-            }
-        });
-
-        // Show or hide the error message based on duplication
-        if (hasDuplicate) {
-            $(this).siblings('.order-no-error').show();
-        } else {
-            $(this).siblings('.order-no-error').hide();
-        }
     });
 
     // Handle form submission with JSON data
@@ -185,7 +169,30 @@
                 if (response.status) {
                     window.location.href = "{{ route('price-managements.index') }}";
                 } else {
-                    // Handle validation errors (e.g., label errors)
+                    var errors = response.errors;
+                    //show error if ordor number is already taken
+                    // alert(response.message);
+                    alert("Order_no is already taken");
+
+                    
+                    // Handle errors by displaying them
+                    if (errors.label) {
+                        $("#label").addClass('is-invalid').siblings('p').html(errors.label).show();
+                    } else {
+                        $("#label").removeClass('is-invalid').siblings('p').hide();
+                    }
+                    
+                    if (errors.description) {
+                        $("#description").addClass('is-invalid').siblings('p').html(errors.description).show();
+                    } else {
+                        $("#description").removeClass('is-invalid').siblings('p').hide();
+                    }
+
+                    if (errors.price_type) {
+                        $("#price_type").addClass('is-invalid').siblings('p').html(errors.price_type).show();
+                    } else {
+                        $("#price_type").removeClass('is-invalid').siblings('p').hide();
+                    }
                 }
             },
             error: function(jqXHR, exception) {
@@ -194,8 +201,6 @@
         });
     });
 });
-
-
 </script>
 
 @endsection

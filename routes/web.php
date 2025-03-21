@@ -6,6 +6,7 @@ use App\Http\Controllers\MenuGenerateController;
 use App\Http\Controllers\admin\MenuImageController;
 use App\Http\Controllers\admin\MenuItemController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\ContactsController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\PriceManagementController;
@@ -46,6 +47,8 @@ Route::post('/contact', [ContactController::class, 'sendEmail'])->name('contact.
 //front end routes
 Route::get('/', [HomeController::class, 'home'])->name('home.index');
 Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('home.about-us');
+Route::get('/menu', [HomeController::class, 'menu'])->name('home.menu');
+Route::get('/menuItems', [HomeController::class, 'menuItems'])->name('home.menuItems');
 Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('home.contact-us');
 Route::get('/services', [HomeController::class, 'service'])->name('home.services');
 Route::get('/user/login', [HomeController::class, 'login'])->name('home.login');
@@ -79,7 +82,9 @@ Route::group(['middleware' => ['auth']], function () {
         ->name('menus.pdf');
     Route::get('/logout', [MenuController::class, 'logout'])->name('admin.logout');
 
-
+Route::get('/contacts', [ContactsController::class, 'index'])
+        ->name('contacts.index')
+        ->middleware(['checkRolePermission:contacts,read-contact']);
     // Menu-item routes
     Route::get('/menu-items', [MenuItemController::class, 'index'])
         ->name('menu-items.index')
@@ -111,13 +116,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/categories', [CategoryController::class, 'store'])
         ->name('categories.store')
         ->middleware(['checkRolePermission:categories,add-new-category']);
-    Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])
+    Route::any('/categories/{category}/edit', [CategoryController::class, 'edit'])
         ->name('categories.edit')
         ->middleware(['checkRolePermission:categories,edit-category']);
-    Route::post('/categories/{category}', [CategoryController::class, 'update'])
+    Route::any('/categories/{category}', [CategoryController::class, 'update'])
         ->name('categories.update')
         ->middleware(['checkRolePermission:categories,edit-category']);
-    Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])
+    Route::delete('/categories/delete/{id}', [CategoryController::class, 'destroy'])
         ->name('categories.delete')
         ->middleware(['checkRolePermission:categories,delete-category']);
     Route::get('/categories/subcategories', [CategoryController::class, 'getSubCategories'])->name('categories.subcategories');
@@ -130,8 +135,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/upload-category-image', [MenuImageController::class, 'categoryCreate'])
         ->name('category-images.categoryCreate');
     Route::get('/dashboard', [MenuImageController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('admin.dashboard');
+        ->middleware(['auth', 'verified'])
+        ->name('admin.dashboard');
 
 
     // Roles routes (already set up)
@@ -155,10 +160,10 @@ Route::group(['middleware' => ['auth']], function () {
         ->middleware(['checkRolePermission:roles,assign-permission']);
 
     //User routes
-    Route::get('users', [UserController::class,'index'])->name('users.index')->middleware(['checkRolePermission:users,read-user']);
-    Route::post('user', [UserController::class,'store'])->name('users.add')->middleware(['checkRolePermission:users,add-new-user']);
-    Route::post('user-update', [UserController::class,'update'])->name('users.edit')->middleware(['checkRolePermission:users,edit-user']);
-    Route::post('user-delete', [UserController::class,'destroy'])->name('users.delete')->middleware(['checkRolePermission:users,delete-user']);
+    Route::get('users', [UserController::class, 'index'])->name('users.index')->middleware(['checkRolePermission:users,read-user']);
+    Route::post('user', [UserController::class, 'store'])->name('users.add')->middleware(['checkRolePermission:users,add-new-user']);
+    Route::post('user-update', [UserController::class, 'update'])->name('users.edit')->middleware(['checkRolePermission:users,edit-user']);
+    Route::post('user-delete', [UserController::class, 'destroy'])->name('users.delete')->middleware(['checkRolePermission:users,delete-user']);
 
     // Price Management routes (already set up)
     Route::get('price-managements', [PriceManagementController::class, 'index'])
@@ -170,15 +175,13 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('price-managements', [PriceManagementController::class, 'store'])
         ->name('price-managements.store')
         ->middleware(['checkRolePermission:price-managements,add-new-price-management']);
-     Route::get('price-managements/{priceMangement}/edit', [PriceManagementController::class, 'edit'])
+    Route::get('price-managements/{priceMangement}/edit', [PriceManagementController::class, 'edit'])
         ->name('price-managements.edit')
         ->middleware(['checkRolePermission:price-managements,edit-price-management']);
     Route::post('price-managements/{priceMangement}', [PriceManagementController::class, 'update'])
         ->name('price-managements.update')
         ->middleware(['checkRolePermission:price-managements,edit-price-management']);
     Route::delete('price-managements/{id}', [PriceManagementController::class, 'destroy'])
-    ->name('price-managements.delete')
-    ->middleware(['checkRolePermission:price-managements,delete-price-management']);
+        ->name('price-managements.delete')
+        ->middleware(['checkRolePermission:price-managements,delete-price-management']);
 });
-
-

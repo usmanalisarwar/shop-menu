@@ -22,130 +22,218 @@ class CategorySeeder extends Seeder
             ]);
         }
 
-        // ----------- MAIN CATEGORIES (Top-level) -----------
-        // Create main categories with no parent_id
-        $electronics = Category::create([
-            'name' => 'Electronics',
-            'slug' => 'electronics',
+        // ----------- MAIN CATEGORIES (Top-level) ----------- 
+        // Create main categories for the restaurant menu
+        $appetizers = Category::create([
+            'name' => 'Appetizers',
+            'slug' => 'appetizers',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null, // Top-level category
-            'order_no' => 1 // Set order number
+            'parent_id' => null // Top-level category
         ]);
 
-        $fashion = Category::create([
-            'name' => 'Fashion',
-            'slug' => 'fashion',
+        $mainCourses = Category::create([
+            'name' => 'Main Courses',
+            'slug' => 'main-courses',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null, // Top-level category
-            'order_no' => 2 // Set order number
+            'parent_id' => null // Top-level category
         ]);
 
-        $homeLiving = Category::create([
-            'name' => 'Home & Living',
-            'slug' => 'home-living',
+        $desserts = Category::create([
+            'name' => 'Desserts',
+            'slug' => 'desserts',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => null, // Top-level category
-            'order_no' => 3 // Set order number
+            'parent_id' => null // Top-level category
         ]);
 
-        // ----------- SUBCATEGORIES (Second-level) -----------
-        // Create subcategories under Electronics
-        $mobiles = Category::create([
-            'name' => 'Mobiles',
-            'slug' => 'mobiles',
+        $beverages = Category::create([
+            'name' => 'Beverages',
+            'slug' => 'beverages',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $electronics->id, // Subcategory of Electronics
-            'order_no' => 1 // Set order number
+            'parent_id' => null // Top-level category
         ]);
 
-        $laptops = Category::create([
-            'name' => 'Laptops',
-            'slug' => 'laptops',
+        // ----------- SUBCATEGORIES (Second-level) ----------- 
+        // Create subcategories under Appetizers
+        $soups = Category::create([
+            'name' => 'Soups',
+            'slug' => 'soups',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $electronics->id, // Subcategory of Electronics
-            'order_no' => 2 // Set order number
+            'parent_id' => $appetizers->id // Subcategory of Appetizers
         ]);
 
-        // Create subcategories under Fashion
-        $clothing = Category::create([
-            'name' => 'Clothing',
-            'slug' => 'clothing',
+        $salads = Category::create([
+            'name' => 'Salads',
+            'slug' => 'salads',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $fashion->id, // Subcategory of Fashion
-            'order_no' => 1 // Set order number
+            'parent_id' => $appetizers->id // Subcategory of Appetizers
         ]);
 
-        $footwear = Category::create([
-            'name' => 'Footwear',
-            'slug' => 'footwear',
+        // Create subcategories under Main Courses
+        $pasta = Category::create([
+            'name' => 'Pasta',
+            'slug' => 'pasta',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $fashion->id, // Subcategory of Fashion
-            'order_no' => 2 // Set order number
+            'parent_id' => $mainCourses->id // Subcategory of Main Courses
         ]);
 
-        // Create subcategories under Home & Living
-        $furniture = Category::create([
-            'name' => 'Furniture',
-            'slug' => 'furniture',
+        $steaks = Category::create([
+            'name' => 'Steaks',
+            'slug' => 'steaks',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $homeLiving->id, // Subcategory of Home & Living
-            'order_no' => 1 // Set order number
+            'parent_id' => $mainCourses->id // Subcategory of Main Courses
         ]);
 
-        $decor = Category::create([
-            'name' => 'Decor',
-            'slug' => 'decor',
+        $seafood = Category::create([
+            'name' => 'Seafood',
+            'slug' => 'seafood',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $homeLiving->id, // Subcategory of Home & Living
-            'order_no' => 2 // Set order number
+            'parent_id' => $mainCourses->id // Subcategory of Main Courses
         ]);
 
-        // ----------- SUB-SUBCATEGORIES (Third-level) -----------
-        // Create sub-subcategories under Mobiles
+        // Create subcategories under Desserts
+        $cakes = Category::create([
+            'name' => 'Cakes',
+            'slug' => 'cakes',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $desserts->id // Subcategory of Desserts
+        ]);
+
+        $iceCream = Category::create([
+            'name' => 'Ice Cream',
+            'slug' => 'ice-cream',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $desserts->id // Subcategory of Desserts
+        ]);
+
+        // Create subcategories under Beverages
+        $softDrinks = Category::create([
+            'name' => 'Soft Drinks',
+            'slug' => 'soft-drinks',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $beverages->id // Subcategory of Beverages
+        ]);
+
+        $alcoholicDrinks = Category::create([
+            'name' => 'Alcoholic Drinks',
+            'slug' => 'alcoholic-drinks',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $beverages->id // Subcategory of Beverages
+        ]);
+
+        // ----------- SUB-SUBCATEGORIES (Third-level) ----------- 
+        // Create sub-subcategories under Soups
         Category::create([
-            'name' => 'Smartphones',
-            'slug' => 'smartphones',
+            'name' => 'Chicken Soup',
+            'slug' => 'chicken-soup',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $mobiles->id, // Sub-subcategory of Mobiles
-            'order_no' => 1 // Set order number
+            'parent_id' => $soups->id // Sub-subcategory of Soups
         ]);
 
         Category::create([
-            'name' => 'Feature Phones',
-            'slug' => 'feature-phones',
+            'name' => 'Vegetable Soup',
+            'slug' => 'vegetable-soup',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $mobiles->id, // Sub-subcategory of Mobiles
-            'order_no' => 2 // Set order number
+            'parent_id' => $soups->id // Sub-subcategory of Soups
         ]);
 
-        // Create sub-subcategories under Clothing
+        // Create sub-subcategories under Salads
         Category::create([
-            'name' => 'Men\'s Clothing',
-            'slug' => 'mens-clothing',
+            'name' => 'Caesar Salad',
+            'slug' => 'caesar-salad',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $clothing->id, // Sub-subcategory of Clothing
-            'order_no' => 1 // Set order number
+            'parent_id' => $salads->id // Sub-subcategory of Salads
         ]);
 
         Category::create([
-            'name' => 'Women\'s Clothing',
-            'slug' => 'womens-clothing',
+            'name' => 'Greek Salad',
+            'slug' => 'greek-salad',
             'status' => 1,
             'user_id' => $user->id,
-            'parent_id' => $clothing->id, // Sub-subcategory of Clothing
-            'order_no' => 2 // Set order number
+            'parent_id' => $salads->id // Sub-subcategory of Salads
+        ]);
+
+        // Create sub-subcategories under Pasta
+        Category::create([
+            'name' => 'Spaghetti',
+            'slug' => 'spaghetti',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $pasta->id // Sub-subcategory of Pasta
+        ]);
+
+        Category::create([
+            'name' => 'Lasagna',
+            'slug' => 'lasagna',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $pasta->id // Sub-subcategory of Pasta
+        ]);
+
+        // Create sub-subcategories under Steaks
+        Category::create([
+            'name' => 'Ribeye',
+            'slug' => 'ribeye',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $steaks->id // Sub-subcategory of Steaks
+        ]);
+
+        Category::create([
+            'name' => 'Filet Mignon',
+            'slug' => 'filet-mignon',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $steaks->id // Sub-subcategory of Steaks
+        ]);
+
+        // Create sub-subcategories under Ice Cream
+        Category::create([
+            'name' => 'Vanilla',
+            'slug' => 'vanilla',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $iceCream->id // Sub-subcategory of Ice Cream
+        ]);
+
+        Category::create([
+            'name' => 'Chocolate',
+            'slug' => 'chocolate',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $iceCream->id // Sub-subcategory of Ice Cream
+        ]);
+
+        // Create sub-subcategories under Soft Drinks
+        Category::create([
+            'name' => 'Coca-Cola',
+            'slug' => 'coca-cola',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $softDrinks->id // Sub-subcategory of Soft Drinks
+        ]);
+
+        Category::create([
+            'name' => 'Pepsi',
+            'slug' => 'pepsi',
+            'status' => 1,
+            'user_id' => $user->id,
+            'parent_id' => $softDrinks->id // Sub-subcategory of Soft Drinks
         ]);
     }
 }

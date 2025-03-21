@@ -1,0 +1,199 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+}
+p {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400; /* Normal */
+}
+
+        :root {
+            --accent-color: #e63946;
+            --heading-color: #1d3557;
+            --bg-color: #FFF8F6;
+        }
+       
+        
+        .navbar-nav .nav-link {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            background-color: #e64343;
+            color: white !important;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-wrap: nowrap !important;
+                font-size: 14px;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .top-bar a {
+                margin-right: 8px;
+            }
+            .top-bar div {
+                display: flex;
+                align-items: center;
+            }
+        }
+
+ /* section 2 start well come to resturent */
+  /* Apply Inter Font */
+ 
+
+        /* Fix for "Welcome Our Restaurant" badge */
+        .hero-badge {
+            background-color: #ffdddd;
+            color: #e64343;
+            padding: 4px 10px;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* View Menu button hover fix */
+        .btn-outline-dark:hover {
+            background-color: #222 !important;
+            color: white !important;
+        }
+        /* section 2 end well come to resturent */
+
+        /* about us start */
+        @media (min-width: 375px) and (max-width: 1024px){
+         .container .png-1 { margin-bottom: 92px; } 
+         .col-lg-7 {
+    margin-top: -46px;
+}
+        } 
+  
+          /* about us end */
+
+  /* menu section start now  */
+
+   /* Add some Bootstrap extensions for hover effects */
+.transition-transform {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.hover-translate-up:hover {
+    transform: translateY(-5px);
+}
+.hover-shadow:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+
+ /* menu section End now  */
+
+
+
+
+
+ /* latest event section start */
+ .latest-events {
+            color: var(--accent-color);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .latest-events::before, .latest-events::after {
+            content: '';
+            height: 1px;
+            width: 20px;
+            background-color: var(--accent-color);
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 10px;
+        }
+        
+        .gallery-heading {
+            color: var(--heading-color);
+        }
+        
+        .event-image {
+            height: 250px;
+        }
+        
+        .event-image:hover {
+            transform: translateY(-5px);
+            transition: transform 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .event-image {
+                height: 200px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .event-image {
+                height: 180px;
+            }
+        }
+
+        /* latest event end  */
+
+
+
+
+        /* testimonial section  start */
+
+        .transition {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1) !important;
+        }
+        .opacity-10 {
+            opacity: 0.1;
+        }
+        /* testimonial section end */
+
+
+
+        /* blog card section start */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        }
+        .full-article {
+            display: none;
+        }
+
+        /* blog card section end  */
+
+
+
+        .responsive-text {
+            font-size: 3rem; /* Default for mobile */
+            opacity: 0.03;
+            white-space: nowrap;
+        }
+      
+        @media (min-width: 576px) {  /* Small screens */
+            .responsive-text { font-size: 7rem; }
+        }
+        @media (min-width: 768px) {  /* Medium screens */
+            .responsive-text { font-size: 7rem; }
+        }
+        @media (min-width: 992px) {  /* Large screens */
+            .responsive-text { font-size: 10rem; }
+        }
+        @media (min-width: 1200px) { /* Extra Large screens */
+            .responsive-text { font-size: 12rem; }
+        }
+   
