@@ -41,6 +41,7 @@
     <link href="{{ asset('dflip/css/themify-icons.min.css')}}" rel="stylesheet" type="text/css">
 
     <!-- Custom Styles to make Flipbook full-screen -->
+    <link rel="stylesheet" href="{{ asset('front-assets/css/order.css') }}">
 
 
     <style>
