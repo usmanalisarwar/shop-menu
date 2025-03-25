@@ -96,6 +96,14 @@
             font-size: 18px;
             display: none;
         }
+        .menu-banner {
+    background: url("{{ asset('front-assets/new_img/banners.jpg') }}") no-repeat center center/cover;
+}
+.breadcrumb-item+.breadcrumb-item::before {
+    color: white; /* This turns the slash ( / ) white */
+}
+
+
     </style>
 </head>
 
@@ -133,24 +141,24 @@
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="blog.html">Blog</a></li>
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="{{ route('home.contact-us')}}">Contact Us</a></li>
                 </ul>
-                <a href="#" class="btn btn-dark rounded-pill">Get Free Quote</a>
-            </div>
+                <a href="{{ route('home.login') }}" class="btn btn-dark rounded-pill">Sign In</a>
+                </div>
         </div>
     </nav>
 
     <!-- banner start -->
 
 
-    <div class="d-flex align-items-center justify-content-center position-relative" style="background-color: #FFF8F6; height: 400px;">
+    <div class="d-flex align-items-center justify-content-center position-relative menu-banner" style="background-color: #FFF8F6; height: 400px;">
         <!-- <div class="position-absolute top-50 start-50 translate-middle text-uppercase fw-bold text-black-50 responsive-text">
         Our Menu
-    </div> -->
+       </div> -->
         <div class="container position-relative text-center">
-            <h1 class="fw-bold text-dark" style="font-size:5rem;">Menu</h1>
+            <h1 class="fw-bold text-white" style="font-size:5rem;">Menu</h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb justify-content-center bg-transparent p-0">
                     <li class="breadcrumb-item"><a href="{{ route('home.index') }}" class="text-danger text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Menu</li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Menu</li>
                 </ol>
             </nav>
         </div>
@@ -219,11 +227,11 @@
                 <div class="col-md-3 col-sm-6 mb-4">
                     <h4 class="text-danger">Quick Links</h4>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none">Home</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Menu</a></li>
+                        <li><a href="{{ route('home.index') }}" class="text-light text-decoration-none">Home</a></li>
+                        <li><a href="{{ route('home.about-us') }}" class="text-light text-decoration-none">About Us</a></li>
+                        <li><a href="{{ route('home.menu') }}" class="text-light text-decoration-none">Menu</a></li>
                         <li><a href="#" class="text-light text-decoration-none">Blog</a></li>
-                        <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+                        <li><a href="{{ route('home.contact-us') }}" class="text-light text-decoration-none">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -318,66 +326,68 @@
         //     }
         // });
         $(document).ready(function() {
-    let page = 1;
-    let isLoading = false;
-    let selectedCategory = '';
-    let hasMoreData = true;
+            let page = 1;
+            let isLoading = false;
+            let selectedCategory = '';
+            let hasMoreData = true;
 
-    // **Category Click Event (New)**
-    $(document).on('click', '.category-link', function() {
-        page = 1; // Reset pagination
-        selectedCategory = $(this).data('category'); // Get category ID
-        $('#items-container').empty(); // Clear previous items
-        hasMoreData = true; // Reset hasMoreData
-        loadCategoriesItem(selectedCategory, page);
-    });
+            // **Category Click Event (New)**
+            $(document).on('click', '.category-link', function() {
+                page = 1; // Reset pagination
+                selectedCategory = $(this).data('category'); // Get category ID
+                $('#items-container').empty(); // Clear previous items
+                hasMoreData = true; // Reset hasMoreData
+                loadCategoriesItem(selectedCategory, page);
+            });
 
-    // **Subcategory Click Event**
-    $(document).on('click', '.subcategory-item', function() {
-        page = 1;
-        selectedCategory = $(this).data('slug'); // Subcategory slug
-        $('#items-container').empty();
-        hasMoreData = true;
-        loadCategoriesItem(selectedCategory, page);
-    });
+            // **Subcategory Click Event**
+            $(document).on('click', '.subcategory-item', function() {
+                page = 1;
+                selectedCategory = $(this).data('slug'); // Subcategory slug
+                $('#items-container').empty();
+                hasMoreData = true;
+                loadCategoriesItem(selectedCategory, page);
+            });
 
-    // **Scroll Event for Pagination**
-    $(window).on('scroll', function() {
-        if (isLoading || !hasMoreData) return;
+            // **Scroll Event for Pagination**
+            $(window).on('scroll', function() {
+                if (isLoading || !hasMoreData) return;
 
-        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-            page++;
-            loadCategoriesItem(selectedCategory, page);
-        }
-    });
-
-    // **Function to Load Items**
-    function loadCategoriesItem(category, page) {
-        $('#loading').show();
-        isLoading = true;
-
-        $.ajax({
-            url: '/menuItems',
-            type: 'GET',
-            data: { category, page },
-            success: function(response) {
-                if (!response.html.trim()) {
-                    hasMoreData = false;
-                    $('#loading').hide();
-                    return;
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+                    page++;
+                    loadCategoriesItem(selectedCategory, page);
                 }
-                $('#items-container').append(response.html);
-                isLoading = false;
-                $('#loading').hide();
-            },
-            error: function() {
-                isLoading = false;
-                $('#loading').hide();
+            });
+
+            // **Function to Load Items**
+            function loadCategoriesItem(category, page) {
+                $('#loading').show();
+                isLoading = true;
+
+                $.ajax({
+                    url: '/menuItems',
+                    type: 'GET',
+                    data: {
+                        category,
+                        page
+                    },
+                    success: function(response) {
+                        if (!response.html.trim()) {
+                            hasMoreData = false;
+                            $('#loading').hide();
+                            return;
+                        }
+                        $('#items-container').append(response.html);
+                        isLoading = false;
+                        $('#loading').hide();
+                    },
+                    error: function() {
+                        isLoading = false;
+                        $('#loading').hide();
+                    }
+                });
             }
         });
-    }
-});
-
     </script>
 </body>
 

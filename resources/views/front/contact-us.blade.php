@@ -6,12 +6,17 @@
     <title>Order And Menu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('front-assets/css/order.css') }}">
     <style>
         /* Set the height of the map */
         #map {
             height: 350px; /* Adjust as needed */
             width: 100%;
+        }
+        .about-banner {
+            background: url("{{ asset('front-assets/new_img/banners.jpg') }}") no-repeat center center/cover;
+        }
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: white; /* Turns the slash ( / ) white */
         }
     </style>
 </head>
@@ -49,18 +54,18 @@
                 <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="blog.html">Blog</a></li>
                 <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="{{ route('home.contact-us')}}">Contact Us</a></li>
             </ul>
-            <a href="#" class="btn btn-dark rounded-pill">Get Free Quote</a>
+            <a href="{{ route('home.login') }}" class="btn btn-dark rounded-pill">Sign In</a>
         </div>
     </div>
 </nav>
 
-<div class="d-flex align-items-center justify-content-center position-relative" style="background-color: #FFF8F6; height: 400px;">
+<div class="d-flex align-items-center justify-content-center position-relative about-banner" style="background-color: #FFF8F6; height: 400px;">
     <div class="container position-relative text-center">
-        <p class="fw-bold text-dark" style="font-size:56px; font-weight: 700;" >Contact-Us</p>
+        <h1 class="fw-bold text-white" style="font-size:56px; font-weight: 700;">Contact-Us </h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center bg-transparent p-0">
                 <li class="breadcrumb-item"><a href="{{ route('home.index')}}" class="text-danger text-decoration-none">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Contact-US</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Contact-Us</li>
             </ol>
         </nav>
     </div>
@@ -84,7 +89,7 @@
                 @endif
             </div>
             <form action="{{ route('contact.send') }}" method="POST">
-            @csrf
+                @csrf
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label">Your Name</label>
@@ -101,17 +106,6 @@
                         <input type="tel" class="form-control border-1 rounded-0 py-2" id="phone" name="phone" placeholder="Phone Number" pattern="[0-9]*" inputmode="numeric" onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
                     </div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-12 mb-3">
-                        <label for="subject" class="form-label">Subject</label>
-                        <select class="form-select border-1 rounded-0 py-2 text-secondary" id="subject" name="subject" required>
-                            <option value="" selected>Subject</option>
-                            <option value="Catering">Catering</option>
-                            <option value="Cooking Classes">Cooking Classes</option>
-                            <option value="General Inquiry">General Inquiry</option>
-                        </select>
-                    </div>
-                </div> -->
                 <div class="row">
                     <div class="col-12 mb-3">
                         <label for="message" class="form-label">Message</label>
@@ -128,6 +122,9 @@
         <div class="col-md-6 ps-md-0">
             <!-- Map Section -->
             <div id="map"></div>
+            <!-- <div class="mt-3">
+                <p><i class="fas fa-map-marker-alt text-danger me-2"></i> 123 Main Street, Miami, FL 33101, USA</p>
+            </div> -->
         </div>
     </div>
 </div>
@@ -151,11 +148,11 @@
             <div class="col-md-3 col-sm-6 mb-4">
                 <h4 class="text-danger">Quick Links</h4>
                 <ul class="list-unstyled">
-                    <li><a href="#" class="text-light text-decoration-none">Home</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Menu</a></li>
+                    <li><a href="{{ route('home.index') }}" class="text-light text-decoration-none">Home</a></li>
+                    <li><a href="{{ route('home.about-us') }}" class="text-light text-decoration-none">About Us</a></li>
+                    <li><a href="{{ route('home.menu') }}" class="text-light text-decoration-none">Menu</a></li>
                     <li><a href="#" class="text-light text-decoration-none">Blog</a></li>
-                    <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+                    <li><a href="{{ route('home.contact-us') }}" class="text-light text-decoration-none">Contact Us</a></li>
                 </ul>
             </div>
             
@@ -193,45 +190,164 @@
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js" crossorigin="anonymous"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD1XDcdRQ5iaYXE5OeV5Gu6-8Nns8pE8oQ&callback=initMap" async defer></script>
 
+<!-- Google Maps API -->
 <script>
-    // Initialize Google Maps
-    let map;
-    let marker;
-
     function initMap() {
-        // Coordinates for 5th Gen Technologies in Jaranwala
-        const techLocation = {
-            lat: 31.1942, // Replace with actual latitude
-            lng: 73.9783  // Replace with actual longitude
-        };
-
-        // Create map
-        map = new google.maps.Map(document.getElementById("map"), {
+        // Default location (Miami, FL)
+        const defaultLocation = { lat: 25.7617, lng: -80.1918 };
+        
+        // Create map centered at default location
+        const map = new google.maps.Map(document.getElementById("map"), {
             zoom: 14,
-            center: techLocation
+            center: defaultLocation,
+            styles: [
+                {
+                    "featureType": "administrative",
+                    "elementType": "labels.text.fill",
+                    "stylers": [
+                        {
+                            "color": "#444444"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "landscape",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "color": "#f2f2f2"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "poi",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "saturation": -100
+                        },
+                        {
+                            "lightness": 45
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.highway",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "simplified"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "road.arterial",
+                    "elementType": "labels.icon",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "transit",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "visibility": "off"
+                        }
+                    ]
+                },
+                {
+                    "featureType": "water",
+                    "elementType": "all",
+                    "stylers": [
+                        {
+                            "color": "#e64343"
+                        },
+                        {
+                            "visibility": "on"
+                        }
+                    ]
+                }
+            ]
         });
-
-        // Create marker
-        marker = new google.maps.Marker({
-            position: techLocation,
+        
+        // Add marker
+        const marker = new google.maps.Marker({
+            position: defaultLocation,
             map: map,
-            title: "5th Gen Technologies"
+            title: "Our Location",
+            icon: {
+                url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            }
         });
-
-        // Optional: Add a click listener to the marker
-        marker.addListener('click', function() {
-            alert("You are at 5th Gen Technologies!");
+        
+        // Info window
+        const infoWindow = new google.maps.InfoWindow({
+            content: "<h5>Our Restaurant</h5><p>123 Main Street, Miami, FL</p>"
         });
+        
+        marker.addListener("click", () => {
+            infoWindow.open(map, marker);
+        });
+        
+        // Try HTML5 geolocation to center map on user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    
+                    // Add user location marker
+                    new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: "Your Location",
+                        icon: {
+                            url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                        }
+                    });
+                    
+                    // Fit bounds to show both locations
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend(defaultLocation);
+                    bounds.extend(userLocation);
+                    map.fitBounds(bounds);
+                },
+                () => {
+                    // If geolocation fails, just use default location
+                    handleLocationError(true, map.getCenter());
+                }
+            );
+        } else {
+            // Browser doesn't support Geolocation
+            handleLocationError(false, map.getCenter());
+        }
     }
-
+    
     function handleLocationError(browserHasGeolocation, pos) {
-        const errorMsg = browserHasGeolocation ?
-            'Error: The Geolocation service failed.' :
-            'Error: Your browser doesn\'t support geolocation.';
-        alert(errorMsg);
+        console.log(browserHasGeolocation ?
+            "Error: The Geolocation service failed." :
+            "Error: Your browser doesn't support geolocation.");
     }
+</script>
+
+<!-- Load Google Maps API with your API key -->
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
 </script>
 </body>
 </html>

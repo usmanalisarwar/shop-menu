@@ -194,11 +194,11 @@
         <div class="col-md-3 col-sm-6 mb-4">
           <h4 class="text-danger">Quick Links</h4>
           <ul class="list-unstyled">
-            <li><a href="#" class="text-light text-decoration-none">Home</a></li>
-            <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
-            <li><a href="#" class="text-light text-decoration-none">Menu</a></li>
+            <li><a href="{{ route('home.index') }}" class="text-light text-decoration-none">Home</a></li>
+            <li><a href="{{ route('home.about-us') }}" class="text-light text-decoration-none">About Us</a></li>
+            <li><a href="{{ route('home.menu') }}" class="text-light text-decoration-none">Menu</a></li>
             <li><a href="#" class="text-light text-decoration-none">Blog</a></li>
-            <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+            <li><a href="{{ route('home.contact-us') }}" class="text-light text-decoration-none">Contact Us</a></li>
           </ul>
         </div>
         <div class="col-md-3 col-sm-6 mb-4">

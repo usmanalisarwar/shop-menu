@@ -8,7 +8,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('front-assets/css/order.css') }}">
     
+<style>
+    .about-banner {
+    background: url("{{ asset('front-assets/new_img/banners.jpg') }}") no-repeat center center/cover;
+}
+.breadcrumb-item+.breadcrumb-item::before {
+    color: white; /* Turns the slash ( / ) white */
+}
+</style>
+
 </head>
+
 <body>
 <!-- Top Bar -->
 <div class="py-2" style="background-color: #e64343;">
@@ -43,21 +53,21 @@
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="blog.html">Blog</a></li>
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="{{ route('home.contact-us')}}">Contact Us</a></li>
                 </ul> 
-            <a href="#" class="btn btn-dark rounded-pill">Get Free Quote</a>
-        </div>
+                <a href="{{ route('home.login') }}" class="btn btn-dark rounded-pill">Sign In</a>
+                </div>
     </div>
 </nav>
 
-<div class="d-flex align-items-center justify-content-center position-relative" style="background-color: #FFF8F6; height: 400px;">
+<div class="d-flex align-items-center justify-content-center position-relative about-banner" style="background-color: #FFF8F6; height: 400px;">
     <!-- <div class="position-absolute top-50 start-50 translate-middle text-uppercase fw-bold text-black-50 responsive-text">
         About Us
     </div> -->
     <div class="container position-relative text-center">
-        <h1 class="fw-bold text-dark  " style="font-size:56px; font-weight: 700;">About-Us </h1>
+        <h1 class="fw-bold text-white  " style="font-size:56px; font-weight: 700;">About-Us </h1>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-center bg-transparent p-0">
                 <li class="breadcrumb-item"><a href="{{ route('home.index')}}" class="text-danger text-decoration-none ">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">About-Us</li>
+                <li class="breadcrumb-item active text-white" aria-current="page">About-Us</li>
             </ol>
         </nav>
     </div>
@@ -308,11 +318,11 @@
             </div>
             
             <!-- Navigation arrows -->
-            <button class="carousel-control-prev bg-danger rounded-circle" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev" style="width: 40px; height: 40px; left: -20px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
+            <button class="carousel-control-prev bg-danger rounded-circle" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev" style="width: 40px; height: 40px; left: -10px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next bg-danger rounded-circle" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next" style="width: 40px; height: 40px; right: -20px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
+            <button class="carousel-control-next bg-danger rounded-circle" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next" style="width: 40px; height: 40px; right: -10px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
@@ -346,11 +356,11 @@
         <div class="col-md-3 col-sm-6 mb-4">
           <h4 class="text-danger">Quick Links</h4>
           <ul class="list-unstyled">
-            <li><a href="#" class="text-light text-decoration-none">Home</a></li>
-            <li><a href="#" class="text-light text-decoration-none">About Us</a></li>
-            <li><a href="#" class="text-light text-decoration-none">Menu</a></li>
+            <li><a href="{{ route('home.index') }}" class="text-light text-decoration-none">Home</a></li>
+            <li><a href="{{ route('home.about-us') }}" class="text-light text-decoration-none">About Us</a></li>
+            <li><a href="{{ route('home.menu') }}" class="text-light text-decoration-none">Menu</a></li>
             <li><a href="#" class="text-light text-decoration-none">Blog</a></li>
-            <li><a href="#" class="text-light text-decoration-none">Contact Us</a></li>
+            <li><a href="{{ route('home.contact-us') }}" class="text-light text-decoration-none">Contact Us</a></li>
           </ul>
         </div>
         
