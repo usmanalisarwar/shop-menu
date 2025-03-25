@@ -51,8 +51,8 @@
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="blog.html">Blog</a></li>
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="{{ route('home.contact-us')}}">Contact Us</a></li>
                 </ul>
-                <a href="#" class="btn btn-dark rounded-pill">Get Free Quote</a>
-            </div>
+                <a href="{{ route('home.login') }}" class="btn btn-dark rounded-pill">Sign In</a>
+                </div>
         </div>
     </nav>
 
@@ -69,7 +69,7 @@
                     <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
                         <a href="#" class="btn btn-primary btn-lg rounded-pill fw-normal"
                             style="background-color: #e64343; border: none;">Call Now!</a>
-                        <a href="http://127.0.0.1:5501/menu.html"
+                        <a href="{{ route('home.menu') }}"
                             class="btn btn-outline-dark btn-lg rounded-pill fw-normal"
                             style="border-color: #222; color: #222;">View Menu</a>
                     </div>
@@ -481,13 +481,13 @@
                 <!-- Navigation arrows -->
                 <button class="carousel-control-prev bg-danger rounded-circle" type="button"
                     data-bs-target="#testimonialCarousel" data-bs-slide="prev"
-                    style="width: 40px; height: 40px; left: -20px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
+                    style="width: 40px; height: 40px; left: -10px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
                 <button class="carousel-control-next bg-danger rounded-circle" type="button"
                     data-bs-target="#testimonialCarousel" data-bs-slide="next"
-                    style="width: 40px; height: 40px; right: -20px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
+                    style="width: 40px; height: 40px; right: -10px; top: 50%; transform: translateY(-50%); opacity: 0.7;">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
@@ -594,11 +594,11 @@
                 <div class="col-md-3 col-sm-6 mb-4">
                     <h4 class="text-danger">Quick Links</h4>
                     <ul class="list-unstyled">
-                        <li><a href="#" class="text-light text-decoration-none lh-base">Home</a></li>
-                        <li><a href="#" class="text-light text-decoration-none lh-base">About Us</a></li>
-                        <li><a href="#" class="text-light text-decoration-none lh-base">Menu</a></li>
+                        <li><a href="{{ route('home.index') }}" class="text-light text-decoration-none lh-base">Home</a></li>
+                        <li><a href="{{ route('home.about-us') }}" class="text-light text-decoration-none lh-base">About Us</a></li>
+                        <li><a href="{{ route('home.menu') }}" class="text-light text-decoration-none lh-base">Menu</a></li>
                         <li><a href="#" class="text-light text-decoration-none lh-base">Blog</a></li>
-                        <li><a href="#" class="text-light text-decoration-none lh-base">Contact Us</a></li>
+                        <li><a href="{{ route('home.contact-us') }}" class="text-light text-decoration-none lh-base">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -632,24 +632,6 @@
             <p class="mb-0">Copyright &copy; 2025 All Rights Reserved.</p>
         </div>
     </footer>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"
         crossorigin="anonymous"></script>
