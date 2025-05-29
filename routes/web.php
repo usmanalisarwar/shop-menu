@@ -47,7 +47,8 @@ Route::post('/contact', [ContactController::class, 'sendEmail'])->name('contact.
 //front end routes
 Route::get('/', [HomeController::class, 'home'])->name('home.index');
 Route::get('/about-us', [HomeController::class, 'aboutUs'])->name('home.about-us');
-Route::get('/menu', [HomeController::class, 'menu'])->name('home.menu');
+// Route::get('/menu', [HomeController::class, 'menu'])->name('home.menu');
+Route::get('/menu/{slug?}', [HomeController::class, 'menu'])->name('home.menu');
 Route::get('/menuItems', [HomeController::class, 'menuItems'])->name('home.menuItems');
 Route::get('/contact-us', [HomeController::class, 'contactUs'])->name('home.contact-us');
 Route::get('/services', [HomeController::class, 'service'])->name('home.services');

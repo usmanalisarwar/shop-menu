@@ -38,8 +38,8 @@ class RegisterController extends Controller
             'role_id' => 3,
             'company_name' => $data['company_name'],
             'password' => Hash::make($data['password']),
-            'latitude' => $data['latitude'],
-            'longitude' => $data['longitude'],
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
         ]);
     }
 

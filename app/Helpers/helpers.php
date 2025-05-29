@@ -86,7 +86,22 @@ if (!function_exists('sendSms')) {
         }
     }
 
+    function slug($table ,$data, $id = null , $field='slug')
+	{
+	    $slug = Str::slug($data);
+	
+	    $query = $table::where($field,'like', '%'.$slug.'%');
+	    if($id){
+	    	$query->where('id','!=',$id);
+	    }
+	   
+	   $slugData = $query->get();
+	    if (count($slugData)) {
+	        $slug = $slug . '-' . count($slugData);
+	    }
 
+	    return $slug;
+	}
 }
 
 

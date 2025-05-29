@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -53,4 +54,20 @@ class User extends Authenticatable implements MustVerifyEmail
     public function role(){
         return $this->belongsTo(Role::class);
     }
+//new add
+    protected static function boot()
+{
+    parent::boot();
+
+    static::creating(function ($model) {
+        if (empty($model->uuid)) {
+            $model->uuid = (string) Str::uuid();
+        }
+    });
+}
+
+public function getRouteKeyName()
+{
+    return 'uuid';
+}
 }

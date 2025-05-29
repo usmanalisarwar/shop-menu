@@ -156,9 +156,9 @@
                     </div>
 
                     <!-- Read More button -->
-                    <div class="mt-4">
+                    <!-- <div class="mt-4">
                         <button class="btn btn-danger rounded-pill px-4 py-2 text-white fw-medium">Read More</button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>

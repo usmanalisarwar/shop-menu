@@ -36,7 +36,7 @@
         $permissions = getAuthUserModulePermissions();
         @endphp
         @if (hasPermissions($permissions, 'edit-category'))
-        <form method="POST" id="categoryForm" name="categoryForm">
+        <form method="POST"  id="categoryForm" name="categoryForm " >
             @csrf
             <div class="card">
                 <div class="card-body">

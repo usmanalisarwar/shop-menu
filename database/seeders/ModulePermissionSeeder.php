@@ -20,6 +20,7 @@ class ModulePermissionSeeder extends Seeder
             ['name' => 'Super Admin'],
             ['name' => 'Admin'],
             ['name' => 'User'],
+            ['name' => 'Restaurant'],
         ];
         foreach ($roles as $role) {
             Role::updateOrCreate($role, $role);
@@ -99,11 +100,17 @@ class ModulePermissionSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Contact',
-                'url' => 'contacts',
-                'active' => 'contacts',
-                'icon' => 'phone', // Add this line
-            ],            
+    'name' => 'Contact',
+    'url' => 'contacts',
+    'active' => 'contacts',
+    'icon' => 'phone',
+    'permissions' => [
+        'Read Contact',
+        'Add New Contact',
+        'Edit Contact',
+        'Delete Contact',
+    ],
+],           
 
         ];
         foreach ($modulesAndPermissions as $modulesAndPermission) {

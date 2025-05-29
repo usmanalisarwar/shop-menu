@@ -20,10 +20,18 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
+    // public function down(): void
+    // {
+    //     Schema::table('menus', function (Blueprint $table) {
+    //         $table->dropColumn('user_id');
+    //     });
+    // }
     public function down(): void
-    {
-        Schema::table('menus', function (Blueprint $table) {
-            $table->dropColumn('user_id');
-        });
-    }
+{
+    Schema::table('menus', function (Blueprint $table) {
+        $table->dropForeign(['user_id']);  // Drop the foreign key constraint
+        $table->dropColumn('user_id');
+    });
+}
+
 };

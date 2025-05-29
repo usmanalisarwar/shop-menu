@@ -96,14 +96,15 @@
             font-size: 18px;
             display: none;
         }
+
         .menu-banner {
-    background: url("{{ asset('front-assets/new_img/banners.jpg') }}") no-repeat center center/cover;
-}
-.breadcrumb-item+.breadcrumb-item::before {
-    color: white; /* This turns the slash ( / ) white */
-}
+            background: url("{{ asset('front-assets/new_img/banners.jpg') }}") no-repeat center center/cover;
+        }
 
-
+        .breadcrumb-item+.breadcrumb-item::before {
+            color: white;
+            /* This turns the slash ( / ) white */
+        }
     </style>
 </head>
 
@@ -127,6 +128,7 @@
     <nav class="navbar navbar-expand-lg bg-white ">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('home.index') }}">
+                <!-- <img src="{{ asset('front-assets/new_img/logo.jpg') }}"> -->
                 <span class="text-black">ORDER AND</span> <span style="color: #e64343;">MENU</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,7 +144,7 @@
                     <li class="nav-item"><a class="nav-link fs-5 fw-semibold" href="{{ route('home.contact-us')}}">Contact Us</a></li>
                 </ul>
                 <a href="{{ route('home.login') }}" class="btn btn-dark rounded-pill">Sign In</a>
-                </div>
+            </div>
         </div>
     </nav>
 
@@ -165,9 +167,8 @@
     </div>
 
     <!-- menu start -->
-    <div class="container pb-5">
+    <!-- <div class="container pb-5">
         <div class="row py-4"></div>
-
         <div class="row">
             <div class="col-lg-3">
                 @foreach ($categories as $category)
@@ -205,9 +206,53 @@
     </div>
 
 
-    <div id="category-container"></div>
+    <div id="category-container"></div> -->
 
+<div class="container pb-5">
+    <div class="row py-4"></div>
+    <div class="row">
+        <div class="col-lg-3">
+            @foreach ($categories as $category)
+                @if($category->parent_id == null)
+                    <div class="category-link"
+                        data-category="{{ $category->slug }}"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#category-{{ $category->id }}"
+                        aria-expanded="false"
+                        aria-controls="category-{{ $category->id }}"
+                        style="cursor: pointer;">
+                        {{ $category->name }}
+                    </div>
+                    @php $child = $category->children; @endphp
+                    @if($child->isNotEmpty())
+                        <div id="category-{{ $category->id }}" class="collapse" style="padding-left: 15px;">
+                            @foreach ($child as $item)
+                                <div class="subcategory-item" data-slug="{{ $item->slug }}" style="cursor: pointer;">
+                                    {{ $item->name }}
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                @endif
+            @endforeach
+        </div>
 
+        <div class="col-lg-9">
+            <h2 id="categoryTitle">Our Items</h2>
+            <div class="row">
+                <div id="items-container"></div>
+            </div>
+            <div id="loading" style="display:none;">Loading...</div>
+        </div>
+    </div>
+
+    <button class="btn text-white w-100 d-lg-none mb-3" type="button" data-bs-toggle="offcanvas"
+        data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" style="background-color: #e64343;">
+        ☰ Menu
+    </button>
+</div>
+
+<div id="category-container"></div>
     <!-- footer start -->
     <footer class="bg-dark text-light pt-5 ">
         <div class="container">
@@ -325,69 +370,153 @@
         //         });
         //     }
         // });
-        $(document).ready(function() {
-            let page = 1;
-            let isLoading = false;
-            let selectedCategory = '';
-            let hasMoreData = true;
+        // let userUuid = '{{ auth()->user()->uuid ?? '' }}';
+        // $(document).ready(function() {
+        //     let page = 1;
+        //     let isLoading = false;
+        //     let selectedCategory = '';
+        //     let hasMoreData = true;
 
-            // **Category Click Event (New)**
-            $(document).on('click', '.category-link', function() {
-                page = 1; // Reset pagination
-                selectedCategory = $(this).data('category'); // Get category ID
-                $('#items-container').empty(); // Clear previous items
-                hasMoreData = true; // Reset hasMoreData
-                loadCategoriesItem(selectedCategory, page);
-            });
+        //     // **Category Click Event (New)**
+        //     $(document).on('click', '.category-link', function() {
+        //         page = 1; // Reset pagination
+        //         selectedCategory = $(this).data('category'); // Get category ID
+        //         $('#items-container').empty(); // Clear previous items
+        //         hasMoreData = true; // Reset hasMoreData
+        //         loadCategoriesItem(selectedCategory, page);
+        //     });
 
-            // **Subcategory Click Event**
-            $(document).on('click', '.subcategory-item', function() {
-                page = 1;
-                selectedCategory = $(this).data('slug'); // Subcategory slug
-                $('#items-container').empty();
-                hasMoreData = true;
-                loadCategoriesItem(selectedCategory, page);
-            });
+        //     // **Subcategory Click Event**
+        //     $(document).on('click', '.subcategory-item', function() {
+        //         page = 1;
+        //         selectedCategory = $(this).data('slug'); // Subcategory slug
+        //         $('#items-container').empty();
+        //         hasMoreData = true;
+        //         loadCategoriesItem(selectedCategory, page);
+        //     });
 
-            // **Scroll Event for Pagination**
-            $(window).on('scroll', function() {
-                if (isLoading || !hasMoreData) return;
+        //     // **Scroll Event for Pagination**
+        //     $(window).on('scroll', function() {
+        //         if (isLoading || !hasMoreData) return;
 
-                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
-                    page++;
-                    loadCategoriesItem(selectedCategory, page);
+        //         if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+        //             page++;
+        //             loadCategoriesItem(selectedCategory, page);
+        //         }
+        //     });
+
+        //     // **Function to Load Items**
+        //     function loadCategoriesItem(category, page) {
+        //         $('#loading').show();
+        //         isLoading = true;
+
+        //         $.ajax({
+        //             url: '/menuItems',
+        //             type: 'GET',
+        //             data: {
+        //                 category,
+        //                 page,
+        //                 user_uuid: userUuid//new add
+        //             },
+        //             success: function(response) {
+        //                 if (!response.html.trim()) {
+        //                     hasMoreData = false;
+        //                     $('#loading').hide();
+        //                     return;
+        //                 }
+        //                 $('#items-container').append(response.html);
+        //                 isLoading = false;
+        //                 $('#loading').hide();
+        //             },
+        //             error: function() {
+        //                 isLoading = false;
+        //                 $('#loading').hide();
+        //             }
+        //         });
+        //     }
+        // });
+        let userUuid = '{{ auth()->user()->uuid ?? '' }}';
+
+$(document).ready(function () {
+    let page = 1;
+    let isLoading = false;
+    let selectedCategory = '';
+    let hasMoreData = true;
+
+    // ✅ Load category from URL on page load
+    const currentPath = window.location.pathname;
+    const parts = currentPath.split('/');
+    if (parts.length === 3 && parts[1] === 'menu') {
+        selectedCategory = parts[2];
+        loadCategoriesItem(selectedCategory, page);
+    }
+
+    // ✅ Category Click
+    $(document).on('click', '.category-link', function () {
+        page = 1;
+        selectedCategory = $(this).data('category');
+        $('#items-container').empty();
+        hasMoreData = true;
+
+        const newUrl = `/menu/${selectedCategory}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        loadCategoriesItem(selectedCategory, page);
+    });
+
+    // ✅ Subcategory Click
+    $(document).on('click', '.subcategory-item', function () {
+        page = 1;
+        selectedCategory = $(this).data('slug');
+        $('#items-container').empty();
+        hasMoreData = true;
+
+        const newUrl = `/menu/${selectedCategory}`;
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        loadCategoriesItem(selectedCategory, page);
+    });
+
+    // ✅ Infinite Scroll
+    $(window).on('scroll', function () {
+        if (isLoading || !hasMoreData) return;
+
+        if ($(window).scrollTop() + $(window).height() >= $(document).height() - 100) {
+            page++;
+            loadCategoriesItem(selectedCategory, page);
+        }
+    });
+
+    // ✅ AJAX Loader
+    function loadCategoriesItem(category, page) {
+        $('#loading').show();
+        isLoading = true;
+
+        $.ajax({
+            url: '/menuItems',
+            type: 'GET',
+            data: {
+                category,
+                page,
+                user_uuid: userUuid
+            },
+            success: function (response) {
+                if (!response.html.trim()) {
+                    hasMoreData = false;
+                    $('#loading').hide();
+                    return;
                 }
-            });
-
-            // **Function to Load Items**
-            function loadCategoriesItem(category, page) {
-                $('#loading').show();
-                isLoading = true;
-
-                $.ajax({
-                    url: '/menuItems',
-                    type: 'GET',
-                    data: {
-                        category,
-                        page
-                    },
-                    success: function(response) {
-                        if (!response.html.trim()) {
-                            hasMoreData = false;
-                            $('#loading').hide();
-                            return;
-                        }
-                        $('#items-container').append(response.html);
-                        isLoading = false;
-                        $('#loading').hide();
-                    },
-                    error: function() {
-                        isLoading = false;
-                        $('#loading').hide();
-                    }
-                });
+                $('#items-container').append(response.html);
+                isLoading = false;
+                $('#loading').hide();
+            },
+            error: function () {
+                isLoading = false;
+                $('#loading').hide();
             }
         });
+    }
+});
     </script>
 </body>
 

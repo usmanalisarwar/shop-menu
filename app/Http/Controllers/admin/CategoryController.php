@@ -45,7 +45,13 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $query = Category::where('user_id', Auth::id())->with('images')->latest();
+        $userId = auth()->id();
+
+        $query = Category::where(function ($q) use ($userId) {
+            $q->where('user_id', $userId)
+                ->orWhereNull('user_id');
+        })->with('images')->latest();
+
 
         if ($keyword = $request->get('keyword')) {
             $query->where('name', 'like', '%' . $keyword . '%');
@@ -63,7 +69,10 @@ class CategoryController extends Controller
         if (!hasPermissions($permissions, 'add-new-category')) {
             abort(403, 'Unauthorized');
         }
+
         $categories = Category::whereNull('parent_id')->get();
+        // $categories = Category::whereNull('parent_id')->whereNull('deleted_at')->get();
+
         return view('admin.category.create', compact('categories'));
     }
 
@@ -121,18 +130,24 @@ class CategoryController extends Controller
             }
         }
 
+        // $category = new Category();
+        // $category->name = $request->name;
+        // $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
+        // $category->status = $request->status;
+        // $category->order_no = $request->order_no;
+        // $category->parent_id = $request->parent_id;
+        // $category->user_id = Auth::id();
+
+        // $category->save();
         $category = new Category();
         $category->name = $request->name;
-        $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name);
         $category->status = $request->status;
         $category->order_no = $request->order_no;
         $category->parent_id = $request->parent_id;
-        $category->user_id = Auth::id();
-
         $category->save();
 
         // Save the menu images
-        if(isset($request->image_array)) {
+        if (isset($request->image_array)) {
             foreach ($request->image_array as $categoryImageId) {
                 $categoryImage = CategoryImage::find($categoryImageId);
 
@@ -165,29 +180,40 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function edit($id)
+    public function edit(Category $category) //, $id)
     {
         $permissions = getAuthUserModulePermissions();
 
         if (!hasPermissions($permissions, 'edit-category')) {
             abort(403, 'Unauthorized');
         }
+    $categories = Category::whereNull('parent_id')->get();
+    $categoryImages = CategoryImage::where('category_id', $category->id)->orderBy('order_no')->get();
 
-        $category = Category::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-        $categories = Category::whereNull('parent_id')->get();
-        $categoryImages = CategoryImage::where('category_id', $id)->orderBy('order_no')->get();
+        // $category = Category::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        // $categories = Category::whereNull('parent_id')->get();
+        // $categoryImages = CategoryImage::where('category_id', $id)->orderBy('order_no')->get();
 
         return view('admin.category.edit', compact('category', 'categories', 'categoryImages'));
     }
 
     public function update(Request $request, $id)
     {
+        
         $permissions = getAuthUserModulePermissions();
         if (!hasPermissions($permissions, 'edit-category')) {
             abort(403, 'Unauthorized');
         }
+        // $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
+        $authUser = Auth::user();
+        $categoryQuery = Category::where('id', $id);
 
-        $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
+        // Apply user_id filter only if user has role 'user' or 'restaurant'
+        if (in_array($authUser->role, ['user', 'restaurant'])) {
+        $categoryQuery->where('user_id', $authUser->id);
+        }
+
+        $category = $categoryQuery->first();
 
         // Validate input data
         $validator = Validator::make($request->all(), [
@@ -210,13 +236,13 @@ class CategoryController extends Controller
                 'errors' => ['order_no' => 'The order number has already been taken. Please choose another one.']
             ]);
         }
-
+        // $category = new Category;
         $category->name = $request->name;
+        
         $category->slug = $this->slugHelper->slug('categories', 'slug', $request->name, $id);
         $category->status = $request->status;
         $category->order_no = $request->order_no;
         $category->parent_id = $request->parent_id;
-
         // Update user_id if provided in the request
         if ($request->has('user_id')) {
             $category->user_id = $request->user_id; // Assign new user ID from the request
@@ -224,7 +250,7 @@ class CategoryController extends Controller
 
         $category->save();
         // Update the order numbers for images
-        if(isset($request->image_array)) {
+        if (isset($request->image_array)) {
             foreach ($request->image_array as $order => $imageId) {
                 $categoryImage = CategoryImage::find($imageId);
                 if ($categoryImage) {
@@ -256,7 +282,17 @@ class CategoryController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
+        // $category = Category::where('id', $id)->where('user_id', Auth::id())->first();
+        $authUser = Auth::user();
+        $categoryQuery = Category::where('id', $id);
+
+        // Apply user_id condition for 'user' or 'restaurant' roles
+        if (in_array($authUser->role, ['user', 'restaurant'])) {
+        $categoryQuery->where('user_id', $authUser->id);
+        }
+
+        $category = $categoryQuery->first();
+
         // Delete associated images
         $categoryImages = CategoryImage::where('category_id', $id)->get();
         foreach ($categoryImages as $image) {

@@ -17,9 +17,9 @@ class MenuGenerateController extends Controller
         // Example: Find the book by slug from the database
         $menu = Menu::where('slug', $slug)->first();
 
-        $menuImage = $menu->images[0];
+        // $menuImage = $menu->images[0];
         // $menuImage = $menu->images->first() ?? null;
-        // $menuImage = $menu->images[0] ?? null;
+        $menuImage = $menu->images[0] ?? null;
 
 
         // Check if the book exists
